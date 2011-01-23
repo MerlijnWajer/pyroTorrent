@@ -20,6 +20,8 @@ def make_map(config):
 
     # CUSTOM ROUTES HERE
 
+    map.connect('/', controller='pyro', action='index')
+
     map.connect('/{controller}/{action}')
     map.connect('/{controller}/{action}/{id}')
 
