@@ -12,24 +12,51 @@ import xmlrpclib
 
 class RTorrent(object):
     """
+    RTorrent class.
+
 
     """
 
-    def __init__(self, host, port=80):
+    def __init__(self, host, port=80, url='/RPC2'):
         # No ending '/' !
-        self.s = xmlrpclib.ServerProxy('http://%s:%i' % (host, port))
+        self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
 
-    def get_upload_rate(self):
-        return self.s.get_upload_rate()
 
-    def set_upload_rate(self, rate):
-        # If invalid, raise ValueError.
-        rate = int(rate)
-        return self.s.set_upload_rate(rate)
+# XXX: Begin hacks
+
+import types
+
+_rpc_methods = {
+    'get_upload_throttle' : ('get_upload_rate',
+        """
+        Returns the current upload throttle.
+        """),
+    'set_upload_throttle' : ('set_upload_rate',
+        """
+        Set the current upload throttle. (In bytes)
+        """)
+}
+
+# Hack in all the methods in _rpc_methods!
+
+for x, y in _rpc_methods.iteritems():
+    caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
+    caller.__doc__ = y[1]
+    setattr(RTorrent, x, types.MethodType(caller, None, RTorrent))
+
+#   Old hack:
+#    exec('caller = lambda self, *args: getattr(self.s, \''+y+'\')(*args)')
+
+# XXX: End hacks
+
 
 if __name__ == '__main__':
-    r = RTorrent('sheeva')
+    x = RTorrent('sheeva')
 
-    print r.get_upload_rate()
-
+    old = x.get_upload_throttle()
+    print 'Throttle:',old
+    print 'Return:', x.set_upload_throttle(20000)
+    print 'Throttle:',x.get_upload_throttle()
+    print 'Return:', x.set_upload_throttle(old)
+    print 'Throttle:',x.get_upload_throttle()
 
