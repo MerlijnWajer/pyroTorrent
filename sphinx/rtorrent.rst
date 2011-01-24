@@ -1,5 +1,5 @@
-RTorrent class
-==============
+RTorrent
+========
 
 .. automodule:: rtorrent
     :members:
