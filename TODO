@@ -1,4 +1,10 @@
 TODO:
     -   Everything.
-    -   Check out: http://libtorrent.rakshasa.no/wiki/UtilsXmlrpc2scgi for some
-        examples on how to properly work with rtorrent.
+    -   Create Models (might be hard for rtorrent)
+    -   Implement XMLRPC Exceptions, own wrapper?
+    -   Implement Models with XMLRPC
+    -   Add controllers
+
+    -   Add direct SCGI support?:
+            Check out: http://libtorrent.rakshasa.no/wiki/UtilsXmlrpc2scgi for
+            some examples on how to properly work with rtorrent.
