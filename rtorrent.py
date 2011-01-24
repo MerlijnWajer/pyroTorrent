@@ -34,7 +34,31 @@ _rpc_methods = {
     'set_upload_throttle' : ('set_upload_rate',
         """
         Set the current upload throttle. (In bytes)
-        """)
+        """),
+    'get_download_throttle' : ('get_download_rate',
+        """
+        Returns the download upload throttle.
+        """),
+    'set_download_throttle' : ('set_download_rate',
+        """
+        Set the current download throttle. (In bytes)
+        """),
+    'get_upload_rate' : ('get_up_rate',
+        """
+        Returns the current upload rate.
+        """),
+    'get_upload_rate_total' : ('get_up_total',
+        """
+        Returns the total uploaded data.
+        """), # XXX ^ Unsure about comment
+    'get_download_rate' : ('get_down_rate',
+        """
+        Returns the current download rate.
+        """),
+    'get_download_rate_total' : ('get_down_total',
+        """
+        Returns the total downloaded data.
+        """) # XXX ^ Unsure about comment
 }
 
 # Hack in all the methods in _rpc_methods!
@@ -54,9 +78,9 @@ if __name__ == '__main__':
     x = RTorrent('sheeva')
 
     old = x.get_upload_throttle()
-    print 'Throttle:',old
+    print 'Throttle:', old
     print 'Return:', x.set_upload_throttle(20000)
-    print 'Throttle:',x.get_upload_throttle()
+    print 'Throttle:', x.get_upload_throttle()
     print 'Return:', x.set_upload_throttle(old)
-    print 'Throttle:',x.get_upload_throttle()
+    print 'Throttle:', x.get_upload_throttle()
 
