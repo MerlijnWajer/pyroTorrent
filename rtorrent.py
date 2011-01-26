@@ -59,7 +59,7 @@ class RTorrent(object):
                 'active', 'hashing', 'seeding', ''):
             return None
 
-        res = self.s.download_view(_type)
+        res = self.s.download_list(_type)
 
         # FIXME: We now only have the hashes. Do we also want to fetch all the
         # data per torrent? Or perhaps only the basic info?
@@ -147,3 +147,4 @@ if __name__ == '__main__':
     print 'Return:', x.set_upload_throttle(old)
     print 'Throttle:', x.get_upload_throttle()
 
+    print 'Download list', x.get_download_list()
