@@ -45,7 +45,7 @@ class RTorrent(object):
         """
         Returns a list of torrents.
         _type defines what is returned. Valid:
-            *   '' (Empty string)
+            *   '' (Empty string), 'default'
             *   'complete'
             *   'incomplete'
             *   'started'
@@ -56,7 +56,7 @@ class RTorrent(object):
         """
         # FIXME: List is not complete(?) + exception should be raised.
         if _type not in ('complete', 'incomplete', 'started', 'stopped',
-                'active', 'hashing', 'seeding', ''):
+                'active', 'hashing', 'seeding', '', 'default'):
             return None
 
         res = self.s.download_list(_type)
