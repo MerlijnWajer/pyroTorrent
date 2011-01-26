@@ -40,6 +40,7 @@ class RTorrent(object):
         """
         # No ending '/' !
         self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
+        self.host, self.port, self.url = host, port, url
 
     def get_download_list(self, _type=''):
         """
@@ -132,6 +133,8 @@ for x, y in _rpc_methods.iteritems():
     caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
     caller.__doc__ = y[1]
     setattr(RTorrent, x, types.MethodType(caller, None, RTorrent))
+
+    del caller
 
 # XXX: End hacks
 

@@ -11,7 +11,10 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    intro.rst
+    todo.rst
     rtorrent.rst
+    torrent.rst
 
 
 
