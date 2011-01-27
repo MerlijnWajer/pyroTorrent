@@ -1,4 +1,15 @@
 #!/usr/bin/python
+"""
+.. _torrent-class:
+
+Torrent
+=======
+
+The Torrent class defines a single torrent.
+It is instantiated with a Torrent specific hash, 
+and connection information similar to :ref:`rtorrent-class`.
+"""
+
 import xmlrpclib
 
 class Torrent(object):
@@ -14,6 +25,9 @@ class Torrent(object):
 
 import types
 
+# RPC Methods for Torrent. You don't have to pass the Torrent hash; it is
+# automatically passed. When you invoke one of these methods on a Torrent
+# instance.
 _rpc_methods = {
     'get_name' : ('d.get_name',
         """
@@ -21,17 +35,29 @@ _rpc_methods = {
         """)
 }
 
+# RPC Methods for Torrent. These do not pass any argument automatically. (See
+# above comments)
+_rpc_methods_noautoarg = {
+
+}
+
 for x, y in _rpc_methods.iteritems():
 
-
-    # XXX: Passing self._hash as first (default) argument. This may be easier in
-    # most cases, it does kind of restrict the range of functions we can use.
-    # We could always make two lists of methods. One where we always pass
-    # self._hash as default argument, and one where we don't.
+    # Passing self._hash as first (default) argument. This may be easier in
+    # most cases. If you don't want to pass a default (hash) argument; use the
+    # _rpc_methods_noautoarg variable.
 
     #caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
 
     caller = (lambda name: lambda self, *args: getattr(self.s, name)(self._hash, *args))(y[0])
+    caller.__doc__ = y[1]
+    setattr(Torrent, x, types.MethodType(caller, None, Torrent))
+
+    del caller
+
+for x, y in _rpc_methods_noautoarg.iteritems():
+
+    caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
     caller.__doc__ = y[1]
     setattr(Torrent, x, types.MethodType(caller, None, Torrent))
 

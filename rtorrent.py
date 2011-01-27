@@ -2,12 +2,17 @@
 """
 .. _rtorrent-class:
 
+RTorrent
+========
+
 The RTorrent class serves as an interface to a remote RTorrent (program?).
 It implements a lot of the functionality that RTorrent exposes over XMLRPC;
 currently only XMLRPC over HTTP is supported; but support for direct SCGI is
 planned. Basically, HTTP support requires a web server to direct requests to
 RTorrent, whereas SCGI talks directly to RTorrent. (The web server also uses
 SCGI to talk to RTorrent)
+
+The RTorrent constructor requires a host and optionally a port and url.
 
 Some of the functions documented in here are in fact auto generated (on the
 fly); they will only have one argument: *args.
@@ -46,6 +51,7 @@ class RTorrent(object):
         """
         Returns a list of torrents.
         _type defines what is returned. Valid:
+
             *   '' (Empty string), 'default'
             *   'complete'
             *   'incomplete'
@@ -66,7 +72,6 @@ class RTorrent(object):
         # data per torrent? Or perhaps only the basic info?
 
         return res
-
 
 # XXX: Begin hacks
 

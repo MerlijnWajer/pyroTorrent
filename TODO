@@ -1,5 +1,4 @@
 TODO:
-    -   Everything.
     -   Create Models (might be hard for rtorrent)
     -   Implement XMLRPC Exceptions, own wrapper?
     -   Implement Models with XMLRPC
