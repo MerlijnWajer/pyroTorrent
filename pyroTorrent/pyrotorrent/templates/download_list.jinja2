@@ -1,0 +1,10 @@
+<html>
+{% if c.download_titles %}
+    <ul>
+    {% for x in c.download_titles %}
+    <li>{{ x }}</li>
+    {% endfor %}
+    <ul>
+{% endif %}
+</html>
+
