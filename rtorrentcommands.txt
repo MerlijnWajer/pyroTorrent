@@ -27,9 +27,9 @@
 [ ] d.delete_tied
 [ ] d.erase
 [ ] d.get_base_filename
-[X] d.get_base_path # Returns the base path
+[X] d.get_base_path # Returns the base path. Torrent.get_full_path
 [ ] d.get_bitfield
-[X] d.get_bytes_done
+[X] d.get_bytes_done # Torrent.get_bytes_done
 [ ] d.get_chunk_size
 [ ] d.get_chunks_hashed
 [X] d.get_complete
@@ -48,12 +48,12 @@
 [ ] d.get_custom_throw
 [ ] d.get_directory
 [ ] d.get_directory_base
-[ ] d.get_down_rate
-[ ] d.get_down_total
+[X] d.get_down_rate # Torrent.get_download_rate
+[X] d.get_down_total # Torrent.get_download_total
 [ ] d.get_free_diskspace
-[ ] d.get_hash
-[ ] d.get_hashing
-[ ] d.get_hashing_failed
+[X] d.get_hash # Torrent.get_hash
+[X] d.get_hashing # Torrent.is_hashing
+[X] d.get_hashing_failed # Torrent.hashing_failed
 [ ] d.get_ignore_commands
 [ ] d.get_left_bytes
 [ ] d.get_loaded_file
@@ -63,7 +63,7 @@
 [ ] d.get_max_size_pex
 [ ] d.get_message
 [ ] d.get_mode
-[X] d.get_name  # Returns the name
+[X] d.get_name  # Torrent.get_name
 [ ] d.get_peer_exchange
 [ ] d.get_peers_accounted
 [ ] d.get_peers_complete
@@ -74,9 +74,9 @@
 [ ] d.get_priority
 [ ] d.get_priority_str
 [ ] d.get_ratio
-[ ] d.get_size_bytes
-[ ] d.get_size_chunks
-[ ] d.get_size_files
+[X] d.get_size_bytes # Torrent.get_size_bytes
+[X] d.get_size_chunks # Torrent.get_size_chucks
+[X] d.get_size_files # Torrent.get_size_files
 [ ] d.get_size_pex
 [ ] d.get_skip_rate
 [ ] d.get_skip_total
@@ -88,8 +88,8 @@
 [ ] d.get_tracker_focus
 [ ] d.get_tracker_numwant
 [ ] d.get_tracker_size
-[ ] d.get_up_rate
-[ ] d.get_up_total
+[X] d.get_up_rate # Torrent.get_upload_rate
+[X] d.get_up_total # Torrent.get_upload_total
 [ ] d.get_uploads_max
 [ ] d.initialize_logs
 [ ] d.is_active

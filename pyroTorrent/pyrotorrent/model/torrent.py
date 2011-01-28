@@ -45,11 +45,48 @@ _rpc_methods = {
         """
         Returns 1 if torrent is complete; 0 if it is not complete.
         """),
+    'get_download_rate' : ('d.get_down_rate',
+        """
+        Returns the current download rate for Torrent.
+        """),
+    'get_download_total' : ('d.get_down_total',
+        """
+        Returns the total downloaded data for torrent.
+        """),
+    'get_upload_rate' : ('d.get_up_rate',
+        """
+        Returns the current upload rate for Torrent.
+        """),
+    'get_upload_total' : ('d.get_up_total',
+        """
+        Returns the total uploaded data for torrent.
+        """),
+    'get_size_bytes' : ('d.get_size_bytes', 
+        """
+        Returns the size of the torrent in bytes.
+        """),
+    'get_size_chucks' : ('d.get_size_chucks', 
+        """
+        Returns the size of the torrent in chucks.
+        """),
+    'get_size_files' : ('d.get_size_files', 
+        """
+        Returns the size of the torrent in files.
+        """),
+
+    'get_hash' :  ('d.get_hash',
+        """
+        Returns the torrent hash. Very useful.
+        """),
+    'is_hashing' : ('d.get_hashing',
+        """
+        """),
+    'hashing_failed' : ('d.get_hashing_failed',
+        """
+        """),
     'perform_hash_check' : (' d.check_hash',
         """
         Performs a hash check. Returns 0 immediately.
-        Unsure how to get the result of the hash check, ATM. Will have to check
-        later
         """)
 
 
