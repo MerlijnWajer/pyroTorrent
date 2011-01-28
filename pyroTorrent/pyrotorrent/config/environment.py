@@ -39,5 +39,12 @@ def load_environment(global_conf, app_conf):
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
-    
+
+    # XXX: Move to proper place later.
+    app_globals.rtorrent = {
+            'host' : 'sheeva',
+            'port' : 80,
+            'url'  : ''
+        }
+
     return config

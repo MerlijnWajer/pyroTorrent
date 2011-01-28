@@ -29,10 +29,30 @@ import types
 # automatically passed. When you invoke one of these methods on a Torrent
 # instance.
 _rpc_methods = {
-    'get_name' : ('d.get_name',
+    'get_name' : ('d.get_name', # XXX: get_base_filename is the same?
         """
         Returns the name of the Torrent.
+        """),
+    'get_full_path' : ('d.get_get_path',
+        """
+        Returns the full path to the Torrent.
+        """),
+    'get_bytes_done' : ('d.get_bytes_done',
+        """
+        Returns the amount of bytes done.
+        """),
+    'is_complete' : ('d.get_complete',
+        """
+        Returns 1 if torrent is complete; 0 if it is not complete.
+        """),
+
+    'perform_hash_check' : (' d.check_hash',
+        """
+        Performs a hash check. Returns 0 immediately.
+        Unsure how to get the result of the hash check, ATM.
         """)
+
+
 }
 
 # RPC Methods for Torrent. These do not pass any argument automatically. (See
