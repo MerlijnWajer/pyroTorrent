@@ -84,7 +84,7 @@ _rpc_methods = {
         """),
     'set_upload_throttle' : ('set_upload_rate',
         """
-        Set the current upload throttle.
+        Set the upload throttle.
         Pass the new throttle size in bytes.
         """),
     'get_download_throttle' : ('get_download_rate',

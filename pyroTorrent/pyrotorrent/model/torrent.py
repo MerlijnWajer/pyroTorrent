@@ -33,7 +33,7 @@ _rpc_methods = {
         """
         Returns the name of the Torrent.
         """),
-    'get_full_path' : ('d.get_get_path',
+    'get_full_path' : ('d.get_base_path',
         """
         Returns the full path to the Torrent.
         """),
@@ -45,11 +45,11 @@ _rpc_methods = {
         """
         Returns 1 if torrent is complete; 0 if it is not complete.
         """),
-
     'perform_hash_check' : (' d.check_hash',
         """
         Performs a hash check. Returns 0 immediately.
-        Unsure how to get the result of the hash check, ATM.
+        Unsure how to get the result of the hash check, ATM. Will have to check
+        later
         """)
 
 

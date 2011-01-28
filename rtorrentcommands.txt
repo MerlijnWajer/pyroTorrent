@@ -19,20 +19,21 @@
 [ ] close_untied
 [ ] create_link
 [ ] d.add_peer
-[ ] d.check_hash
+[/] d.check_hash # Partially implemented. (Need to figure out how to use it, see
+                 # when it is done etc)
 [ ] d.close
 [ ] d.create_link
 [ ] d.delete_link
 [ ] d.delete_tied
 [ ] d.erase
 [ ] d.get_base_filename
-[ ] d.get_base_path
+[X] d.get_base_path # Returns the base path
 [ ] d.get_bitfield
-[ ] d.get_bytes_done
+[X] d.get_bytes_done
 [ ] d.get_chunk_size
 [ ] d.get_chunks_hashed
-[ ] d.get_complete
-[ ] d.get_completed_bytes
+[X] d.get_complete
+[X] d.get_completed_bytes # Same as get_bytes_done?
 [ ] d.get_completed_chunks
 [ ] d.get_connection_current
 [ ] d.get_connection_leech
@@ -62,7 +63,7 @@
 [ ] d.get_max_size_pex
 [ ] d.get_message
 [ ] d.get_mode
-[ ] d.get_name
+[X] d.get_name  # Returns the name
 [ ] d.get_peer_exchange
 [ ] d.get_peers_accounted
 [ ] d.get_peers_complete
@@ -139,7 +140,7 @@
 [ ] dht
 [ ] dht_add_node
 [ ] dht_statistics
-[ ] download_list
+[X] download_list # Returns list of hashes. See RTorrent.get_download_list
 [ ] enable_trackers
 [ ] encoding_list
 [ ] encryption
@@ -199,9 +200,9 @@
 [ ] get_directory
 [ ] get_done_bg_color
 [ ] get_done_fg_color
-[ ] get_down_rate
-[ ] get_down_total
-[ ] get_download_rate
+[X] get_down_rate # Current download rate. RTorrent.get_download_rate
+[X] get_down_total # Total download. RTorrent.get_download_rate_total(0
+[X] get_download_rate # Download throttle. RTorrent.get_download_throttle
 [ ] get_handshake_log
 [ ] get_hash_interval
 [ ] get_hash_max_tries
@@ -255,9 +256,9 @@
 [ ] get_timeout_safe_sync
 [ ] get_timeout_sync
 [ ] get_tracker_numwant
-[ ] get_up_rate
-[ ] get_up_total
-[ ] get_upload_rate
+[X] get_up_rate # current upload rate (not throttle)
+[X] get_up_total # total uploaded data RTorrent.get_upload_rate_total
+[X] get_upload_rate # current upload _throttle_ RTorrent.get_upload_throttle
 [ ] get_use_udp_trackers
 [ ] get_xmlrpc_size_limit
 [ ] greater
@@ -347,7 +348,7 @@
 [ ] set_directory
 [ ] set_done_bg_color
 [ ] set_done_fg_color
-[ ] set_download_rate
+[X] set_download_rate # Download throttle. RTorrent.set_download_throttle
 [ ] set_handshake_log
 [ ] set_hash_interval
 [ ] set_hash_max_tries
@@ -393,7 +394,7 @@
 [ ] set_timeout_safe_sync
 [ ] set_timeout_sync
 [ ] set_tracker_numwant
-[ ] set_upload_rate
+[X] set_upload_rate # Set the upload throttle. RTorrent.set_upload_throttle.
 [ ] set_use_udp_trackers
 [ ] set_xmlrpc_size_limit
 [ ] start_tied
