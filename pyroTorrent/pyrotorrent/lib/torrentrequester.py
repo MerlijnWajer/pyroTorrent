@@ -1,7 +1,7 @@
 # Also change return type? not list of list but perhaps a dict or class?
 
 import xmlrpclib
-from model import torrent
+from pyrotorrent.model import torrent
 
 class InvalidTorrentCommandException(Exception):
     pass
@@ -9,6 +9,9 @@ class InvalidTorrentCommandException(Exception):
 class TorrentRequester(object):
 
     def __init__(self, host, port=80, url='/RPC2'):
+        print host
+        print port
+        print url
         self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
         self.host, self.port, self.url = host, port, url
         self.commandstack = []

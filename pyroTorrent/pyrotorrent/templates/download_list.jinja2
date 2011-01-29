@@ -2,6 +2,8 @@
 {% if c.torrents %}
     <ul>
     {% for x in c.torrents %}
+    <li> {{ x[0] }} </li>
+    {%if false %}
     <li>
     <p> Name: {{ x.get_name() }} </p>
     <p> Current down / up: {{ x.get_download_rate() }} / 
@@ -14,6 +16,7 @@
     {% endif %}
 
     </li>
+    {% endif %}
     {% endfor %}
     <ul>
 {% endif %}
