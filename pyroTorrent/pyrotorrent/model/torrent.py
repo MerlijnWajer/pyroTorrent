@@ -61,6 +61,14 @@ _rpc_methods = {
         """
         Returns the total uploaded data for torrent.
         """),
+    'get_bytes_left' : ('d.get_left_bytes',
+        """
+        Returns the amounts of bytes left to download.
+        """
+    'get_ratio' : ('d.get_ratio',
+        """
+        Returns the ratio for this Torrent. (Download / Upload)
+        """
     'get_size_bytes' : ('d.get_size_bytes', 
         """
         Returns the size of the torrent in bytes.

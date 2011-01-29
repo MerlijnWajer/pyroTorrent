@@ -55,7 +55,7 @@
 [X] d.get_hashing # Torrent.is_hashing
 [X] d.get_hashing_failed # Torrent.hashing_failed
 [ ] d.get_ignore_commands
-[ ] d.get_left_bytes
+[X] d.get_left_bytes
 [ ] d.get_loaded_file
 [ ] d.get_local_id
 [ ] d.get_local_id_html
@@ -73,7 +73,7 @@
 [ ] d.get_peers_not_connected
 [ ] d.get_priority
 [ ] d.get_priority_str
-[ ] d.get_ratio
+[X] d.get_ratio
 [X] d.get_size_bytes # Torrent.get_size_bytes
 [X] d.get_size_chunks # Torrent.get_size_chucks
 [X] d.get_size_files # Torrent.get_size_files
@@ -99,7 +99,7 @@
 [ ] d.is_open
 [ ] d.is_pex_active
 [ ] d.is_private
-[ ] d.multicall
+[X] d.multicall
 [ ] d.open
 [ ] d.pause
 [ ] d.resume
