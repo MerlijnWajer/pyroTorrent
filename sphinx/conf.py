@@ -19,6 +19,7 @@ import sys, os
 #sys.path.insert(0, os.path.abspath('.'))
 # XXX:  Change this to model path later.
 sys.path.insert(0, os.path.abspath('../pyroTorrent/pyrotorrent/model'))
+sys.path.insert(0, os.path.abspath('../pyroTorrent'))
 sys.path.insert(0, os.path.abspath('../pyroTorrent/pyrotorrent/lib'))
 
 # -- General configuration -----------------------------------------------------
