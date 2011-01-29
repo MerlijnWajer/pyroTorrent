@@ -1,17 +1,21 @@
+"""
+.. _torrentrequester-class:
+
+TorrentRequester
+================
+"""
 # Also change return type? not list of list but perhaps a dict or class?
 
 import xmlrpclib
 from pyrotorrent.model import torrent
 
-class InvalidTorrentCommandException(Exception):
-    pass
-
 class TorrentRequester(object):
-
+    """
+    The TorrentRequester is FIXME COMPLETE
+    """
     def __init__(self, host, port=80, url='/RPC2'):
-        print host
-        print port
-        print url
+        """
+        """
         self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
         self.host, self.port, self.url = host, port, url
         self.commandstack = []
@@ -20,6 +24,7 @@ class TorrentRequester(object):
     def __call__(self, *args):
         """
         Return self so we can chain calls:
+
         >>> t.get_name().get_hash()
         """
         if len(args):
@@ -85,12 +90,16 @@ class TorrentRequester(object):
         self.commandsstack = []
         self.commands = {}
 
+class InvalidTorrentCommandException(Exception):
+    """
+    Thrown on an invalid command.
+    """
+
 if __name__ == '__main__':
 
     t = TorrentRequester('192.168.1.75')
     t.get_name().get_hash().get_name()
     for x in t.all():
         print x
-#    print t.all()
 
 
