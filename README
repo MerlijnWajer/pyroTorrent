@@ -1,1 +1,5 @@
-πϱTorrent
+πϱTorrent (pronounced/also pyroTorrent)
+
+will be a lean web interface to rTorrent written in Python using Pylons,
+thereby getting rid of PHP.
+
