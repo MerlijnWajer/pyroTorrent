@@ -18,7 +18,7 @@ class PyroController(BaseController):
     def index(self):
         r = RTorrent(**app_globals.rtorrent)
 
-        c.download_titles = [Torrent(x, **app_globals.rtorrent).get_name() for x in
+        c.torrents = [Torrent(x, **app_globals.rtorrent) for x in
                 r.get_download_list()]
 
         return render('/download_list.jinja2')
