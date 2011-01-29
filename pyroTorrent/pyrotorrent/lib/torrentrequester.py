@@ -18,7 +18,15 @@ class TorrentRequester(object):
         """
         self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
         self.host, self.port, self.url = host, port, url
+
+        # Stack to put commands on
         self.commandstack = []
+
+        # Same as commandstack, but stores the original names.
+        # We need to for .all()
+        self.commandistack = []
+
+        # Contains possible arguments.
         self.commands = {}
 
     def __call__(self, *args):
@@ -57,7 +65,9 @@ class TorrentRequester(object):
             if len(self.commands[x]):
                 pass # TODO: Add args for set*
 
-        self.__res = self.s.d.multicall('', *rpc_commands)
+        res = self.s.d.multicall('', *rpc_commands)
+
+        self.__res = [DictAttribute(zip(self.commandistack, x)) for x in res]
 
     def all(self):
         """
@@ -81,10 +91,12 @@ class TorrentRequester(object):
         Add commands to the stack.
         """
         # TODO: Find out how set commands work.
+        oldcommand = command
         command = self._convert_command(command)
 
         self.commands[command] = ()
-        self.commandstack.append('%s' % command)
+        self.commandstack.append(command)
+        self.commandistack.append(oldcommand)
 
     # XXX: When do we use this? Do we use it all? Do we need it at all?
     # Do we have it here just as a convenience for the user?
@@ -92,12 +104,20 @@ class TorrentRequester(object):
         del self.commandsstack
         del self.commands
         self.commandsstack = []
+        self.commandisstack = []
         self.commands = {}
 
 class InvalidTorrentCommandException(Exception):
     """
     Thrown on an invalid command.
     """
+
+class DictAttribute(dict):
+    def __getattr__(self, attr):
+        if attr in self:
+            return self[attr]
+        else:
+            raise AttributeError('%s not in dict' % attr)
 
 if __name__ == '__main__':
 

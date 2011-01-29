@@ -2,21 +2,18 @@
 {% if c.torrents %}
     <ul>
     {% for x in c.torrents %}
-    <li> {{ x[0] }} </li>
-    {%if false %}
     <li>
-    <p> Name: {{ x.get_name() }} </p>
-    <p> Current down / up: {{ x.get_download_rate() }} / 
-                           {{ x.get_upload_rate() }} </p>
-    {% if x.is_complete() %}
-    <p> <b>Complete.</b> (Total: {{ x.get_size_bytes() }} </p>
+    <p> Name: {{ x.get_name }} </p>
+    <p> Current down / up: {{ x.get_download_rate }} /
+                           {{ x.get_upload_rate }} </p>
+    {% if x.is_complete %}
+    <p> <b>Complete.</b> (Total: {{ x.get_size_bytes }} </p>
     {% else %}
-    <p> <b>Incomplete:</b> (Local: {{ x.get_download_total() }} /
-                            {{ x.get_size_bytes() }}) </p>
+    <p> <b>Incomplete:</b> (Local: {{ x.get_download_total }} /
+                            {{ x.get_size_bytes }}) </p>
     {% endif %}
 
     </li>
-    {% endif %}
     {% endfor %}
     <ul>
 {% endif %}
