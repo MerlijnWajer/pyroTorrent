@@ -25,11 +25,11 @@ class TorrentRequester(object):
         """
         Return self so we can chain calls:
 
-        >>> t.get_name().get_hash()
+        >>> t = TorrentRequester()
         """
         if len(args):
-            raise InvalidTorrentCommandException('No parameters are supported'\
-                'yet')
+            raise InvalidTorrentCommandException('No parameters are supported' \
+                ' yet')
         self.commands[self.commandstack[-1]] = args
         return self
 
