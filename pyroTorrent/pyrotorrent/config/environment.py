@@ -42,7 +42,7 @@ def load_environment(global_conf, app_conf):
 
     # XXX: Move to proper place later.
     app_globals.rtorrent = {
-            'host' : 'sheeva',
+            'host' : '192.168.1.75',
             'port' : 80,
             'url'  : ''
         }
