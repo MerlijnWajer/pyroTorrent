@@ -21,7 +21,9 @@ class PyroController(BaseController):
 
         t = TorrentRequester(**app_globals.rtorrent)
         t.get_name().get_download_rate().get_upload_rate() \
-                .is_complete().get_size_bytes().get_download_total()
+                .is_complete().get_size_bytes().get_download_total().get_hash()
         c.torrents = t.all()
+
+        c.up_rate, c.down_rate = r.get_upload_rate(), r.get_download_rate()
 
         return render('/download_list.jinja2')

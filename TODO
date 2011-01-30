@@ -11,7 +11,7 @@ Unclassified:
             some examples on how to properly work with rtorrent.
 
 Version 0.0:
-    -   Show pages of torrents with: speed, completeness
-    -   Add torrent link
-    -   Show current up and down speed
+    -   Show pages of torrents with: speed, completeness    [X]
+    -   Add torrent link                                    [X]
+    -   Show current up and down speed                      [X]
 

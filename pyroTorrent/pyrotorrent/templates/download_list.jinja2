@@ -1,9 +1,14 @@
 <html>
+<p>Upload rate: {{ c.up_rate }}</p>
+<p>Download rate: {{ c.down_rate }}</p>
+
 {% if c.torrents %}
     <ul>
     {% for x in c.torrents %}
     <li>
-    <p> Name: {{ x.get_name }} </p>
+    <p>
+        <a href="/torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
+    </p>
     <p> Current down / up: {{ x.get_download_rate }} /
                            {{ x.get_upload_rate }} </p>
     {% if x.is_complete %}
