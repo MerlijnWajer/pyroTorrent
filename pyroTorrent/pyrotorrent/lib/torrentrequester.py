@@ -55,25 +55,26 @@ class TorrentRequester(object):
             raise AttributeError(e.message)
         return self
 
-    def _fetch(self):
+    def _fetch(self, model):
         """
         Executes the current command stack. Stores results in the class.
         """
+        # TODO: Verify model?
         rpc_commands = []
         for x in self.commandstack:
             rpc_commands.append('%s=' % x)
             if len(self.commands[x]):
                 pass # TODO: Add args for set*
 
-        res = self.s.d.multicall('', *rpc_commands)
+        res = self.s.d.multicall(model, *rpc_commands)
 
         self.__res = [DictAttribute(zip(self.commandistack, x)) for x in res]
 
-    def all(self):
+    def all(self, model=''):
         """
         Returns a list of the results.
         """
-        self._fetch()
+        self._fetch(model)
         return self.__res
 
     def _convert_command(self, command):

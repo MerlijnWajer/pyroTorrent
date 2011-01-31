@@ -15,3 +15,10 @@ Version 0.0:
     -   Add torrent link                                    [X]
     -   Show current up and down speed                      [X]
 
+Version 0.01:
+    -   TorrentRequester should support views other than the default one.
+
+
+
+TorrentRequester should support custom views.
+
