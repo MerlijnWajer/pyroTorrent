@@ -73,6 +73,12 @@ class RTorrent(object):
 
         return res
 
+    def query(self):
+        """
+        """
+        from pyrotorrent.lib.rtorrent import RTorrentQuery
+        return RTorrentQuery(self.host, self.port, self.url)
+
 # XXX: Begin hacks
 
 import types

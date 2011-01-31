@@ -16,9 +16,19 @@ Version 0.0:
     -   Show current up and down speed                      [X]
 
 Version 0.01:
-    -   TorrentRequester should support views other than the default one.
+    -   Add Fault handling to model/* and lib/*/. (Invalid hash, etc)
+    -   Double check the [R]TorrentQuery implementation / design.
+
+= Decide if we want to add more features first, or get some html design first =
+
+Version 0.02:
+    -   Some HTML formatting, CSS?
+
+Version 0.03:
+    -   Ajax / JS
+
+Version 0.04:
+    -   Add more features.
 
 
-
-TorrentRequester should support custom views.
-
+-   TorrentRequester should support views other than the default one.
