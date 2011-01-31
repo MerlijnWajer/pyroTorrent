@@ -1,14 +1,41 @@
 
-body {
-    background-color: #222222;
-    color: white;
-}
-
-li {
+div.header {
     background-color: #555555;
 }
 
-p.header {
+div.logo {
+    float: right;
+    color: #FF0000;
+    font-weight: bold;
+    margin-right: 1em;
+}
+
+div.up {
+    float: left;
+    margin-right: 1em;
+    color: #00CC00;
+    font-weight: bold;
+}
+
+div.down {
+    color: #CC0000;
+    font-weight: bold;
+}
+
+body {
+    background-color: #222222;
+    color: white;
+    margin: 0px;
+}
+
+li.torrent {
+    background-color: #555555;
+    width: 70%;
+    position: relative;
+    left: 15%;
+}
+
+p.t_header {
     background-color: #883333;
 }
 

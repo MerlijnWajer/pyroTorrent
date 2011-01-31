@@ -3,14 +3,17 @@
     <link rel="stylesheet" type="text/css" href="/style.css" />
 </head>
 <body>
-<p>Upload rate: {{ c.up_rate }}</p>
-<p>Download rate: {{ c.down_rate }}</p>
+<div class="header">
+    <div class="logo">πϱTorrent v0.x</div>
+    <div class="up">Upload rate: {{ c.up_rate }}</div>
+    <div class="down">Download rate: {{ c.down_rate }}</div>
+</div>
 
 {% if c.torrents %}
     <ul>
     {% for x in c.torrents %}
-    <li>
-    <p class="header">
+    <li class="torrent">
+    <p class="t_header">
         <a href="/torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
     </p>
     <p> Current down / up: {{ x.get_download_rate }} /

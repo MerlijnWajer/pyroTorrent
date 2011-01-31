@@ -3,6 +3,12 @@
     <link rel="stylesheet" type="text/css" href="/style.css" />
 </head>
 <body>
+<div class="header">
+    <div class="logo">πϱTorrent v0.x</div>
+    <div class="up">Upload rate: {{ c.up_rate }}</div>
+    <div class="down">Download rate: {{ c.down_rate }}</div>
+</div>
+
 {% if c.t %}
     {{ c.t.get_name() }}
 {% endif %}
