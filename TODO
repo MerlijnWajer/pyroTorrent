@@ -14,6 +14,14 @@ Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
     -   Add torrent link                                    [X]
     -   Show current up and down speed                      [X]
+    -   Change torrent status                               [ ]
+    -   List torrent peers                                  [ ]
+    -   Page torrents                                       [ ]
+    -   Change rtorrent up/down throttle                    [ ]
+    -   Show disk usage                                     [ ]
+    -   List torrent files                                  [ ]
+    -   Prioritize torrent files                            [ ]
+    -   Download torrent files                              [ ]
 
 Version 0.01:
     -   Add Fault handling to model/* and lib/*/. (Invalid hash, etc)
