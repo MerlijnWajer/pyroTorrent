@@ -1,6 +1,6 @@
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="/style.css" />
 </head>
 <body>
 <p>Upload rate: {{ c.up_rate }}</p>
@@ -10,7 +10,7 @@
     <ul>
     {% for x in c.torrents %}
     <li>
-    <p>
+    <p class="header">
         <a href="/torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
     </p>
     <p> Current down / up: {{ x.get_download_rate }} /

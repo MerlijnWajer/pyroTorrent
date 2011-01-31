@@ -8,3 +8,12 @@ li {
     background-color: #555555;
 }
 
+p.header {
+    background-color: #883333;
+}
+
+a {
+    color: #FFFFFF;
+    text-decoration:none;
+}
+
