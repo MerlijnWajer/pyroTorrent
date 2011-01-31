@@ -1,6 +1,10 @@
 
 body {
-    background color: black
-    color: white
+    background-color: #222222;
+    color: white;
+}
+
+li {
+    background-color: #555555;
 }
 
