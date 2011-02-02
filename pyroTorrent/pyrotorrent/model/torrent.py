@@ -23,7 +23,13 @@ class Torrent(object):
         self.host, self.port, self.url = host, port, url
 
     def query(self):
-        from pyrotorrent.lib.torrent import TorrentQuery
+        """
+        Query returns a new TorrentQuery object with the host, port, url and
+        hash(!) from the current Torrent object. The hash will be used as
+        default argument in the TorrentQuery class.
+        See :ref:`torrentquery-class`
+        """
+        from pyrotorrent.lib.torrentquery import TorrentQuery
         return TorrentQuery(self.host, self.port, self.url, self._hash)
 
 

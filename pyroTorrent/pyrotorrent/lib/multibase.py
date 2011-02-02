@@ -1,13 +1,27 @@
 """
-TODO:
-    -   Make the class reusable. (.flush?) Or just after .all()
-    -   Perhaps make it iterable?
+.. _multibase-class:
+
+MultiBase
+=========
 """
 
 import xmlrpclib
 
 class MultiBase(object):
     """
+    MultiBase is a class that can be inherited to easily create a class that can
+    send multiple XMLRPC commands in one request, using the xmlrpclib.MultiCall
+    class. It also overrides several functions like __getattr__ and __call__ to
+    make usage simple:
+
+    .. code-block:: python
+
+        t = Torrent.query() # Returns a TorrentQuery object which inherits from
+                            # MultiBase
+        t.get_name().get_hash()
+        t.get_upload_rate()
+
+        print t.all()
     """
 
     def __init__(self, host, port=80, url='/RPC2', *args):
@@ -24,7 +38,7 @@ class MultiBase(object):
 
     def __call__(self, attr, *args):
         """
-        Return self so we can chain calls
+        Return self so we can chain calls.
         """
         _attr = self._convert_command(attr)
 
@@ -64,7 +78,12 @@ class MultiBase(object):
 
             result.append(AttributeDictMultiResult(zip(group, res)))
 
+        self._flush()
+
         return result
+
+    def _flush(self):
+        pass
 
     def _convert_command(self, command):
         """
@@ -82,6 +101,10 @@ class InvalidTorrentCommandException(Exception):
     """
 
 class AttributeDictMultiResult(dict):
+    """
+        AttributeDictMultiResult is basically just a dict object which also
+        implements __getattr__ so you can access the dict values via .<name>.
+    """
     def __getattr__(self, attr):
         if attr in self:
             return self[attr]

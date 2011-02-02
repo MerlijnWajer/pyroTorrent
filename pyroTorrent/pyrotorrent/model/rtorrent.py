@@ -75,8 +75,11 @@ class RTorrent(object):
 
     def query(self):
         """
+        Query returns a new RTorrentQuery object with the host, port, url and
+        hash from the current RTorrent object.
+        See :ref:`rtorrentquery-class`
         """
-        from pyrotorrent.lib.rtorrent import RTorrentQuery
+        from pyrotorrent.lib.rtorrentquery import RTorrentQuery
         return RTorrentQuery(self.host, self.port, self.url)
 
 # XXX: Begin hacks

@@ -1,0 +1,6 @@
+TorrentQuery
+============
+
+.. automodule:: torrentquery
+    :members:
+

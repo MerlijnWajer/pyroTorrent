@@ -16,7 +16,9 @@ Contents:
     rtorrent.rst
     torrent.rst
     torrentrequester.rst
-
+    multibase.rst
+    torrentquery.rst
+    rtorrentquery.rst
 
 
 Indices and tables

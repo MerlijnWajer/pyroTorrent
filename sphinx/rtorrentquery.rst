@@ -1,0 +1,6 @@
+RTorrentQuery
+=============
+
+.. automodule:: rtorrentquery
+    :members:
+
