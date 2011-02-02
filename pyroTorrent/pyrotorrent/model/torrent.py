@@ -106,7 +106,6 @@ _rpc_methods = {
         """
         Performs a hash check. Returns 0 immediately.
         """)
-
 }
 
 # RPC Methods for Torrent. These do not pass any argument automatically. (See

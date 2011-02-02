@@ -9,11 +9,13 @@ Unclassified:
     -   Add direct SCGI support?:
             Check out: http://libtorrent.rakshasa.no/wiki/UtilsXmlrpc2scgi for
             some examples on how to properly work with rtorrent.
+    -   Add support for different types in .all() method.
 
 Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
     -   Add torrent link                                    [X]
     -   Show current up and down speed                      [X]
+    -   Add torrents                                        [ ]
     -   Change torrent status                               [ ]
     -   List torrent peers                                  [ ]
     -   Page torrents                                       [ ]
@@ -40,3 +42,5 @@ Version 0.04:
 
 
 -   TorrentRequester should support views other than the default one.
+-   Graphs (perhaps)
+

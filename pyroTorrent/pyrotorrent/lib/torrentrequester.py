@@ -25,6 +25,8 @@ Example usage:
 import xmlrpclib
 from pyrotorrent.model import torrent
 
+# XXX: Create baseclass for rtorrent-multicall's. BaseRequester
+
 class TorrentRequester(object):
     """
     """

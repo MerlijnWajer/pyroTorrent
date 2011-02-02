@@ -1,15 +1,9 @@
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="/style.css" />
-</head>
-<body>
-<div class="header">
-    <div class="logo">πϱTorrent v0.x</div>
-    <div class="up">Upload rate: {{ c.up_rate }}</div>
-    <div class="down">Download rate: {{ c.down_rate }}</div>
-</div>
+{% extends "base.jinja2" %}
 
+{% block main %}
 {% if c.torrents %}
+    <div class="torrentlist">
+    <div style="height:1px;"></div>
     <ul>
     {% for x in c.torrents %}
     <li class="torrent">
@@ -27,8 +21,9 @@
 
     </li>
     {% endfor %}
-    <ul>
+    </ul>
+    <div style="height:1;"></div>
+    </div>
 {% endif %}
-</body>
-</html>
+{% endblock %}
 

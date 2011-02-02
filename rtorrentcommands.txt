@@ -131,7 +131,7 @@
 [ ] d.try_start
 [ ] d.try_stop
 [ ] d.update_priorities
-[ ] d.views
+[T] d.views
 [ ] d.views.has
 [ ] d.views.push_back
 [ ] d.views.push_back_unique
@@ -180,7 +180,8 @@
 [ ] f.is_created
 [ ] f.is_open
 [ ] f.is_resize_queued
-[ ] f.multicall
+[ ] f.multicall # First arg is hash, Second argument is empty ''... third is
+                # methods.
 [ ] f.set_create_queued
 [ ] f.set_priority
 [ ] f.set_resize_queued
