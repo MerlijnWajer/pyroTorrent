@@ -63,11 +63,13 @@ class MultiBase(object):
         self._group_args = args
         return self
 
-    def all(self, model='', _type=AttributeDictMultiResult):
+    def all(self, _type=None):
         """
         Returns a list of the results.
         _type can be 'list' or AttributeDictMultiResult.
         """
+        if _type is None:
+            _type = AttributeDictMultiResult
         if _type not in (AttributeDictMultiResult, list):
             raise InvalidTorrentCommandException('Invalid _type: %s' %
                     str(_type))
@@ -91,6 +93,15 @@ class MultiBase(object):
         self._flush()
 
         return result
+
+    def first(self, _type=None):
+        res = self.all(_type)
+        if len(res):
+            return res[0]
+        else:
+            return None
+
+
 
     def _flush(self):
         pass

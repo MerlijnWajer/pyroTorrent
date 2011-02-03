@@ -6,8 +6,8 @@
 <body>
 <div class="header">
     <div class="logo">πϱTorrent v0.x</div>
-    <div class="up">Upload rate: {{ c.up_rate }}</div>
-    <div class="down">Download rate: {{ c.down_rate }}</div>
+    <div class="up">Upload rate: {{ c.r.get_upload_rate }}</div>
+    <div class="down">Download rate: {{ c.r.get_download_rate }}</div>
 </div>
 
 
