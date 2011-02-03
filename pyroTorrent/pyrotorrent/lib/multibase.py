@@ -63,11 +63,21 @@ class MultiBase(object):
         self._group_args = args
         return self
 
-    def all(self, model=''):
+    def all(self, model='', _type=AttributeDictMultiResult):
         """
         Returns a list of the results.
+        _type can be 'list' or AttributeDictMultiResult.
         """
+        if _type not in (AttributeDictMultiResult, list):
+            raise InvalidTorrentCommandException('Invalid _type: %s' %
+                    str(_type))
+
         xmlres = list(self.m())
+
+        if _type is list:
+            self._flush()
+            return xmlres
+
         xmlres.reverse()
 
         result = []

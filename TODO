@@ -1,15 +1,36 @@
-TODO:
-
 Unclassified:
-    -   Create Models (might be hard for rtorrent)
+    -   Interface should work without a rtorrent connection
+    -   Add Fault handling to model/* and lib/*/. (Invalid hash, etc)
+    -   Double check the [R]TorrentQuery implementation / design.
+    -   TorrentRequester should support views other than the default one.
     -   Implement XMLRPC Exceptions, own wrapper?
-    -   Implement Models with XMLRPC
-    -   Add controllers
 
     -   Add direct SCGI support?:
             Check out: http://libtorrent.rakshasa.no/wiki/UtilsXmlrpc2scgi for
-            some examples on how to properly work with rtorrent.
-    -   Add support for different types in .all() method.
+                    some examples on how to properly work with rtorrent.
+
+Admin panel:
+    -   User Management
+    -   Shutdown rtorrent?
+    -   Change encryption
+
+Download Management:
+    -   List torrents.
+    -   Move torrents to other views?
+    -   Add a torrent
+
+Events and Schedulers:
+    -   Schedule stuff
+    -   Manage events. (Provide default mail scripts?)
+
+Statistics:
+    -   Disk Usage
+    -   Memory Usage
+    -   CPU Usage
+    -   Current upload / download rate
+    -   Current active torrents
+    -   Complete Torrents
+    -   Incomplete Torrents
 
 Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
@@ -18,6 +39,7 @@ Version 0.0:
     -   Add torrents                                        [ ]
     -   Change torrent status                               [ ]
     -   List torrent peers                                  [ ]
+    -   List tackers.                                       [ ]
     -   Page torrents                                       [ ]
     -   Change rtorrent up/down throttle                    [ ]
     -   Show disk usage                                     [ ]
@@ -25,22 +47,11 @@ Version 0.0:
     -   Prioritize torrent files                            [ ]
     -   Download torrent files                              [ ]
 
-Version 0.01:
-    -   Add Fault handling to model/* and lib/*/. (Invalid hash, etc)
-    -   Double check the [R]TorrentQuery implementation / design.
 
-= Decide if we want to add more features first, or get some html design first =
+Far fetched TODO:
 
-Version 0.02:
-    -   Some HTML formatting, CSS?
-
-Version 0.03:
-    -   Ajax / JS
-
-Version 0.04:
-    -   Add more features.
-
-
--   TorrentRequester should support views other than the default one.
--   Graphs (perhaps)
+    -   Graphs
+    -   Database support
+    -   FTP Access / Download torrent files via web interface,
+    -   Advanced security. Download limit per user, etc.
 
