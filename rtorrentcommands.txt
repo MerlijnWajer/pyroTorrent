@@ -169,7 +169,7 @@
 [ ] f.get_match_depth_prev
 [ ] f.get_offset
 [X] f.get_path
-[ ] f.get_path_components
+[X] f.get_path_components
 [ ] f.get_path_depth
 [ ] f.get_priority
 [ ] f.get_range_first

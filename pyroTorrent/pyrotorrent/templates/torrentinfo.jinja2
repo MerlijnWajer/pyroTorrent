@@ -10,7 +10,7 @@
     Files:
     <ul>
     {% for x in c.t.get_files %}
-    <li> {{ x.get_path }} </li>
+    <li> {{ x.get_path }} ( {{ x.get_path_components }} )</li>
     {% endfor %}
     </ul>
     </p>

@@ -13,7 +13,6 @@ and connection information similar to :ref:`rtorrent-class`.
 import xmlrpclib
 import types
 
-from pyrotorrent.lib.filerequester import TorrentFileRequester
 
 class Torrent(object):
     """
@@ -35,11 +34,6 @@ class Torrent(object):
 
     def get_peers(self):
         pass
-
-    def get_files(self):
-        f = TorrentFileRequester(self.host, self.port, self.url, self._hash, '')
-        f.get_path()
-        return f.all()
 
 # XXX: Begin hacks
 

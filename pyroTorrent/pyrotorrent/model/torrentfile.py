@@ -22,6 +22,10 @@ _rpc_methods = {
         """
         Returns the path.
         """), # XXX: What is the frozen path?
+    'get_path_components' : ('f.get_path_components',
+        """
+        Returns the path components.
+        """), # XXX: What is the frozen path?
     'get_frozen_path' : ('f.get_frozen_path',
         """
         Returns the *frozen* path.

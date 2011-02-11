@@ -24,7 +24,8 @@ Example usage:
 
 import xmlrpclib
 from pyrotorrent.model import torrentfile
-from pyrotorrent.lib.baserequester import BaseRequester
+from pyrotorrent.lib.baserequester import BaseRequester, \
+    InvalidTorrentCommandException
 
 # XXX: Create baseclass for rtorrent-multicall's. BaseRequester
 
