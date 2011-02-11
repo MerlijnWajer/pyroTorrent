@@ -6,7 +6,7 @@
     {% for x in c.torrents %}
     <li class="torrent">
     <p class="t_header">
-        <a href="/torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
+        <a href="torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
     </p>
     <p> Current down / up: {{ x.get_download_rate }} /
                            {{ x.get_upload_rate }} </p>
