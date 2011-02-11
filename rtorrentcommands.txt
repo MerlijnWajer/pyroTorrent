@@ -226,7 +226,7 @@
 [ ] get_max_uploads
 [ ] get_max_uploads_div
 [ ] get_max_uploads_global
-[ ] get_memory_usage
+[X] get_memory_usage
 [ ] get_min_peers
 [ ] get_min_peers_seed
 [ ] get_name

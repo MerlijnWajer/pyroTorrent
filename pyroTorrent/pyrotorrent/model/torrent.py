@@ -32,6 +32,12 @@ class Torrent(object):
         from pyrotorrent.lib.torrentquery import TorrentQuery
         return TorrentQuery(self.host, self.port, self.url, self._hash)
 
+    def get_peers(self):
+        pass
+
+    def get_files(self):
+        pass
+
 
 # XXX: Begin hacks
 
