@@ -2,8 +2,6 @@
 
 {% block main %}
 {% if c.torrents %}
-    <div class="torrentlist">
-    <div style="height:1px;"></div>
     <ul>
     {% for x in c.torrents %}
     <li class="torrent">
@@ -22,8 +20,6 @@
     </li>
     {% endfor %}
     </ul>
-    <div style="height:1;"></div>
-    </div>
 {% endif %}
 {% endblock %}
 

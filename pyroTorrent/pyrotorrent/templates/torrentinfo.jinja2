@@ -1,15 +1,8 @@
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" href="/style.css" />
-</head>
-<body>
-<div class="header">
-    <div class="logo">πϱTorrent v0.x</div>
-    <div class="up">Upload rate: {{ c.up_rate }}</div>
-    <div class="down">Download rate: {{ c.down_rate }}</div>
-</div>
+{% extends "base.jinja2" %}
 
+{% block main %}
 {% if c.t %}
+    <div style="margin: 2em">
     <p> {{ c.t.get_name }} ({{ c.t.get_size_bytes - c.t.get_bytes_left }} / 
         {{ c.t.get_size_bytes }}) </p>
     <p> Loaded file: {{ c.t.get_loaded_file }} </p>
@@ -21,6 +14,6 @@
     {% endfor %}
     </ul>
     </p>
+    </div>
 {% endif %}
-</body>
-</html>
+{% endblock %}

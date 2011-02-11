@@ -9,6 +9,7 @@ from pyrotorrent.lib import app_globals
 from pyrotorrent.lib.torrentrequester import TorrentRequester
 
 from pyrotorrent.model.torrent import Torrent
+from pyrotorrent.model.rtorrent import RTorrent
 
 log = logging.getLogger(__name__)
 
@@ -24,5 +25,13 @@ class TorrentinfoController(BaseController):
 
         c.t = q.all()[0]
         c.t.get_files = t.get_files()
+
+        host, port, url = app_globals.rtorrent['host'], \
+            app_globals.rtorrent['port'], app_globals.rtorrent['url']
+
+        r = RTorrent(host, port, url)
+        rquery = r.query().get_upload_rate().get_download_rate()
+
+        c.r = rquery.first()
 
         return render('/torrentinfo.jinja2')
