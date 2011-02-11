@@ -39,7 +39,7 @@ Version 0.0:
     -   Add torrents                                        [ ]
     -   Change torrent status                               [ ]
     -   List torrent peers                                  [ ]
-    -   List tackers.                                       [ ]
+    -   List trackers.                                      [ ]
     -   Page torrents                                       [ ]
     -   Change rtorrent up/down throttle                    [ ]
     -   Show disk usage                                     [ ]

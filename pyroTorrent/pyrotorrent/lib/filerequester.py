@@ -23,10 +23,12 @@ Example usage:
 # Properly implement flush?
 
 import xmlrpclib
-from pyrotorrent.model import torrent
+from pyrotorrent.model import torrentfile
 from pyrotorrent.lib.baserequester import BaseRequester
 
-class TorrentRequester(BaseRequester):
+# XXX: Create baseclass for rtorrent-multicall's. BaseRequester
+
+class TorrentFileRequester(BaseRequester):
     """
     """
     def __init__(self, host, port=80, url='/RPC2', *first_args):
@@ -34,23 +36,14 @@ class TorrentRequester(BaseRequester):
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):
-        return self.s.d.multicall(*(self.first_args + rpc_commands))
+        return self.s.f.multicall(*(self.first_args + rpc_commands))
 
     def _convert_command(self, command):
         """
         Convert command based on torrent._rpc_methods to rtorrent command.
         """
-        if command in torrent._rpc_methods:
-            return torrent._rpc_methods[command][0]
+        if command in torrentfile._rpc_methods:
+            return torrentfile._rpc_methods[command][0]
         else:
             raise InvalidTorrentCommandException("%s is not a valid command" %
                     command)
-
-if __name__ == '__main__':
-
-    t = TorrentRequester('192.168.1.75')
-    t.get_name().get_hash().get_name()
-    for x in t.all():
-        print x
-
-

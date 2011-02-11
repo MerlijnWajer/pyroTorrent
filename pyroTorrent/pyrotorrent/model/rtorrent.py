@@ -121,7 +121,7 @@ _rpc_methods = {
         """
         Returns the total downloaded data.
         """), # XXX ^ Unsure about comment
-    'get_memory_usage', ('get_memory_usage',
+    'get_memory_usage' : ('get_memory_usage',
         """
         Returns rtorrent memory usage.
         """)

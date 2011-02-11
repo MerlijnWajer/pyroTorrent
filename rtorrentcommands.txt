@@ -56,7 +56,7 @@
 [X] d.get_hashing_failed # Torrent.hashing_failed
 [ ] d.get_ignore_commands
 [X] d.get_left_bytes
-[ ] d.get_loaded_file
+[X] d.get_loaded_file
 [ ] d.get_local_id
 [ ] d.get_local_id_html
 [ ] d.get_max_file_size
@@ -163,18 +163,18 @@
 [ ] execute_raw
 [ ] execute_raw_nothrow
 [ ] f.get_completed_chunks
-[ ] f.get_frozen_path
+[X] f.get_frozen_path
 [ ] f.get_last_touched
 [ ] f.get_match_depth_next
 [ ] f.get_match_depth_prev
 [ ] f.get_offset
-[ ] f.get_path
+[X] f.get_path
 [ ] f.get_path_components
 [ ] f.get_path_depth
 [ ] f.get_priority
 [ ] f.get_range_first
 [ ] f.get_range_second
-[ ] f.get_size_bytes
+[X] f.get_size_bytes
 [ ] f.get_size_chunks
 [ ] f.is_create_queued
 [ ] f.is_created

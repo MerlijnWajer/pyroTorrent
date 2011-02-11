@@ -10,7 +10,17 @@
 </div>
 
 {% if c.t %}
-    {{ c.t.get_name() }}
+    <p> {{ c.t.get_name }} ({{ c.t.get_size_bytes - c.t.get_bytes_left }} / 
+        {{ c.t.get_size_bytes }}) </p>
+    <p> Loaded file: {{ c.t.get_loaded_file }} </p>
+    <p>
+    Files:
+    <ul>
+    {% for x in c.t.get_files %}
+    <li> {{ x.get_path }} </li>
+    {% endfor %}
+    </ul>
+    </p>
 {% endif %}
 </body>
 </html>

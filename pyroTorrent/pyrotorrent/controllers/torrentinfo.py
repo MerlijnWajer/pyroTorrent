@@ -17,6 +17,12 @@ class TorrentinfoController(BaseController):
     def index(self, torrenthash):
 
         t = Torrent(torrenthash, **app_globals.rtorrent)
-        c.t = t
+
+        q = t.query()
+
+        q.get_name().get_size_bytes().get_bytes_left().get_loaded_file()
+
+        c.t = q.all()[0]
+        c.t.get_files = t.get_files()
 
         return render('/torrentinfo.jinja2')

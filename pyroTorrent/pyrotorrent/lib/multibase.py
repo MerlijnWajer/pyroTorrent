@@ -101,8 +101,6 @@ class MultiBase(object):
         else:
             return None
 
-
-
     def _flush(self):
         pass
 

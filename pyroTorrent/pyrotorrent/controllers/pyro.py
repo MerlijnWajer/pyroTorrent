@@ -17,9 +17,12 @@ log = logging.getLogger(__name__)
 class PyroController(BaseController):
 
     def index(self):
-        r = RTorrent(**app_globals.rtorrent)
+        host, port, url = app_globals.rtorrent['host'], \
+            app_globals.rtorrent['port'], app_globals.rtorrent['url']
+        r = RTorrent(host, port, url)
 
-        t = TorrentRequester(**app_globals.rtorrent)
+        t = TorrentRequester(host, port, url, '')
+
         t.get_name().get_download_rate().get_upload_rate() \
                 .is_complete().get_size_bytes().get_download_total().get_hash()
         c.torrents = t.all()

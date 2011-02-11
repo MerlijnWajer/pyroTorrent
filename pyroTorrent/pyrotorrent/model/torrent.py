@@ -13,6 +13,7 @@ and connection information similar to :ref:`rtorrent-class`.
 import xmlrpclib
 import types
 
+from pyrotorrent.lib.filerequester import TorrentFileRequester
 
 class Torrent(object):
     """
@@ -36,8 +37,9 @@ class Torrent(object):
         pass
 
     def get_files(self):
-        pass
-
+        f = TorrentFileRequester(self.host, self.port, self.url, self._hash, '')
+        f.get_path()
+        return f.all()
 
 # XXX: Begin hacks
 
@@ -94,6 +96,10 @@ _rpc_methods = {
         Returns the size of the torrent in chucks.
         """),
     'get_size_files' : ('d.get_size_files',
+        """
+        Returns the size of the torrent in files.
+        """),
+    'get_loaded_file' : ('d.get_loaded_file',
         """
         Returns the size of the torrent in files.
         """),
