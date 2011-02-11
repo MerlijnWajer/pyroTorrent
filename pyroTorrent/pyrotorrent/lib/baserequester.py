@@ -52,8 +52,6 @@ class BaseRequester(object):
                 pass # TODO: Add args for set*
 
         res = self.dofetch(*rpc_commands)
-        print 'cs', self.commandistack
-        print 'res0', res[0]
 
         self.__res = [DictAttribute(zip(self.commandistack, x)) for x in res]
 
