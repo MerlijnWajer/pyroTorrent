@@ -120,7 +120,11 @@ _rpc_methods = {
     'get_download_rate_total' : ('get_down_total',
         """
         Returns the total downloaded data.
-        """) # XXX ^ Unsure about comment
+        """), # XXX ^ Unsure about comment
+    'get_memory_usage', ('get_memory_usage',
+        """
+        Returns rtorrent memory usage.
+        """)
 }
 
 
