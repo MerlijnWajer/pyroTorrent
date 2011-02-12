@@ -52,15 +52,22 @@ class BaseRequester(object):
                 pass # TODO: Add args for set*
 
         res = self.dofetch(*rpc_commands)
+        return res
 
-        self.__res = [DictAttribute(zip(self.commandistack, x)) for x in res]
 
     def all(self):
         """
         Returns a list of the results.
         """
-        self._fetch()
+        _res = self._fetch()
+        self.__res = [DictAttribute(zip(self.commandistack, x)) for x in _res]
         return self.__res
+
+    def as_list(self):
+        """
+        """
+        _res = self._fetch()
+        return _res
 
     def append_command(self, command):
         """
