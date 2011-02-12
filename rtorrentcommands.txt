@@ -100,9 +100,9 @@
 [ ] d.is_pex_active
 [ ] d.is_private
 [X] d.multicall
-[ ] d.open
-[ ] d.pause
-[ ] d.resume
+[X] d.open
+[X] d.pause
+[X] d.resume
 [ ] d.save_session
 [ ] d.set_connection_current
 [ ] d.set_custom
