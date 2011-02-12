@@ -111,6 +111,26 @@ _rpc_methods = {
     'perform_hash_check' : (' d.check_hash',
         """
         Performs a hash check. Returns 0 immediately.
+        """),
+    'start' : (' d.start',
+        """
+        Start a torrent.
+        """),
+    'stop' : (' d.stop',
+        """
+        Stop a torrent.
+        """),
+    'open' : (' d.open',
+        """
+        Open a torrent.
+        """),
+    'pause' : (' d.pause',
+        """
+        Pause a torrent.
+        """),
+    'resume' : (' d.resume',
+        """
+        Resume a torrent.
         """)
 }
 

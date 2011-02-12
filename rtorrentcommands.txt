@@ -125,8 +125,8 @@
 [ ] d.set_tied_to_file
 [ ] d.set_tracker_numwant
 [ ] d.set_uploads_max
-[ ] d.start
-[ ] d.stop
+[X] d.start
+[X] d.stop
 [ ] d.try_close
 [ ] d.try_start
 [ ] d.try_stop
