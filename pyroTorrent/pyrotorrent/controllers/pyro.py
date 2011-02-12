@@ -27,7 +27,8 @@ class PyroController(BaseController):
                 .is_complete().get_size_bytes().get_download_total().get_hash()
         c.torrents = t.all()
 
-        rquery = r.query().get_upload_rate().get_download_rate()
+        rquery = r.query().get_upload_rate().get_download_rate(\
+                ).get_libtorrent_version()
 
         c.r = rquery.first()
 

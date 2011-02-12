@@ -124,6 +124,19 @@ _rpc_methods = {
     'get_memory_usage' : ('get_memory_usage',
         """
         Returns rtorrent memory usage.
+        """),
+    'get_libtorrent_version' : ('system.library_version',
+        """
+        Returns the libtorrent version.
+        """),
+    'add_torrent' : ('load',
+        """
+        Loads a torrent into rtorrent from the torrent path.
+        """),
+    'add_torrent_start' : ('load_start',
+        """
+        Loads a torrent into rtorrent from the torrent path.
+        Will also start the download immediately.
         """)
 }
 

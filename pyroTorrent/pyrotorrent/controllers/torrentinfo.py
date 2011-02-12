@@ -32,8 +32,9 @@ class TorrentinfoController(BaseController):
                 t._hash, '').get_path_components().all()
 
         r = RTorrent(host, port, url)
-        rquery = r.query().get_upload_rate().get_download_rate()
 
+        rquery = r.query().get_upload_rate().get_download_rate(\
+                ).get_libtorrent_version()
         c.r = rquery.first()
 
         return render('/torrentinfo.jinja2')

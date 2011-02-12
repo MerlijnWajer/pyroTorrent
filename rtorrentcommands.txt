@@ -279,11 +279,11 @@
 [ ] if
 [ ] import
 [ ] less
-[ ] load
+[X] load
 [ ] load_raw
 [ ] load_raw_start
 [ ] load_raw_verbose
-[ ] load_start
+[X] load_start
 [ ] load_start_verbose
 [ ] load_verbose
 [ ] log.execute
@@ -407,7 +407,7 @@
 [ ] system.file_status_cache.size
 [ ] system.get_cwd
 [ ] system.hostname
-[ ] system.library_version
+[X] system.library_version
 [ ] system.method.erase
 [ ] system.method.get
 [ ] system.method.has_key
