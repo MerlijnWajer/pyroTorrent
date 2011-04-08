@@ -14,9 +14,10 @@ from pyrotorrent.model.rtorrent import RTorrent
 
 log = logging.getLogger(__name__)
 
-class TorrentinfoController(BaseController):
+class TorrentController(BaseController):
 
     def index(self, torrenthash):
+        # TODO: We need a way to stop getting these globals all the time.
         host, port, url = app_globals.rtorrent['host'], \
             app_globals.rtorrent['port'], app_globals.rtorrent['url']
 
@@ -38,3 +39,26 @@ class TorrentinfoController(BaseController):
         c.r = rquery.first()
 
         return render('/torrentinfo.jinja2')
+
+    def start(self, torrenthash):
+        # TODO: We need a way to stop getting these globals all the time.
+        host, port, url = app_globals.rtorrent['host'], \
+            app_globals.rtorrent['port'], app_globals.rtorrent['url']
+
+        t = Torrent(torrenthash, **app_globals.rtorrent)
+
+        # TODO: Check if it not already started?
+        t.start()
+
+        # Render torrent information? (Or main page?)
+        # We should also write if the action was successfull.
+        return index(self, torrenthash)
+
+    def stop(self, torrenthash):
+        pass
+
+    def pause(self, torrenthash):
+        pass
+
+    def resume(self, torrenthash):
+        pass

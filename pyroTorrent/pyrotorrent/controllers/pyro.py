@@ -21,7 +21,8 @@ class PyroController(BaseController):
             app_globals.rtorrent['port'], app_globals.rtorrent['url']
         r = RTorrent(host, port, url)
 
-        t = TorrentRequester(host, port, url, '')
+        t = TorrentRequester(host, port, url, '') # Make this view a post
+                                                  # variable?
 
         t.get_name().get_download_rate().get_upload_rate() \
                 .is_complete().get_size_bytes().get_download_total().get_hash()

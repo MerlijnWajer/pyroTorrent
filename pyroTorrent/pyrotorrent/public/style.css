@@ -30,14 +30,13 @@ div.down {
     font-weight: bold;
 }
 
-
 body {
     background-color: #444444;
     color: white;
     margin: 0px;
 }
 
-li.torrent {
+li.torrent-done {
     background-color: #555555;
     position: relative;
     left: -1em; 
@@ -45,8 +44,14 @@ li.torrent {
     list-style: none;
 }
 
-p.t_header {
+p.t_header-complete {
+    background-color: #229922;
+    width: 95%;
+}
+
+p.t_header-incomplete {
     background-color: #883333;
+    width: 95%;
 }
 
 a {

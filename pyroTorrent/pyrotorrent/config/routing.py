@@ -23,7 +23,7 @@ def make_map(config):
     map.connect('/', controller='pyro', action='index')
 
     map.connect('/torrent/{torrenthash}/{action}',
-            requirements=dict(torrenthash='\w{40}'), controller='torrentinfo')
+            requirements=dict(torrenthash='\w{40}'), controller='torrent')
 
 #    map.connect('/{controller}/{action}')
 #    map.connect('/{controller}/{action}/{id}')
