@@ -11,7 +11,9 @@ class MultiBase(object):
     """
     MultiBase is a class that can be inherited to easily create a class that can
     send multiple XMLRPC commands in one request, using the xmlrpclib.MultiCall
-    class. It also overrides several functions like __getattr__ and __call__ to
+    class. RTorrentQuery and TorrentQuery implement this class.
+
+    It also overrides several functions like __getattr__ and __call__ to
     make usage simple:
 
     .. code-block:: python
@@ -38,6 +40,8 @@ class MultiBase(object):
 
     def __call__(self, attr, *args):
         """
+        Add the attribute ``attr'' to the list we want to fetch.
+
         Return self so we can chain calls.
         """
         _attr = self._convert_command(attr)
@@ -53,7 +57,7 @@ class MultiBase(object):
         """
         Used to add commands.
         """
-        return lambda *args: self(attr, *args)
+        return lambda *args: self(attr, *args) # calls __call__
 
     def new_group(self, *args):
         """
@@ -66,6 +70,7 @@ class MultiBase(object):
     def all(self, _type=None):
         """
         Returns a list of the results.
+
         _type can be 'list' or AttributeDictMultiResult.
         """
         if _type is None:
@@ -95,6 +100,9 @@ class MultiBase(object):
         return result
 
     def first(self, _type=None):
+        """
+        Return the first result.
+        """
         res = self.all(_type)
         if len(res):
             return res[0]
@@ -121,8 +129,9 @@ class InvalidTorrentCommandException(Exception):
 
 class AttributeDictMultiResult(dict):
     """
-        AttributeDictMultiResult is basically just a dict object which also
-        implements __getattr__ so you can access the dict values via .<name>.
+        AttributeDictMultiResult is used by MultiBase .all() calls to return
+        data in a somewhat usable manner. It's basically a dict with an extra
+        feature to access the dict values via .<name> instead of [name].
     """
     def __getattr__(self, attr):
         if attr in self:

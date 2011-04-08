@@ -8,7 +8,7 @@ it'll probably mainly serve as a braindump page on TODO items. (We already have
 a list of things to do in the TODO file)
 
 List:
-    
+
     -   Figure out what each model should do. It may help to look at the
         RTorrent XMLRPC commands. [1]
         Is a download the same as a torrent? And what is a *File* (in the
@@ -25,5 +25,3 @@ List:
         do it's own look ups, they'll all need a host+port+url.
 
         We'll also have to think about error handling.
-
-    -   Some basic web interface. (Perhaps a login + list torrents by view?)

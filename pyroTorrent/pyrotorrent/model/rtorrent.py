@@ -15,7 +15,9 @@ SCGI to talk to RTorrent)
 The RTorrent constructor requires a host and optionally a port and url.
 
 Some of the functions documented in here are in fact auto generated (on the
-fly); they will only have one argument: *args.
+fly); We did this for a few reasons: extendability and ease of use. (We can
+easily chain calls this way)
+They will only have one argument in the documentation: *args.
 Obviously some do not take any arguments; the docstring should
 (in the near future, anyway) explain exactly what variables
 should be passed.
@@ -28,7 +30,10 @@ import xmlrpclib
 class RTorrent(object):
     """
     RTorrent class. This wraps most of the RTorrent *main* functionality
-    (read: global functionality) in a class.
+    (read: global functionality) in a class. Think of, current upload and
+    download, libTorrent version.
+
+
     Methods specific to a Torrent can be found in the :ref:`torrent-class`
     class.
     """
@@ -77,7 +82,11 @@ class RTorrent(object):
         """
         Query returns a new RTorrentQuery object with the host, port, url and
         hash from the current RTorrent object.
-        See :ref:`rtorrentquery-class`
+
+        Use this to execute several (different) calls on the RTorrent class in
+        one request. This can increase performance and reduce latency and load.
+
+        See :ref:`rtorrentquery-class` on how to use it.
         """
         from pyrotorrent.lib.rtorrentquery import RTorrentQuery
         return RTorrentQuery(self.host, self.port, self.url)
@@ -153,7 +162,7 @@ _rpc_methods = {
 #
 #def create_argcheck(arg_valid):
 #    return lambda *args: len(args) == len(arg_valid) \
-#        and all(map(lambda x, y: type(x) is y, args, arg_valid)) 
+#        and all(map(lambda x, y: type(x) is y, args, arg_valid))
 
 # Hack in all the methods in _rpc_methods!
 for x, y in _rpc_methods.iteritems():
@@ -169,6 +178,24 @@ for x, y in _rpc_methods.iteritems():
 
 # XXX: End hacks
 
+"""
+A simple test:
+
+.. code-block: python
+
+
+    x = RTorrent('sheeva')
+
+    # Simple test.
+    old = x.get_upload_throttle()
+    print 'Throttle:', old
+    print 'Return:', x.set_upload_throttle(20000)
+    print 'Throttle:', x.get_upload_throttle()
+    print 'Return:', x.set_upload_throttle(old)
+    print 'Throttle:', x.get_upload_throttle()
+
+    print 'Download list', x.get_download_list()
+"""
 
 if __name__ == '__main__':
     x = RTorrent('sheeva')

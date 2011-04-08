@@ -15,6 +15,7 @@ Contents:
     todo.rst
     rtorrent.rst
     torrent.rst
+    baserequester.rst
     torrentrequester.rst
     multibase.rst
     torrentquery.rst

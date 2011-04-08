@@ -1,3 +1,16 @@
+"""
+.. _baserequester-class:
+
+BaseRequester
+=============
+
+BaseRequester is a class created to provide an easy way to create classes that
+implement a lot of operations over XMLRPC. It is not the same as
+:ref:`multibase-class` in the sense that this performs operations on all the
+items in the view. (For example, :ref:`torrentrequester-class` implements a
+method to get the name of each torrent in a view by simply calling .get_name().
+"""
+
 import xmlrpclib
 
 class BaseRequester(object):
