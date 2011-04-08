@@ -21,7 +21,7 @@ Head over to :ref:`multibase-class` to find more about the general *Query classe
 
     # Create the query.
     rq = r.query().get_upload_rate().get_download_rate(\
-            ).get_librtorrent_version()
+).get_librtorrent_version()
 
     res = rq.first()
 

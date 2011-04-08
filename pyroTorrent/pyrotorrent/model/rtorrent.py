@@ -21,6 +21,23 @@ They will only have one argument in the documentation: *args.
 Obviously some do not take any arguments; the docstring should
 (in the near future, anyway) explain exactly what variables
 should be passed.
+
+A simple test:
+
+.. code-block: python
+
+
+    x = RTorrent('sheeva')
+
+    # Simple test.
+    old = x.get_upload_throttle()
+    print 'Throttle:', old
+    print 'Return:', x.set_upload_throttle(20000)
+    print 'Throttle:', x.get_upload_throttle()
+    print 'Return:', x.set_upload_throttle(old)
+    print 'Throttle:', x.get_upload_throttle()
+
+    print 'Download list', x.get_download_list()
 """
 
 # TODO:  SCGI support (with xmlrpc2scgi.py from rtorrent wiki)
@@ -177,25 +194,6 @@ for x, y in _rpc_methods.iteritems():
     del caller
 
 # XXX: End hacks
-
-"""
-A simple test:
-
-.. code-block: python
-
-
-    x = RTorrent('sheeva')
-
-    # Simple test.
-    old = x.get_upload_throttle()
-    print 'Throttle:', old
-    print 'Return:', x.set_upload_throttle(20000)
-    print 'Throttle:', x.get_upload_throttle()
-    print 'Return:', x.set_upload_throttle(old)
-    print 'Throttle:', x.get_upload_throttle()
-
-    print 'Download list', x.get_download_list()
-"""
 
 if __name__ == '__main__':
     x = RTorrent('sheeva')
