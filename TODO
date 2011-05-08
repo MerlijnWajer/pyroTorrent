@@ -8,6 +8,8 @@ Unclassified:
     -   Add direct SCGI support?:
             Check out: http://libtorrent.rakshasa.no/wiki/UtilsXmlrpc2scgi for
                     some examples on how to properly work with rtorrent.
+    -   Possiblity to set (and manage) directory per torrent file.
+        (Where it has to be copied or downloaded to)
 
 Admin panel:
     -   User Management
