@@ -1,4 +1,5 @@
 Unclassified:
+    -   Add a {{baseurl}} variable to all Jinja templates and URLs.
     -   Interface should work without a rtorrent connection
     -   Add Fault handling to model/* and lib/*/. (Invalid hash, etc)
     -   Double check the [R]TorrentQuery implementation / design.
