@@ -10,7 +10,7 @@
     {% else %}
     <p class="t_header-incomplete">
     {% endif %}
-        <a href="torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
+        <a href="{{c.prefix}}/torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
         <!-- Place other options/ icons here.... Resume... Pause... Delete...
              View -->
     </p>

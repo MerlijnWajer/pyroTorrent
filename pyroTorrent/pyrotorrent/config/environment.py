@@ -45,7 +45,7 @@ def load_environment(global_conf, app_conf):
             'host' : '127.0.0.1',
             'port' : 80,
             'url'  : '',
-            'prefix' : ''
         }
+    app_globals.prefix = '/torrent'
 
     return config

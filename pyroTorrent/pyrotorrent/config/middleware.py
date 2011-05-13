@@ -72,6 +72,6 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     from pyrotorrent.lib import app_globals
 
     app = PrefixMiddleware(app, global_conf,
-            app_globals.rtorrent['prefix'])
+            app_globals.prefix)
 
     return app
