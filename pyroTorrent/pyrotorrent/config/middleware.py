@@ -7,6 +7,7 @@ from paste.deploy.converters import asbool
 from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
+from paste.deploy.config import PrefixMiddleware
 
 from pyrotorrent.config.environment import load_environment
 
@@ -64,4 +65,7 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
         static_app = StaticURLParser(config['pylons.paths']['static_files'])
         app = Cascade([static_app, app])
     app.config = config
+
+    app = PrefixMiddleware(app, global_conf, '')
+
     return app
