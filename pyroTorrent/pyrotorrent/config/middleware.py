@@ -9,6 +9,8 @@ from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
 from paste.deploy.config import PrefixMiddleware
 
+from paste.deploy.config import PrefixMiddleware
+
 from pyrotorrent.config.environment import load_environment
 
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
