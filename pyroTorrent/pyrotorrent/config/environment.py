@@ -44,7 +44,8 @@ def load_environment(global_conf, app_conf):
     app_globals.rtorrent = {
             'host' : '192.168.1.75',
             'port' : 80,
-            'url'  : ''
+            'url'  : '',
+            'prefix' : ''
         }
 
     return config
