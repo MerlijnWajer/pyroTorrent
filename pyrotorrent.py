@@ -97,7 +97,7 @@ def main_page(env):
         'torrents' : torrents, 'rtorrent_data' : rtorrent_data} )
 
 def torrent_info_page(env, torrent_hash):
-    t = Torrent(torrenthash, **rtorrent_config)
+    t = Torrent(torrent_hash, **rtorrent_config)
 
     q = t.query()
 
