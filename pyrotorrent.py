@@ -103,26 +103,25 @@ def torrent_info_page(env, torrent_hash):
 
     q.get_name().get_size_bytes().get_bytes_left().get_loaded_file()
 
-    torrent = q.all()[0] # .first() ?
-
+    torrentinfo = q.all()[0] # .first() ?
 
     # FIXME THIS IS UGLY
     host = rtorrent_config['host']
     port = rtorrent_config['port']
     url = rtorrent_config['url']
 
-    files = TorrentFileRequester(host, port, url, t._hash, '').get_path_components().all()
+    files = TorrentFileRequester(host, port, url, t._hash, '')\
+            .get_path_components().all()
 
     global global_rtorrent
     r = global_rtorrent.query().get_upload_rate().get_download_rate()
 
     rtorrent_data = r.first()
 
-
     tmpl = jinjaenv.get_template('torrentinfo.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrent' : torrent, 'files' : files, 'rtorrent_data' : rtorrent_data} )
+        'torrent' : torrentinfo, 'files' : files, 'rtorrent_data' : rtorrent_data} )
 
 if __name__ == '__main__':
     jinjaenv = Environment(loader=PackageLoader('pyrotorrent', 'templates'))
