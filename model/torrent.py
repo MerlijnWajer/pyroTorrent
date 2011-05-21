@@ -29,7 +29,7 @@ class Torrent(object):
         default argument in the TorrentQuery class.
         See :ref:`torrentquery-class`
         """
-        from pyrotorrent.lib.torrentquery import TorrentQuery
+        from lib.torrentquery import TorrentQuery
         return TorrentQuery(self.host, self.port, self.url, self._hash)
 
     def get_peers(self):
