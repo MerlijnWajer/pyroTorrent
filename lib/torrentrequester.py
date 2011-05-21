@@ -26,7 +26,7 @@ import xmlrpclib
 from model import torrent
 from lib.baserequester import BaseRequester
 
-from config import *
+from config import rtorrent_config
 
 class TorrentRequester(BaseRequester):
     """

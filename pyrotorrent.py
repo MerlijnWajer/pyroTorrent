@@ -97,7 +97,7 @@ def main_page(env):
         'torrents' : torrents, 'rtorrent_data' : rtorrent_data} )
 
 def torrent_info_page(env, torrent_hash):
-    t = Torrent(torrent_hash, **rtorrent_config)
+    t = Torrent(torrent_hash)
 
     q = t.query()
 
@@ -110,7 +110,7 @@ def torrent_info_page(env, torrent_hash):
     port = rtorrent_config['port']
     url = rtorrent_config['url']
 
-    files = TorrentFileRequester(host, port, url, t._hash, '')\
+    files = TorrentFileRequester(t._hash, '')\
             .get_path_components().all()
 
     global global_rtorrent
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     execfile('rules.py')
 
     # Global helpers
-    global_rtorrent = RTorrent(**rtorrent_config)
+    global_rtorrent = RTorrent()
 
     libtorrentversion = global_rtorrent.get_libtorrent_version()
 

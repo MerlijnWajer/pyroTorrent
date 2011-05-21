@@ -5,10 +5,22 @@ from model.rtorrent import RTorrent
 from lib.torrentrequester import TorrentRequester
 
 if __name__ == '__main__':
-    r = RTorrent('sheeva')
+    r = RTorrent()
     print r.get_upload_rate()
 
     #torrents = r.get_download_list('')
-    torrents = TorrentRequester(r.host, r.port, r.url)
+    torrents = TorrentRequester('')
     torrents.get_hash().get_name()
-    print torrents.all()
+
+    a = torrents.all()
+    print a
+
+    torrenthash = a[0].get_hash
+
+    t = Torrent(torrenthash)
+
+    q = t.query()
+
+    q.get_name().get_size_bytes().get_bytes_left().get_loaded_file()
+
+    print q.all()[0]

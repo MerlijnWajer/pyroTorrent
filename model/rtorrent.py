@@ -44,6 +44,8 @@ A simple test:
 
 import xmlrpclib
 
+from config import rtorrent_config
+
 class RTorrent(object):
     """
     RTorrent class. This wraps most of the RTorrent *main* functionality
@@ -56,7 +58,7 @@ class RTorrent(object):
     """
 
     # FIXME: If we leave URL at '' xmlrpclib will default to /RPC2 as well.
-    def __init__(self, host, port=80, url='/RPC2'):
+    def __init__(self):
         """
         Initialise the RTorrent object.
         Host is the hostname of the server where the XMLRPC interface is
@@ -65,7 +67,10 @@ class RTorrent(object):
         URL defaults to '/RPC2', you shouldn't change this unless you know
         what you are doing.
         """
-        # No ending '/' !
+        host = rtorrent_config['host']
+        port = rtorrent_config['port']
+        url = rtorrent_config['url']
+
         self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
         self.host, self.port, self.url = host, port, url
 

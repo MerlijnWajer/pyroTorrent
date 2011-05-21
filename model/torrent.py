@@ -13,11 +13,15 @@ and connection information similar to :ref:`rtorrent-class`.
 import xmlrpclib
 import types
 
+from config import rtorrent_config
 
 class Torrent(object):
     """
     """
-    def __init__(self, _hash, host, port=80, url='/RPC2'):
+    def __init__(self, _hash):
+        host = rtorrent_config['host']
+        port = rtorrent_config['port']
+        url = rtorrent_config['url']
         self._hash = _hash
         self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
         self.host, self.port, self.url = host, port, url

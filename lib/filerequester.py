@@ -27,13 +27,15 @@ from pyrotorrent.model import torrentfile
 from pyrotorrent.lib.baserequester import BaseRequester, \
     InvalidTorrentCommandException
 
+from config import rtorrent_config
+
 # XXX: Create baseclass for rtorrent-multicall's. BaseRequester
 
 class TorrentFileRequester(BaseRequester):
     """
     """
-    def __init__(self, host, port=80, url='/RPC2', *first_args):
-        BaseRequester.__init__(self, host, port, url)
+    def __init__(self, *first_args):
+        BaseRequester.__init__(self, **rtorrent_config)
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):
