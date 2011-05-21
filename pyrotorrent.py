@@ -38,7 +38,6 @@ def pyroTorrentApp(env, start_response):
     # Log here if you want
 
     r = wt.apply_rule('/torrent', env)
-    r = main_page(env)
     #r = wt.apply_rule(env['REQUEST_URI'], env)
     # 404
     if r is None:
