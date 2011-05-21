@@ -41,6 +41,11 @@ def pyroTorrentApp(env, start_response):
     # 404
     if r is None:
         start_response('404 Not Found', [('Content-Type', 'text/html')])
+        tmpl = jinjaenv.get_template('404.html')
+
+        return template_render(tmpl, {
+            'url' : env['REQUEST_URI'], 'session' : env['beaker.session']},
+            default_page=False)
 
     elif type(r) in (tuple, list) and len(r) >= 1:
         # Respond with custom type.
