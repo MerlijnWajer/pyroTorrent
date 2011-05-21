@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+</head>
+<body>
+<div class="header">
+    <div class="logo">πϱTorrent v0.x (libTorrent {{
+        c.r.get_libtorrent_version }})</div>
+    <div class="up">Upload rate: {{ c.r.get_upload_rate }}</div>
+    <div class="down">Download rate: {{ c.r.get_download_rate }}</div>
+    <div class="up"> <a href="/">Home</a> </div>
+    <div class="up"> <a href="/">Add Torrent</a> </div>
+    <div class="up"> <a href="/">Admin</a> </div>
+</div>
+
+
+<div class="torrentmain">
+<div style="height:1px;"></div>
+{% block main %}
+<h1> O GOD WTF </h1>
+{% endblock %}
+<div style="height:1px;"></div>
+</div>
+</body>
+</html>
