@@ -29,6 +29,7 @@ from model.rtorrent import RTorrent
 from model.torrent import Torrent
 
 from lib.torrentrequester import TorrentRequester
+from lib.filerequester import TorrentFileRequester
 
 def pyroTorrentApp(env, start_response):
     """

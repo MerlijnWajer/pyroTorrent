@@ -1,15 +1,16 @@
 {% extends "base.jinja2" %}
 
 {% block main %}
-{% if c.t %}
+{% if torrent %}
     <div style="margin: 2em">
-    <p> {{ c.t.get_name }} ({{ c.t.get_size_bytes - c.t.get_bytes_left }} / 
-        {{ c.t.get_size_bytes }}) </p>
-    <p> Loaded file: {{ c.t.get_loaded_file }} </p>
+        <p> {{ torrent.get_name }}
+        ({{ torrent.get_size_bytes - torrent.get_bytes_left }} /
+        {{ torrent.get_size_bytes }}) </p>
+    <p> Loaded file: {{ torrent.get_loaded_file }} </p>
     <p>
     Files:
     <ul>
-    {% for x in c.t.get_files %}
+    {% for x in files %}
     <li> {{ x.get_path }} ( {{ x.get_path_components }} )</li>
     {% endfor %}
     </ul>
