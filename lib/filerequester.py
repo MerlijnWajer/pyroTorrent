@@ -23,8 +23,8 @@ Example usage:
 # Properly implement flush?
 
 import xmlrpclib
-from pyrotorrent.model import torrentfile
-from pyrotorrent.lib.baserequester import BaseRequester, \
+from model import torrentfile
+from lib.baserequester import BaseRequester, \
     InvalidTorrentCommandException
 
 from config import rtorrent_config
