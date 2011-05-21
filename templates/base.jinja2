@@ -6,9 +6,9 @@
 <body>
 <div class="header">
     <div class="logo">πϱTorrent v0.x (libTorrent {{
-        c.r.get_libtorrent_version }})</div>
-    <div class="up">Upload rate: {{ c.r.get_upload_rate }}</div>
-    <div class="down">Download rate: {{ c.r.get_download_rate }}</div>
+        libtorrentversion }})</div>
+    <div class="up">Upload rate: {{ rtorrent_data.get_upload_rate }}</div>
+    <div class="down">Download rate: {{ rtorrent_data.get_download_rate }}</div>
     <div class="up"> <a href="/">Home</a> </div>
     <div class="up"> <a href="/">Add Torrent</a> </div>
     <div class="up"> <a href="/">Admin</a> </div>

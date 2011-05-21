@@ -1,9 +1,9 @@
 {% extends "base.jinja2" %}
 
 {% block main %}
-{% if c.torrents %}
+{% if torrents %}
     <ul>
-    {% for x in c.torrents %}
+    {% for x in torrents %}
     <li class="torrent">
     {% if x.is_complete %}
     <p class="t_header-complete">

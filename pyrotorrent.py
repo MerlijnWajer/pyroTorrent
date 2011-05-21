@@ -28,6 +28,8 @@ from sessionhack import SessionHack, SessionHackException
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
 
+from lib.torrentrequester import TorrentRequester
+
 def pyroTorrentApp(env, start_response):
     """
     pyroTorrent main function.
@@ -36,6 +38,7 @@ def pyroTorrentApp(env, start_response):
     # Log here if you want
 
     r = wt.apply_rule('/torrent', env)
+    r = main_page(env)
     #r = wt.apply_rule(env['REQUEST_URI'], env)
     # 404
     if r is None:
@@ -86,7 +89,7 @@ def main_page(env):
     tmpl = jinjaenv.get_template('download_list.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrents' : t, 'rtorrent_data' : rtorrent_data} )
+        'torrents' : torrents, 'rtorrent_data' : rtorrent_data} )
 
 def torrent_info_page(env, torrent_hash):
     pass
@@ -104,5 +107,7 @@ if __name__ == '__main__':
 
     libtorrentversion = global_rtorrent.get_libtorrent_version()
 
-    WSGIServer(SessionMiddleware(SessionHack(pyroTorrentApp), \
-            session_options)).run()
+    WSGIServer(SessionMiddleware(pyroTorrentApp), \
+            session_options).run()
+   # WSGIServer(SessionMiddleware(SessionHack(pyroTorrentApp), \
+   #         session_options)).run()

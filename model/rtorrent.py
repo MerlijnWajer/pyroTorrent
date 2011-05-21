@@ -105,7 +105,7 @@ class RTorrent(object):
 
         See :ref:`rtorrentquery-class` on how to use it.
         """
-        from pyrotorrent.lib.rtorrentquery import RTorrentQuery
+        from lib.rtorrentquery import RTorrentQuery
         return RTorrentQuery(self.host, self.port, self.url)
 
 # XXX: Begin hacks
