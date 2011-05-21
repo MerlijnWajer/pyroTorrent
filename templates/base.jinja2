@@ -8,8 +8,10 @@
 <div class="header">
     <div class="logo">πϱTorrent v0.x (libTorrent {{
         libtorrentversion }})</div>
+    {% if rtorrent_data %}
     <div class="up">Upload rate: {{ rtorrent_data.get_upload_rate }}</div>
     <div class="down">Download rate: {{ rtorrent_data.get_download_rate }}</div>
+    {% endif %}
     <div class="up"> <a href="/">Home</a> </div>
     <div class="up"> <a href="/">Add Torrent</a> </div>
     <div class="up"> <a href="/">Admin</a> </div>
