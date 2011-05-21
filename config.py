@@ -2,6 +2,7 @@
 
 # ``Base'' URL
 BASE_URL = '/torrent'
+STATIC_URL = '/static/torrent'
 
 rtorrent_config = {
         'host' : '192.168.1.75',

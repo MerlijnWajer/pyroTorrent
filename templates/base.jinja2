@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{static_url}}/style.css" />
     <title>{% block title %} pyroTorrent {% endblock %}</title>
 </head>
 <body>
@@ -12,9 +12,9 @@
     <div class="up">Upload rate: {{ rtorrent_data.get_upload_rate }}</div>
     <div class="down">Download rate: {{ rtorrent_data.get_download_rate }}</div>
     {% endif %}
-    <div class="up"> <a href="/">Home</a> </div>
-    <div class="up"> <a href="/">Add Torrent</a> </div>
-    <div class="up"> <a href="/">Admin</a> </div>
+    <div class="up"> <a href="{{base_url}}">Home</a> </div>
+    <div class="up"> <a href="{{base_url}}">Add Torrent</a> </div>
+    <div class="up"> <a href="{{base_url}}">Admin</a> </div>
 </div>
 
 

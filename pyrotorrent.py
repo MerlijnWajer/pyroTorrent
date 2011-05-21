@@ -66,6 +66,7 @@ def template_render(template, vars, default_page=True):
         and handles unicode encoding.
     """
     vars['base_url'] = BASE_URL
+    vars['static_url'] = STATIC_URL
 
     # You can add more to vars here, such as a cached libTorrent version.
     if default_page:
