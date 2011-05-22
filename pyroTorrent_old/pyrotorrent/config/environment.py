@@ -42,10 +42,10 @@ def load_environment(global_conf, app_conf):
 
     # XXX: Move to proper place later.
     app_globals.rtorrent = {
-            'host' : '192.168.1.75',
+            'host' : '127.0.0.1',
             'port' : 80,
             'url'  : '',
-            'prefix' : ''
         }
+    app_globals.prefix = '/torrent'
 
     return config

@@ -19,6 +19,8 @@ class PyroController(BaseController):
     def index(self):
         host, port, url = app_globals.rtorrent['host'], \
             app_globals.rtorrent['port'], app_globals.rtorrent['url']
+        c.prefix = app_globals.prefix
+
         r = RTorrent(host, port, url)
 
         t = TorrentRequester(host, port, url, '') # Make this view a post

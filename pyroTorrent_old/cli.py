@@ -5,10 +5,10 @@ from pyrotorrent.model.rtorrent import RTorrent
 from pyrotorrent.lib.torrentrequester import TorrentRequester
 
 if __name__ == '__main__':
-    r = RTorrent('sheeva')
+    r = RTorrent('localhost')
     print r.get_upload_rate()
     
     #torrents = r.get_download_list('')
-    torrents = TorrentRequester(r.host, r.port, r.url)
+    torrents = TorrentRequester(r.host, r.port, r.url, '')
     torrents.get_hash().get_name()
     print torrents.all()

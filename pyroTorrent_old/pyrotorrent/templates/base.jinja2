@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="stylesheet" type="text/css" href="/torrent/style.css" />
 </head>
 <body>
 <div class="header">
@@ -9,9 +9,9 @@
         c.r.get_libtorrent_version }})</div>
     <div class="up">Upload rate: {{ c.r.get_upload_rate }}</div>
     <div class="down">Download rate: {{ c.r.get_download_rate }}</div>
-    <div class="up"> <a href="/">Home</a> </div>
-    <div class="up"> <a href="/">Add Torrent</a> </div>
-    <div class="up"> <a href="/">Admin</a> </div>
+    <div class="up"> <a href="{{c.prefix}}/">Home</a> </div>
+    <div class="up"> <a href="{{c.prefix}}/">Add Torrent</a> </div>
+    <div class="up"> <a href="{{c.prefix}}/">Admin</a> </div>
 </div>
 
 

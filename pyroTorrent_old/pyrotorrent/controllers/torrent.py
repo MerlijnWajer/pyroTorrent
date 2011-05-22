@@ -20,6 +20,7 @@ class TorrentController(BaseController):
         # TODO: We need a way to stop getting these globals all the time.
         host, port, url = app_globals.rtorrent['host'], \
             app_globals.rtorrent['port'], app_globals.rtorrent['url']
+        c.prefix = app_globals.prefix
 
         t = Torrent(torrenthash, **app_globals.rtorrent)
 
