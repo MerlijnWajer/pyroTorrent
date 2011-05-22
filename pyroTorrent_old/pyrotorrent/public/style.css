@@ -1,0 +1,61 @@
+
+div.header {
+    background-color: #555555;
+}
+
+div.logo {
+    float: right;
+    color: #FF0000;
+    font-weight: bold;
+    margin-right: 1em;
+}
+
+div.up {
+    float: left;
+    margin-right: 1em;
+    color: #00CC00;
+    font-weight: bold;
+}
+
+div.torrentmain {
+    background-color: #222222;
+    position: relative;
+    margin: 1em;
+    width: 50%;
+    left: 25%;
+}
+
+div.down {
+    color: #CC0000;
+    font-weight: bold;
+}
+
+body {
+    background-color: #444444;
+    color: white;
+    margin: 0px;
+}
+
+li.torrent-done {
+    background-color: #555555;
+    position: relative;
+    left: -1em; 
+/*    top: -1em; */
+    list-style: none;
+}
+
+p.t_header-complete {
+    background-color: #229922;
+    width: 95%;
+}
+
+p.t_header-incomplete {
+    background-color: #883333;
+    width: 95%;
+}
+
+a {
+    color: #FFFFFF;
+    text-decoration:none;
+}
+
