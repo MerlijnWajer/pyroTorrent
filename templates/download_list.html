@@ -1,16 +1,16 @@
 {% extends "base.jinja2" %}
 
 {% block main %}
-{% if c.torrents %}
+{% if torrents %}
     <ul>
-    {% for x in c.torrents %}
+    {% for x in torrents %}
     <li class="torrent">
     {% if x.is_complete %}
     <p class="t_header-complete">
     {% else %}
     <p class="t_header-incomplete">
     {% endif %}
-        <a href="{{c.prefix}}/torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
+    <a href="{{base_url}}/torrent/{{ x.get_hash }}"> Name: {{ x.get_name }} </a>
         <!-- Place other options/ icons here.... Resume... Pause... Delete...
              View -->
     </p>

@@ -1,0 +1,44 @@
+{% extends "base.jinja2" %}
+
+{% block main %}
+{% if c.torrents %}
+    <ul>
+    {% for x in c.torrents %}
+    <li class="torrent">
+    {% if x.is_complete %}
+    <p class="t_header-complete">
+    {% else %}
+    <p class="t_header-incomplete">
+    {% endif %}
+        <a href="torrent/{{ x.get_hash }}/index"> Name: {{ x.get_name }} </a>
+        <!-- Place other options/ icons here.... Resume... Pause... Delete...
+             View -->
+    </p>
+    <p>Download ( <!-- Needs icons -->
+    {% if x.get_download_rate > 0 %}
+    <b> {{ x.get_download_rate }} </b>
+    {% else %}
+    {{ x.get_download_rate }}
+    {% endif %}
+    )
+    Upload (
+    {% if x.get_upload_rate > 0 %}
+    <b> {{ x.get_upload_rate }} </b>
+    {% else %}
+    {{ x.get_upload_rate }}
+    {% endif %}
+    )
+    </p>
+    <!-- Progress bar? -->
+    {% if x.is_complete %}
+    <p> <b>Complete.</b> (Total: {{ x.get_size_bytes }}) </p>
+    {% else %}
+    <p> <b>Incomplete:</b> (Local: {{ x.get_download_total }} /
+                            {{ x.get_size_bytes }}) </p>
+    {% endif %}
+
+    </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
