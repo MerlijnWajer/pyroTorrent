@@ -1,11 +1,38 @@
+body {
+    background-color: #444;
+    color: white;
+    font: 12px/18px "Liberation Sans", Arial, Verdana, Sans;
+    margin: 0;
+    padding: 0;
+}
 
-div.header {
-    background-color: #555555;
+header {
+    background-color: #555;
+}
+
+a {
+    color: #fff;
+}
+
+#torrent_list {
+    margin: 20px 0 0 0;
+    padding: 0;
+}
+
+#torrent_list ul {
+    margin: 0;
+    padding: 0;
+}
+
+#torrent_list li {
+    margin: 1px;
+    padding: 2px 6px;
+    list-style: none;
 }
 
 div.logo {
     float: right;
-    color: #FF0000;
+    color: #F00;
     font-weight: bold;
     margin-right: 1em;
 }
@@ -13,54 +40,95 @@ div.logo {
 div.up {
     float: left;
     margin-right: 1em;
-    color: #00CC00;
+    color: #0C0;
     font-weight: bold;
 }
 
-div.torrentmain {
-    background-color: #222222;
-    position: relative;
-    margin: 1em;
-    width: 50%;
-    left: 25%;
-}
-
 div.down {
-    color: #CC0000;
+    color: #C00;
     font-weight: bold;
 }
 
 div.ip {
-    color: #FFFFFF;
+    color: #fff;
     font-weight: bold;
 }
 
-body {
-    background-color: #444444;
-    color: white;
-    margin: 0px;
+li.torrent_complete {
+    background-color: #292;
 }
 
-li.torrent-done {
-    background-color: #555555;
-    position: relative;
-    left: -1em; 
-/*    top: -1em; */
-    list-style: none;
+li.torrent_incomplete {
+    background-color: #333;
 }
 
-p.t_header-complete {
-    background-color: #229922;
-    width: 95%;
+span.upload_rate, span.download_rate, span.progress {
+    clear: none;
+    display: inline-block;
+    margin-top: -17px;
+    position: absolute;
+    right: 0%;
+    text-align: right;
 }
 
-p.t_header-incomplete {
-    background-color: #883333;
-    width: 95%;
+span.progress { 
+    border: 1px solid #272;
+    width: 140px;
+    height: 14px;
+    right: 4px;
+    line-height: 16px;
 }
 
-a {
-    color: #FFFFFF;
-    text-decoration:none;
+span.download_rate {
+    margin-right: 210px;
+}
+
+span.upload_rate {
+    margin-right: 152px;
+}
+
+span.progress {
+    color: #aaa;
+    margin-right: 0px;
+}
+
+li.torrent_complete span.progress {
+    color: #eee;
+    border: 0;
+    padding: 1px 5px;
+}
+
+li.torrent_incomplete span.progress_bar {
+    background-color: rgba(33, 33, 33, .6);
+    width: 20%;
+    height: 14px;
+    display: block;
+    float: left;
+    position: absolute;
+    z-index: 1;
+}
+
+li.torrent_incomplete span.progress_text {
+    display: inline-block;
+    float: right;
+    position: absolute;
+    text-align: right;
+    right: 2px;
+    width: 100%;
+    z-index: 2;
+}
+
+span.download_icon, span.upload_icon {
+    float: right;
+    height: 16px;
+    width: 16px;
+    margin-left: 4px;
+}
+
+span.download_icon {
+    background: transparent url(/static/icons/arrow_down.png);
+}
+span.upload_icon {
+    background: transparent url(/static/icons/arrow_up.png);
 }
 

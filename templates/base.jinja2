@@ -5,7 +5,8 @@
     <title>{% block title %} pyroTorrent {% endblock %}</title>
 </head>
 <body>
-<div class="header">
+
+<header>
     <div class="logo">πϱTorrent v0.x (libTorrent {{
         libtorrentversion }})</div>
     {% if rtorrent_data %}
@@ -16,15 +17,12 @@
     <div class="up"> <a href="{{base_url}}">Home</a> </div>
     <div class="up"> <a href="{{base_url}}/add_torrent">Add Torrent</a> </div>
     <div class="up"> <a href="{{base_url}}">Admin</a> </div>
-</div>
+</header>
 
-
-<div class="torrentmain">
-<div style="height:1px;"></div>
+<section id="torrent_list">
 {% block main %}
 <h1> O GOD WTF </h1>
 {% endblock %}
-<div style="height:1px;"></div>
-</div>
+</section>
 </body>
 </html>
