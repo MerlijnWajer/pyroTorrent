@@ -211,7 +211,7 @@
 [ ] get_http_cacert
 [ ] get_http_capath
 [ ] get_http_proxy
-[ ] get_ip
+[X] get_ip
 [ ] get_key_layout
 [ ] get_log.tracker
 [ ] get_max_downloads_div
@@ -280,8 +280,8 @@
 [ ] import
 [ ] less
 [X] load
-[ ] load_raw
-[ ] load_raw_start
+[X] load_raw
+[X] load_raw_start
 [ ] load_raw_verbose
 [X] load_start
 [ ] load_start_verbose

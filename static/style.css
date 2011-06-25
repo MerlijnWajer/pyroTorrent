@@ -30,6 +30,11 @@ div.down {
     font-weight: bold;
 }
 
+div.ip {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
 body {
     background-color: #444444;
     color: white;

@@ -11,6 +11,7 @@
     {% if rtorrent_data %}
     <div class="up">Upload rate: {{ rtorrent_data.get_upload_rate }}</div>
     <div class="down">Download rate: {{ rtorrent_data.get_download_rate }}</div>
+    <div class="ip">IP: {{ rtorrent_data.get_ip }}</div> <!-- XXX markup broken -->
     {% endif %}
     <div class="up"> <a href="{{base_url}}">Home</a> </div>
     <div class="up"> <a href="{{base_url}}">Add Torrent</a> </div>
