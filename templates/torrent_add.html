@@ -1,0 +1,21 @@
+{% extends "base.jinja2" %}
+
+{% block main %}
+
+{% if torrent_added %}
+
+    {% if torrent_added == "SUCCES" %}
+    <p> Torrent added :-) </p>
+    {% else %}
+    <p> Torrent could not be added. Reason: TODO </p>
+    {% endif %}
+
+{% endif %}
+
+<form method="post" action="{{base_url}}/add_torrent">
+    <p> Enter the Torrent URL here: <input type="text"
+    name="torrent_url"></input> </p>
+    <input type="submit" value="Add torrent"></input>
+</form>
+
+{% endblock %}

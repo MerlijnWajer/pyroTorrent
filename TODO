@@ -39,7 +39,7 @@ Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
     -   Add torrent link                                    [X]
     -   Show current up and down speed                      [X]
-    -   Add torrents                                        [ ]
+    -   Add torrents                                        [X]
     -   Change torrent status                               [ ]
     -   List torrent peers                                  [ ]
     -   List trackers.                                      [ ]
