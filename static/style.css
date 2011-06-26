@@ -32,9 +32,11 @@ a {
 
 div.logo {
     float: right;
-    color: #F00;
+    font-size: 22px;
+    line-height: 33px;
+    color: #ddd;
     font-weight: bold;
-    margin-right: 1em;
+    margin-right: 10px;
 }
 
 div.up {
