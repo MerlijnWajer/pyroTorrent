@@ -32,7 +32,8 @@
     <span class="progress">
         {% if not x.is_complete %}
 
-        <span class="progress_bar" style="width: {{ x.get_download_total / x.get_size_bytes }}%"></span>
+        <span class="progress_bar" style="width: {{ x.get_download_total /
+            x.get_size_bytes * 100.0 }}%"></span>
         {% endif %}
         <span class="progress_text">
             {% if x.is_complete %}

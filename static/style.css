@@ -101,7 +101,10 @@ li.torrent_complete span.progress {
 }
 
 li.torrent_incomplete span.progress_bar {
-    background-color: rgba(33, 33, 33, .6);
+    /* Made the background colour more visible. I probably lack taste so
+     * feel free to change it to a more fitting (but still noticable!) colour
+     */
+    background-color: rgba(50, 200, 60, .6);
     width: 20%;
     height: 14px;
     display: block;
