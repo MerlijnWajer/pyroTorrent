@@ -10,8 +10,8 @@
         View -->
     {% if not x.is_complete %}
     <!-- Needs icons -->
-    <span class="download_rate"> 
-        <span class="download_icon"></span> 
+    <span class="download_rate">
+        <span class="download_icon"></span>
         {% if x.get_download_rate > 0 %}
         {{ x.get_download_rate }}
         {% else %}
@@ -19,19 +19,19 @@
         {% endif %}
     </span>
     {% endif %}
-   
-    <span class="upload_rate"> 
-        <span class="upload_icon"></span> 
+
+    <span class="upload_rate">
+        <span class="upload_icon"></span>
         {% if x.get_upload_rate > 0 %}
         {{ x.get_upload_rate }}</span>
         {% else %}
         {{ x.get_upload_rate }}
         {% endif %}
     </span>
-    
+
     <span class="progress">
         {% if not x.is_complete %}
-            
+
         <span class="progress_bar" style="width: {{ x.get_download_total / x.get_size_bytes }}%"></span>
         {% endif %}
         <span class="progress_text">

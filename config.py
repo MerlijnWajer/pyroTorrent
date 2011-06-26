@@ -5,6 +5,7 @@ BASE_URL = '/torrent'
 STATIC_URL = '/static/torrent'
 
 rtorrent_config = {
+        #'host' : '84.80.118.144',
         'host' : '192.168.1.75',
         'port' : 80,
         'url'  : '',

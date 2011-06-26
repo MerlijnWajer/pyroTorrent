@@ -92,7 +92,8 @@ def fetch_global_info():
         -   IP (perhaps move to static global)
     """
     global global_rtorrent
-    r = global_rtorrent.query().get_upload_rate().get_download_rate().get_ip()
+    r = global_rtorrent.query().get_upload_rate().get_download_rate().get_ip()\
+            .get_hostname().get_memory_usage().get_max_memory_usage()
 
     return r.first()
 

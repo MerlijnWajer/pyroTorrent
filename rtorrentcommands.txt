@@ -217,7 +217,7 @@
 [ ] get_max_downloads_div
 [ ] get_max_downloads_global
 [ ] get_max_file_size
-[ ] get_max_memory_usage
+[X] get_max_memory_usage # RTorrent.get_max_memory_usage
 [ ] get_max_open_files
 [ ] get_max_open_http
 [ ] get_max_open_sockets
@@ -406,7 +406,7 @@
 [ ] system.file_status_cache.prune
 [ ] system.file_status_cache.size
 [ ] system.get_cwd
-[ ] system.hostname
+[X] system.hostname # RTorrent.get_hostname()
 [X] system.library_version
 [ ] system.method.erase
 [ ] system.method.get

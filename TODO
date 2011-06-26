@@ -40,15 +40,18 @@ Version 0.0:
     -   Add torrent link                                    [X]
     -   Show current up and down speed                      [X]
     -   Add torrents                                        [X]
+    -   Global progress bar                                 [ ]
     -   Change torrent status                               [ ]
     -   List torrent peers                                  [ ]
     -   List trackers.                                      [ ]
-    -   Page torrents                                       [ ]
+    -   Page torrents                                       [X]
     -   Change rtorrent up/down throttle                    [ ]
     -   Show disk usage                                     [ ]
     -   List torrent files                                  [ ]
     -   Prioritize torrent files                            [ ]
     -   Download torrent files                              [ ]
+    -   RTorrent ``info'' page, where we show all the available rtorrent
+    information. (eg, all rtorrent calls that return info)  [ ]
 
 
 Far fetched TODO:

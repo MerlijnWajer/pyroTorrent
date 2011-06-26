@@ -156,9 +156,17 @@ _rpc_methods = {
         """
         Returns rtorrent memory usage.
         """),
+    'get_max_memory_usage' : ('get_max_memory_usage',
+        """
+        Returns rtorrent maximum memory usage.
+        """),
     'get_libtorrent_version' : ('system.library_version',
         """
         Returns the libtorrent version.
+        """),
+    'get_hostname' : ('system.hostname',
+        """
+        Returns the hostname.
         """),
     'add_torrent' : ('load',
         """
