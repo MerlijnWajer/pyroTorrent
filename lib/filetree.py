@@ -29,7 +29,6 @@ class Node(object):
 class Leaf(object):
     def __init__(self, name):
         self.name = name
-        print 'Creating leaf with name', name
 
     def repr(self):
         return 'Leaf(%s)' % name
@@ -49,8 +48,6 @@ class FileTree(object):
 
         for x in files:
             last_node = root
-
-            print x
 
             while len(x) > 1:
                 y = x[0]
