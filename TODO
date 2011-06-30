@@ -47,11 +47,15 @@ Version 0.0:
     -   Page torrents                                       [X]
     -   Change rtorrent up/down throttle                    [ ]
     -   Show disk usage                                     [ ]
-    -   List torrent files                                  [ ]
+    -   List torrent files                                  [X]
+        -   Clean up the root name of the file tree         [ ]
+        -   Fix markup for files tree                       [ ]
+
     -   Prioritize torrent files                            [ ]
     -   Download torrent files                              [ ]
     -   RTorrent ``info'' page, where we show all the available rtorrent
     information. (eg, all rtorrent calls that return info)  [ ]
+
 
 
 Far fetched TODO:

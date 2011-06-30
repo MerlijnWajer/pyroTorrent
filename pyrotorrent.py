@@ -38,6 +38,7 @@ from model.torrent import Torrent
 
 from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
+from lib.filetree import FileTree
 
 
 def pyroTorrentApp(env, start_response):
@@ -129,12 +130,22 @@ def torrent_info_page(env, torrent_hash):
     files = TorrentFileRequester(t._hash, '')\
             .get_path_components().all()
 
+    files = map(lambda x: x['get_path_components'], files)
+
+    tree = FileTree(files).root
+
     rtorrent_data = fetch_global_info()
 
     tmpl = jinjaenv.get_template('torrentinfo.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrent' : torrentinfo, 'files' : files, 'rtorrent_data' : rtorrent_data} )
+        'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data} )
+
+def torrent_action(env, action):
+    """
+    Start, Stop, Pause, Delete torrent. I suppose. XXX TODO
+    """
+    pass
 
 def add_torrent_page(env):
     """

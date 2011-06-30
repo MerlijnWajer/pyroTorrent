@@ -1,5 +1,24 @@
 {% extends "base.jinja2" %}
 
+{% macro dfs(node) -%}
+
+<li>
+{% if node.children %}
+<b>{{ node.name }}</b>
+{% else %}
+<i>{{ node.name }}</i>
+{% endif %}
+<li>
+
+{% if node.children %}
+    <ul>
+    {% for x in node.children %}
+        {{ dfs(x) }}
+    {% endfor %}
+    </ul>
+{% endif %}
+{%- endmacro %}
+
 {% block main %}
 {% if torrent %}
     <div style="margin: 2em">
@@ -8,11 +27,8 @@
         {{ torrent.get_size_bytes }}) </p>
     <p> Loaded file: {{ torrent.get_loaded_file }} </p>
     <p>
-    Files:
     <ul>
-    {% for x in files %}
-    <li> {{ x.get_path }} ( {{ x.get_path_components }} )</li>
-    {% endfor %}
+        {{ dfs(tree) }}
     </ul>
     </p>
     </div>
