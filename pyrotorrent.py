@@ -136,7 +136,7 @@ def torrent_info_page(env, torrent_hash):
 
     rtorrent_data = fetch_global_info()
 
-    tmpl = jinjaenv.get_template('torrentinfo.html')
+    tmpl = jinjaenv.get_template('torrent_info.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
         'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data} )
