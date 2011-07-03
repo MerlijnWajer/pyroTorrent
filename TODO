@@ -1,39 +1,34 @@
 Unclassified:
-    -   Make the red/green bar a progress bar.
-    -   Interface should work without a rtorrent connection
     -   Add Fault handling to model/* and lib/*/. (Invalid hash, etc)
     -   Double check the [R]TorrentQuery implementation / design.
     -   TorrentRequester should support views other than the default one.
-    -   Implement XMLRPC Exceptions, own wrapper?
 
     -   Add direct SCGI support?:
             Check out: http://libtorrent.rakshasa.no/wiki/UtilsXmlrpc2scgi for
                     some examples on how to properly work with rtorrent.
-    -   Possiblity to set (and manage) directory per torrent file.
-        (Where it has to be copied or downloaded to)
 
 Admin panel:
-    -   User Management
-    -   Shutdown rtorrent?
-    -   Change encryption
+    -   User Management                                     [ ]
+    -   Shutdown rtorrent?                                  [ ]
+    -   Change encryption                                   [ ]
 
 Download Management:
-    -   List torrents.
-    -   Move torrents to other views?
-    -   Add a torrent
+    -   List torrents.                                      [ ]
+    -   Move torrents to other views?                       [ ]
+    -   Add a torrent                                       [ ]
 
 Events and Schedulers:
     -   Schedule stuff
     -   Manage events. (Provide default mail scripts?)
 
 Statistics:
-    -   Disk Usage
-    -   Memory Usage
-    -   CPU Usage
-    -   Current upload / download rate
-    -   Current active torrents
-    -   Complete Torrents
-    -   Incomplete Torrents
+    -   Disk Usage                                          [ ]
+    -   Memory Usage                                        [ ]
+    -   CPU Usage                                           [ ]
+    -   Current upload / download rate                      [ ]
+    -   Current active torrents                             [ ]
+    -   Complete Torrents                                   [ ]
+    -   Incomplete Torrents                                 [ ]
 
 Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
@@ -51,7 +46,9 @@ Version 0.0:
         -   Clean up the root name of the file tree         [ ]
         -   Fix markup for files tree                       [ ]
 
-    -   Prioritize torrent files                            [ ]
+    -   Interface should work without a rtorrent connection [ ]
+    -   Implement XMLRPC Exceptions, own wrapper?           [ ]
+
     -   Download torrent files                              [ ]
     -   RTorrent ``info'' page, where we show all the available rtorrent
     information. (eg, all rtorrent calls that return info)  [ ]
@@ -59,6 +56,10 @@ Version 0.0:
 
 
 Far fetched TODO:
+
+    -   Prioritize torrent files                            [ ]
+    -   Possiblity to set (and manage) directory per torrent file.
+        (Where it has to be copied or downloaded to)
 
     -   Graphs
     -   Database support
