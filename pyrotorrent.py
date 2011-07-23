@@ -36,6 +36,8 @@ from sessionhack import SessionHack, SessionHackException
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
 
+from lib.multibase import InvalidTorrentException
+
 from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
@@ -55,8 +57,11 @@ def pyroTorrentApp(env, start_response):
         start_response('404 Not Found', [('Content-Type', 'text/html')])
         tmpl = jinjaenv.get_template('404.html')
 
+        rtorrent_data = fetch_global_info()
+
         return template_render(tmpl, {
-            'url' : env['REQUEST_URI'], 'session' : env['beaker.session']},
+            'url' : env['REQUEST_URI'], 'session' : env['beaker.session'],
+            'rtorrent_data' : rtorrent_data},
             default_page=False)
 
     elif type(r) in (tuple, list) and len(r) >= 1:
@@ -117,13 +122,19 @@ def main_page(env):
         'torrents' : torrents, 'rtorrent_data' : rtorrent_data} )
 
 def torrent_info_page(env, torrent_hash):
-    t = Torrent(torrent_hash)
+    try:
+        t = Torrent(torrent_hash)
+        q = t.query()
+        q.get_name().get_size_bytes().get_bytes_left().get_loaded_file()
+        torrentinfo = q.all()[0] # .first() ?
 
-    q = t.query()
+    except InvalidTorrentException, e:
 
-    q.get_name().get_size_bytes().get_bytes_left().get_loaded_file()
-
-    torrentinfo = q.all()[0] # .first() ?
+        rtorrent_data = fetch_global_info()
+        tmpl = jinjaenv.get_template('error.html')
+        return template_render(tmpl, {'session' : env['beaker.session'],
+            'error' : str(e), # e.message is deprecated.
+            'rtorrent_data' : rtorrent_data })
 
     # FIXME THIS IS UGLY
 

@@ -1,10 +1,11 @@
 {% extends "base.jinja2" %}
 {% block title %}
-        404 Not Found!
+        Whoop!
 {% endblock %}
 
 {% block main %}
-    <p> We could not find the page you requested in our web space: </p>
-    <ul><li>{{url}}</li></ul>
+    <p> Something went wrong!
+    Technical details:</p>
+    <b><pre>{{error}}</pre></b>
     <p> Click here to return <a href="{{base_url}}/">home</a> </p>
 {% endblock %}

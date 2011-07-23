@@ -3,29 +3,29 @@
 
 MultiBase
 =========
+
+MultiBase is a class that can be inherited to easily create a class that can
+send multiple XMLRPC commands in one request, using the xmlrpclib.MultiCall
+class. RTorrentQuery and TorrentQuery implement this class.
+
+It also overrides several functions like __getattr__ and __call__ to
+make usage simple:
+
+.. code-block:: python
+
+    t = Torrent.query() # Returns a TorrentQuery object which inherits from
+                        # MultiBase
+    t.get_name().get_hash()
+    t.get_upload_rate()
+
+    print t.all()
 """
 
 import xmlrpclib
 
 class MultiBase(object):
     """
-    MultiBase is a class that can be inherited to easily create a class that can
-    send multiple XMLRPC commands in one request, using the xmlrpclib.MultiCall
-    class. RTorrentQuery and TorrentQuery implement this class.
-
-    It also overrides several functions like __getattr__ and __call__ to
-    make usage simple:
-
-    .. code-block:: python
-
-        t = Torrent.query() # Returns a TorrentQuery object which inherits from
-                            # MultiBase
-        t.get_name().get_hash()
-        t.get_upload_rate()
-
-        print t.all()
     """
-
     def __init__(self, host, port=80, url='/RPC2', *args):
         """
         """
@@ -79,7 +79,10 @@ class MultiBase(object):
             raise InvalidTorrentCommandException('Invalid _type: %s' %
                     str(_type))
 
-        xmlres = list(self.m())
+        try:
+            xmlres = list(self.m())
+        except xmlrpclib.Fault, e:
+            raise InvalidTorrentException(e)
 
         if _type is list:
             self._flush()
@@ -125,6 +128,11 @@ class MultiBase(object):
 class InvalidTorrentCommandException(Exception):
     """
     Thrown on an invalid command.
+    """
+
+class InvalidTorrentException(Exception):
+    """
+    Thrown on xmlrpc error.
     """
 
 class AttributeDictMultiResult(dict):
