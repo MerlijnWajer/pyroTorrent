@@ -13,10 +13,12 @@ class SessionHack(object):
         the trace and error is only shown in the web page.
     """
 
-    def __init__(self, app):
+    def __init__(self, app, render_call):
         self.app = app
+        self.render_call = render_call
 
     def __call__(self, env, start_response):
+        error = False
         try:
             ret = self.app(env, start_response)
         except Exception, e:
@@ -24,8 +26,12 @@ class SessionHack(object):
             print '-' * 60
             traceback.print_exc(file=sys.stdout)
             print '-' * 60
-            raise SessionHackException(e.message)
+            ret = self.render_call(env, str(e))
+            #raise SessionHackException(e.message)
+            error = True
         finally:
             pass
 
+        if error:
+            start_response('200 OK', [('Content-Type', 'text/html')])
         return ret

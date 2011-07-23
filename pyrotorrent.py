@@ -23,7 +23,6 @@ import xmlrpclib
 # Regex
 import re
 
-
 from beaker.middleware import SessionMiddleware
 
 # Future: for JSON.
@@ -36,7 +35,7 @@ from sessionhack import SessionHack, SessionHackException
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
 
-from lib.multibase import InvalidTorrentException
+from lib.multibase import InvalidTorrentException, InvalidConnectionException
 
 from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
@@ -84,11 +83,6 @@ def template_render(template, vars, default_page=True):
     vars['base_url'] = BASE_URL
     vars['static_url'] = STATIC_URL
 
-    # You can add more to vars here, such as a cached libTorrent version.
-    if default_page:
-        global libtorrentversion
-        vars['libtorrentversion'] = libtorrentversion
-
     return unicode(template.render(vars)).encode('utf8')
 
 def fetch_global_info():
@@ -98,21 +92,27 @@ def fetch_global_info():
         -   IP (perhaps move to static global)
     """
     global global_rtorrent
-    r = global_rtorrent.query().get_upload_rate().get_download_rate().get_ip()\
-            .get_hostname().get_memory_usage().get_max_memory_usage()
-
-    return r.first()
-
+    try:
+        r = global_rtorrent.query().get_upload_rate().get_download_rate().get_ip()\
+            .get_hostname().get_memory_usage().get_max_memory_usage()\
+            .get_libtorrent_version()
+        return r.first()
+    except InvalidConnectionException, e:
+        return {}
 
 # These *_page functions are what you would call ``controllers''.
 def main_page(env):
 
-    t = TorrentRequester('')
+    try:
+        t = TorrentRequester('')
 
-    t.get_name().get_download_rate().get_upload_rate() \
-            .is_complete().get_size_bytes().get_download_total().get_hash()
+        t.get_name().get_download_rate().get_upload_rate() \
+                .is_complete().get_size_bytes().get_download_total().get_hash()
 
-    torrents = t.all()
+        torrents = t.all()
+
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
 
     rtorrent_data = fetch_global_info()
 
@@ -120,6 +120,13 @@ def main_page(env):
 
     return template_render(tmpl, {'session' : env['beaker.session'],
         'torrents' : torrents, 'rtorrent_data' : rtorrent_data} )
+
+def error_page(env, error='No error?'):
+    rtorrent_data = fetch_global_info()
+    tmpl = jinjaenv.get_template('error.html')
+    return template_render(tmpl, {'session' : env['beaker.session'],
+        'error' : error,
+        'rtorrent_data' : rtorrent_data })
 
 def torrent_info_page(env, torrent_hash):
     try:
@@ -129,12 +136,7 @@ def torrent_info_page(env, torrent_hash):
         torrentinfo = q.all()[0] # .first() ?
 
     except InvalidTorrentException, e:
-
-        rtorrent_data = fetch_global_info()
-        tmpl = jinjaenv.get_template('error.html')
-        return template_render(tmpl, {'session' : env['beaker.session'],
-            'error' : str(e), # e.message is deprecated.
-            'rtorrent_data' : rtorrent_data })
+        return error_page(env, str(e))
 
     # FIXME THIS IS UGLY
 
@@ -213,9 +215,7 @@ if __name__ == '__main__':
     # Global helpers
     global_rtorrent = RTorrent()
 
-    libtorrentversion = global_rtorrent.get_libtorrent_version()
-
-    WSGIServer(SessionMiddleware(pyroTorrentApp), \
-            session_options).run()
-   # WSGIServer(SessionMiddleware(SessionHack(pyroTorrentApp), \
-   #         session_options)).run()
+    #WSGIServer(SessionMiddleware(pyroTorrentApp), \
+    #        session_options).run()
+    WSGIServer(SessionMiddleware(SessionHack(pyroTorrentApp, error_page), \
+            session_options)).run()

@@ -22,6 +22,7 @@ make usage simple:
 """
 
 import xmlrpclib
+import socket
 
 class MultiBase(object):
     """
@@ -83,6 +84,8 @@ class MultiBase(object):
             xmlres = list(self.m())
         except xmlrpclib.Fault, e:
             raise InvalidTorrentException(e)
+        except socket.error, s:
+            raise InvalidConnectionException(s)
 
         if _type is list:
             self._flush()
@@ -131,6 +134,11 @@ class InvalidTorrentCommandException(Exception):
     """
 
 class InvalidTorrentException(Exception):
+    """
+    Thrown on xmlrpc error.
+    """
+
+class InvalidConnectionException(Exception):
     """
     Thrown on xmlrpc error.
     """
