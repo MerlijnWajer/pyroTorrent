@@ -65,7 +65,7 @@ set it up)
 
     -   The *user* ``rtorrent`` runs ``rtorrent``. 
     -   The *user* ``rtorrent`` has a folder called ``pyrotorrent`` in it's home
-        directory, (*/home/rtorrent*) this is the directory containing th
+        directory, (*/home/rtorrent*) this is the directory containing the
         pyroTorrent source code.
     -   The HTTPD users and groups are *lighttpd* (at least in the lighttpd
         example)
@@ -284,7 +284,8 @@ this:
             'port' : 80, # HTTPD port
             'url'  : '', # URL can typically be empty.
         }
-
+pyroTorrent configuration for webpages
+``````````````````````````````````````
 
 To actually serve webpages over FCGI, we need to extend the configuration file a
 bit:
@@ -308,3 +309,5 @@ bit:
         'session.cookie_expires' : True
     }
 
+Make sure the *BASE_URL* matches the URL you set in your HTTPD setup; the same
+goes for *STATIC_URL*.
