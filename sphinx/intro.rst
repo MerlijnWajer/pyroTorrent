@@ -1,32 +1,5 @@
 .. _introduction:
 
-Introduction to pyroTorrent
-===========================
-
-What is pyroTorrent?
---------------------
-
-pyroTorrent is a web interface to rTorrent, the popular bittorrent client.
-
-Features
---------
-
-
-It's features include but are not limited to:
-
-    -   View your torrents and upload/download.
-    -   Efficient XMLRPC usage.
-    -   Browse the files of your torrents.
-
-Planned features:
-
-    -   Add torrents via direct links to .torrent files
-    -   Support torrent views.
-    -   Add lots of statistics. (database, graphs?)
-    -   Add events / schedulers.
-    -   Encryption policy management.
-    -   Support for transmission
-
 Setting up pyroTorrent
 ======================
 
