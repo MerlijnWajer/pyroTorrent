@@ -44,7 +44,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyroTorrent'
+project = u'πϱTorrent'
 copyright = u'2011, Merlijn Wajer, Bas Weelinck'
 
 # The version info for the project you're documenting, acts as replacement for

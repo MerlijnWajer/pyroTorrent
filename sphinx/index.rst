@@ -4,14 +4,14 @@
    contain the root `toctree` directive.
 
 
-Introduction to pyroTorrent
+Introduction to πϱTorrent
 ===========================
 
-What is pyroTorrent?
---------------------
+What is πϱTorrent?
+------------------
 
-pyroTorrent is a web interface to rTorrent, the popular bittorrent client.
-pyroTorrent was created to rid servers of that awful project called PHP. It is a
+πϱTorrent is a web interface to rTorrent, the popular bittorrent client.
+πϱTorrent was created to rid servers of that awful project called PHP. It is a
 disgrace to programming languages in general. Anyway, enough ranting, as the
 code of this project sucks too, just less than any PHP project. pyroTorrent is
 still very much work in progress. It can only show some basic information about
@@ -47,8 +47,8 @@ Git source code:
 
     git clone git://github.com/MerlijnWajer/pyroTorrent.git
 
-PyroTorrent's documentation
-===========================
+πϱTorrent's documentation
+=========================
 
 .. toctree::
     :maxdepth: 2
