@@ -55,8 +55,25 @@ rtorrent expose a XMLRPC interface over a HTTPD (in our case, we used
 the HTTPD, and it will also make use of (possibly another) HTTPD to expose its
 web interface.
 
+Throughout the entire setup manual we will make the following assumptions:
 
-.. TODO: Image of all this
+    -   You know your way around the terminal - at least a bit.
+    -   You are smart enough to adjust out exemplary paths to your own.
+
+Our setup is as follows: (Compare it to your own, or how you will be wanting to
+set it up)
+
+    -   The *user* ``rtorrent`` runs ``rtorrent``. 
+    -   The *user* ``rtorrent`` has a folder called ``pyrotorrent`` in it's home
+        directory, (*/home/rtorrent*) this is the directory containing th
+        pyroTorrent source code.
+    -   The HTTPD users and groups are *lighttpd* (at least in the lighttpd
+        example)
+    -   You know how to configure your HTTPD (lighttpd in our case); your
+        webroot directory is assumed to be */var/www*. It doesn't matter to
+        pyroTorrent but the examples use this directory.
+
+AT ALL TIMES make sure you use the appropriate paths.
 
 rTorrent configuration
 ----------------------
@@ -83,7 +100,7 @@ although at the moment I do not recall why it was required.
 
 Restart rtorrent once you've changed the configuration, if the socket file is
 created then you've set up your *.rtorrent.rc* correctly. Now, don't forget to
-make it writable by the webserver as well.
+make it writable by the web server as well.
 
 Webserver configuration
 -----------------------
@@ -146,9 +163,8 @@ Now, pyroTorrent offers a little test file called ``test.py``:
 
 Which should return your rTorrent version on success, and otherwise will tell
 you what went wrong. However, we cannot yet test our connection with pyroTorrent
-since we did not yet create a basic pyroTorrent configuration file. see
-
-`Basic pyroTorrent configuration`_ on how to do this.
+since we did not yet create a basic pyroTorrent configuration file.
+See `Basic pyroTorrent configuration`_ on how to do this.
 
 Once you've done this, verify that pyroTorrent works:
 
@@ -185,10 +201,15 @@ This is the tricky part. You'll need to ensure that a couple of things work:
 
     -   An empty file is required in your document root to prevent 404's before
         the FCGI contact is made.
+    -   You have the appropriate *rewrite-once* rule.
     -   You have an *alias.url* for the static files.
     -   You have the correct *fastcgi.server* line.
 
 .. code-block:: lua
+
+    url.rewrite-once = (
+             "^/torrent" => "torrent.tfcgi"
+    )
 
     fastcgi.server += ( ".tfcgi" =>
        ( "torrentfcgi" =>
@@ -200,6 +221,39 @@ This is the tricky part. You'll need to ensure that a couple of things work:
      )
     alias.url += ("/static/torrent/" => "/home/rtorrent/pyrotorrent/static/")
 
+And don't forget to create the empty file:
+
+.. code-block:: lua
+
+    touch /var/www/torrent.tfcgi
+
+Where */var/www* is my *var.basedir* in the lighttpd configuration file.
+
+Using spawn-fcgi
+````````````````
+
+To spawn an instance of pyroTorrent, we use the program called *spawn-fcgi*.
+It's probably in your package manager; install it. Run the following command as
+root, obviously again adjust whatever parameters you need to adjust.
+
+.. code-block:: bash
+
+    /usr/bin/spawn-fcgi /home/rtorrent/pyrotorrent/pyrotorrent.py \
+    -s /tmp/torrent.sock-1 \
+    -u lighttpd -g lighttpd \
+    -d /home/rtorrent/pyrotorrent/
+
+Where the socket path is defined by *-s*, the user and group of the pid
+are set with *-u* and *-g*, and finally, the directory to change to is
+defined by *-d*.
+
+Now that you've spawned a pyroTorrent process, let's check that it's still
+alive:
+
+.. code-block:: bash
+
+    # ps xua  |grep python
+    lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/pyrotorrent/pyrotorrent.py
 
 Apache
 ~~~~~~
