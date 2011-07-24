@@ -308,5 +308,3 @@ bit:
         'session.cookie_expires' : True
     }
 
-
-:ref:`TODO`
