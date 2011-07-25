@@ -42,9 +42,7 @@ A simple test:
 
 # TODO:  SCGI support (with xmlrpc2scgi.py from rtorrent wiki)
 
-import xmlrpclib
-
-from config import rtorrent_config
+from lib.xmlrpc import RTorrentXMLRPC
 
 class RTorrent(object):
     """
@@ -67,12 +65,8 @@ class RTorrent(object):
         URL defaults to '/RPC2', you shouldn't change this unless you know
         what you are doing.
         """
-        host = rtorrent_config['host']
-        port = rtorrent_config['port']
-        url = rtorrent_config['url']
 
-        self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
-        self.host, self.port, self.url = host, port, url
+        self.s = RTorrentXMLRPC()
 
     def get_download_list(self, _type=''):
         """
@@ -111,7 +105,7 @@ class RTorrent(object):
         See :ref:`rtorrentquery-class` on how to use it.
         """
         from lib.rtorrentquery import RTorrentQuery
-        return RTorrentQuery(self.host, self.port, self.url)
+        return RTorrentQuery()
 
 # XXX: Begin hacks
 
