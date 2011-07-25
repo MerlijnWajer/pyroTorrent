@@ -310,11 +310,11 @@ This is the tricky part. You'll need to ensure that a couple of things work:
        ( "torrentfcgi" =>
          (
              "socket"        => "/tmp/torrent.sock-1",
-             "docroot"       => "/home/rtorrent/πϱtorrent"
+             "docroot"       => "/home/rtorrent/pyrotorrent"
          )
        )
      )
-    alias.url += ("/static/torrent/" => "/home/rtorrent/πϱtorrent/static/")
+    alias.url += ("/static/torrent/" => "/home/rtorrent/pyrotorrent/static/")
 
 And don't forget to create the empty file:
 
@@ -333,10 +333,10 @@ root, obviously again adjust whatever parameters you need to adjust.
 
 .. code-block:: bash
 
-    /usr/bin/spawn-fcgi /home/rtorrent/πϱtorrent/πϱtorrent.py \
+    /usr/bin/spawn-fcgi /home/rtorrent/pyrotorrent/pyrotorrent.py \
     -s /tmp/torrent.sock-1 \
     -u lighttpd -g lighttpd \
-    -d /home/rtorrent/πϱtorrent/
+    -d /home/rtorrent/pyrotorrent/
 
 Where the socket path is defined by *-s*, the user and group of the pid
 are set with *-u* and *-g*, and finally, the directory to change to is
