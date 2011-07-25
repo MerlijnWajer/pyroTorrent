@@ -82,7 +82,7 @@ Our setup is as follows: (Compare it to your own, or how you will be wanting to
 set it up)
 
     -   The *user* ``rtorrent`` runs ``rtorrent``.
-    -   The *user* ``rtorrent`` has a folder called ``πϱtorrent`` in it's home
+    -   The *user* ``rtorrent`` has a folder called ``pyroTorrent`` in it's home
         directory, (*/home/rtorrent*) this is the directory containing the
         pyroTorrent source code.
 
@@ -131,8 +131,8 @@ Or, if you prefer a network socket to a unix socket:
 
     scgi_port = localhost:5000
 
-Although this is typically the most safe way, as any local user can connect to
-rTorrent this way.
+Although this is typically not the most safe way, as any local user can connect
+to rTorrent now.
 
 Encoding
 ~~~~~~~~
