@@ -117,14 +117,13 @@ In your *.rtorrent.rc* file, you need at least this line:
 
 .. code-block:: bash
 
-    scgi_local = /home/rtorrent/rtorrentsock/rpc.socket
+    scgi_local = /tmp/rtorrent.sock
 
-Where */home/rtorrent/rtorrentsock/rpc.socket* is the path to the socket file
-rtorrent will create for communication. If you want to use the HTTPD as a
-*middle man* for communication, you'll need to make sure the socket is writable
-by the HTTPD as well. An interesting problem is that you have to make it
-writable every time you restart rTorrent. (or find a nice way to set up the
-permissions)
+Where */tmp/rtorrent.sock* is the path to the socket file rtorrent will
+create for communication. If you want to use the HTTPD as a *middle man* for
+communication, you'll need to make sure the socket is writable by the HTTPD as
+well. An interesting problem is that you have to make it writable every time
+you restart rTorrent. (or find a nice way to set up the permissions)
 
 Or, if you prefer a network socket to a unix socket:
 
