@@ -157,6 +157,12 @@ then you've set up your *.rtorrent.rc* correctly.
 Now, don't forget to make it writable by the web server if you want to use the
 HTTPD to communicate.
 
+Further reading
+~~~~~~~~~~~~~~~
+
+rTorrent also has a page on how to `Set up XMLRPC
+<http://libtorrent.rakshasa.no/wiki/RTorrentXMLRPCGuide>`_.
+
 SCGI communication
 ------------------
 
