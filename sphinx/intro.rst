@@ -1,20 +1,24 @@
 .. _introduction:
 
-Setting up pyroTorrent
+Setting up πϱTorrent
 ======================
 
 Requirements
 ------------
 
-pyroTorrent is written in Python. Aside from Python, you'll need the following
-python packages:
+πϱTorrent is written in Python. Aside from Python, you'll need the following
+python packages, depending on your setup:
 
     -   jinja2
-    -   flup (WSGIServer)
     -   beaker
+
+If you're not using the built-in simple HTTPD, you will need:
+    -   flup (WSGIServer)
+
+Future:
     -   simplejson (not yet but will soon)
 
-as well as rtorrent with XMLRPC support. pyroTorrent has only been tested on
+as well as rtorrent with XMLRPC support. πϱTorrent has only been tested on
 GNU/Linux, so this would be an advantage as well.
 
 .. TERRIBLE NAME vvvvvv
@@ -22,34 +26,92 @@ GNU/Linux, so this would be an advantage as well.
 Deciding on your setup
 ----------------------
 
-Currently the only supported way of setting up pyroTorrent is to have
-rtorrent expose a XMLRPC interface over a HTTPD (in our case, we used
-`lighttpd <http://www.lighttpd.net/>`_. pyroTorrent will *talk* to rtorrent via
-the HTTPD, and it will also make use of (possibly another) HTTPD to expose its
-web interface.
+πϱTorrent supports two ways of connecting to rTorrent. Through a HTTPD (such
+as `lighttpd <http://www.lighttpd.net/>`_ or directly via SCGI.
+
+To run the web interface, πϱTorrent can either serve pages using a FastCGI-aware
+HTTPD (`lighttpd`_, but also Apache and Nginx) or it can simply run it's
+own *very basic* HTTPD. Currently I have not played a lot with it's own Simple
+HTTPD, so I recommend using an external HTTPD with FastCGI support.
+
+Now that all the option have been layed out, you have a few options.
+
+HTTPD for everything
+~~~~~~~~~~~~~~~~~~~~
+
+This approach uses a professional-grade HTTPD for
+everything: Serving web pages and providing a HTTP XMLRPC interface to rTorrent.
+
+HTTPD for serving webpages, πϱTorrent for SCGI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This uses a HTTPD to serve πϱTorrent pages,
+and uses πϱTorrent's direct SCGI capabilities to communicate with rTorrent.
+
+πϱTorrent for everything (serving webpages and SCGI)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This uses πϱTorrent's built-in HTTPD to serve web pages and uses πϱTorrent's
+direct SCGI ability to talk to rTorrent.
+
+πϱTorrent for serving webpages, HTTPD for communication
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This uses a HTTPD to talk to rTorrent, but use πϱTorrent's built-in HTTPD to
+serve web pages.
+
+.. note::
+
+    *THIS IS SILLY, DO NOT USE THIS METHOD!*
+
+Personally I suggest using a professional HTTPD (like `lighttpd`_) to serve
+the pages and using πϱTorrent's direct SCGI capabilities to talk to rTorrent
+directly over a unix socket file. Alternatively you can use `lighttpd`_'s SCGI
+capabilities to act as middle man for the communication between rtorrent and
+πϱTorrent. (πϱTorrent will then talk over HTTP using XMLRPC instead of SCGI)
+
+Getting started
+---------------
 
 Throughout the entire setup manual we will make the following assumptions:
 
     -   You know your way around the terminal - at least a bit.
-    -   You are smart enough to adjust out exemplary paths to your own.
+    -   You are smart enough to adjust exemplary paths to your own.
 
 Our setup is as follows: (Compare it to your own, or how you will be wanting to
 set it up)
 
-    -   The *user* ``rtorrent`` runs ``rtorrent``. 
-    -   The *user* ``rtorrent`` has a folder called ``pyrotorrent`` in it's home
+    -   The *user* ``rtorrent`` runs ``rtorrent``.
+    -   The *user* ``rtorrent`` has a folder called ``πϱtorrent`` in it's home
         directory, (*/home/rtorrent*) this is the directory containing the
         pyroTorrent source code.
+
+Now, depending on your setup, you may or may not use a professional HTTPD:
+
     -   The HTTPD users and groups are *lighttpd* (at least in the lighttpd
         example)
     -   You know how to configure your HTTPD (lighttpd in our case); your
         webroot directory is assumed to be */var/www*. It doesn't matter to
-        pyroTorrent but the examples use this directory.
+        πϱTorrent but the examples use this directory.
 
 AT ALL TIMES make sure you use the appropriate paths.
 
+The setup process can be divided chronologically into a few parts:
+
+    -   Configuring rTorrent.
+    -   Configuring communication for rTorrent.
+    -   Testing a basic πϱTorrent.
+    -   Configuring how to serve the πϱTorrent webpages.
+
 rTorrent configuration
 ----------------------
+
+To communicate with rTorrent, rTorrent needs to expose a XMLRPC interface.
+Most likely this feature is already compiled into your rTorrent, and you only
+need to enable it.
+
+SCGI
+~~~~
 
 In your *.rtorrent.rc* file, you need at least this line:
 
@@ -58,8 +120,23 @@ In your *.rtorrent.rc* file, you need at least this line:
     scgi_local = /home/rtorrent/rtorrentsock/rpc.socket
 
 Where */home/rtorrent/rtorrentsock/rpc.socket* is the path to the socket file
-rtorrent will create for communication with the HTTPD. You'll also need to make
-sure the socket is writeable by rtorrent as well as the HTTPD.
+rtorrent will create for communication. If you want to use the HTTPD as a
+*middle man* for communication, you'll need to make sure the socket is writable
+by the HTTPD as well. An interesting problem is that you have to make it
+writable every time you restart rTorrent. (or find a nice way to set up the
+permissions)
+
+Or, if you prefer a network socket to a a unix socket:
+
+.. code-block:: bash
+
+    scgi_port = localhost:5000
+
+Although this is typically the most safe way, as any local user can connect to
+rTorrent this way.
+
+Encoding
+~~~~~~~~
 
 Having this option in your *.rtorrent.rc* is also recommended:
 
@@ -67,24 +144,29 @@ Having this option in your *.rtorrent.rc* is also recommended:
 
     encoding_list = UTF-8
 
-although at the moment I do not recall why it was required.
+to ensure all the encoding is in UTF-8.
 
-.. TODO LOL XXX FIXME ^^^
+Wrapping up
+~~~~~~~~~~~
 
-Restart rtorrent once you've changed the configuration, if the socket file is
-created then you've set up your *.rtorrent.rc* correctly. Now, don't forget to
-make it writable by the web server as well.
+Restart rtorrent once you've changed the configuration.
 
-Webserver configuration
------------------------
+If the socket file is created (and you're using the ``scgi_local`` option)
+then you've set up your *.rtorrent.rc* correctly.
 
-Now that we've got the rtorrent side working, let's have a look at the HTTPD
-side.
+Now, don't forget to make it writable by the web server if you want to use the
+HTTPD to communicate.
+
+SCGI communication
+------------------
+
+If you are going to use πϱTorrent to directly to talk rTorrent instead of via
+a HTTPD, you can skip this chapter.
 
 Lighttpd
 ~~~~~~~~
 
-Lighttpd is known to work well with pyroTorrent.
+Lighttpd is known to work well with πϱTorrent.
 
 Setting up SCGI
 ```````````````
@@ -113,14 +195,28 @@ Add this to your configuration file:
         )
 
 Again, make notice of the path */home/rtorrent/rtorrentsock/rpc.socket* that you
-set in `rTorrent configuration`_.
-
-Testing SCGI
-````````````
+set in `rTorrent configuration`_ (or, alternatively a host + port, have a look
+at lighttpd's official documentation on how to set this up, it'll be very
+similar)
 
 Now we can test your SCGI setup. Don't forget to restart lighttpd to make sure
 the configuration changes have been loaded.
-Now, pyroTorrent offers a little test file called ``test.py``:
+
+Apache
+~~~~~~
+
+TODO.
+
+Nginx
+~~~~~
+
+TODO.
+
+Testing SCGI
+------------
+
+Onto the testing of the communication.
+πϱTorrent offers a little test file called ``test.py``:
 
 .. code-block:: python
 
@@ -135,16 +231,36 @@ Now, pyroTorrent offers a little test file called ``test.py``:
         print 'Failed to connect to libTorrent:', str(e)
 
 Which should return your rTorrent version on success, and otherwise will tell
-you what went wrong. However, we cannot yet test our connection with pyroTorrent
-since we did not yet create a basic pyroTorrent configuration file.
-See `Basic pyroTorrent configuration`_ on how to do this.
+you what went wrong. However, we cannot yet test our connection with πϱTorrent
+since we did not yet create a basic πϱTorrent configuration file.
+See `Basic πϱTorrent configuration`_ on how to do this.
 
-Once you've done this, verify that pyroTorrent works:
+Once you've done this, verify that πϱTorrent works:
 
 .. code-block:: bash
 
     $ python test.py
     libTorrent version: 0.12.6
+
+Serving webpages
+----------------
+
+To actually view any content, we still need to set up the page serving.
+
+Using the built-in HTTPD
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+I'm not completely done integration the built-in HTTPD just yet... :-)
+
+Anyway, you'll typically have to select that you want to use the built-in HTTPD
+in the config file, and just run ``πϱtorrent.py``.
+
+Lighttpd
+~~~~~~~~
+
+Serving the webpages with `lighttpd`_ is recommended, as it has recieved a lot
+more testing than the built-in HTTPD, along with many other reasons.
+It is however, more complicated to set up.
 
 Setting up FCGI
 ```````````````
@@ -167,8 +283,8 @@ it doesn't do any weird stuff like set up PHP. (Who would want that anyway?)
 There. Now we should have fastcgi support for lighttpd. If this went too fast,
 have a look at the lighttpd documentation.
 
-Setting up FCGI to talk to pyroTorrent
-``````````````````````````````````````
+Setting up FCGI to talk to πϱTorrent
+````````````````````````````````````
 
 This is the tricky part. You'll need to ensure that a couple of things work:
 
@@ -188,11 +304,11 @@ This is the tricky part. You'll need to ensure that a couple of things work:
        ( "torrentfcgi" =>
          (
              "socket"        => "/tmp/torrent.sock-1",
-             "docroot"       => "/home/rtorrent/pyrotorrent"
+             "docroot"       => "/home/rtorrent/πϱtorrent"
          )
        )
      )
-    alias.url += ("/static/torrent/" => "/home/rtorrent/pyrotorrent/static/")
+    alias.url += ("/static/torrent/" => "/home/rtorrent/πϱtorrent/static/")
 
 And don't forget to create the empty file:
 
@@ -205,46 +321,37 @@ Where */var/www* is my *var.basedir* in the lighttpd configuration file.
 Using spawn-fcgi
 ````````````````
 
-To spawn an instance of pyroTorrent, we use the program called *spawn-fcgi*.
+To spawn an instance of πϱTorrent, we use the program called *spawn-fcgi*.
 It's probably in your package manager; install it. Run the following command as
 root, obviously again adjust whatever parameters you need to adjust.
 
 .. code-block:: bash
 
-    /usr/bin/spawn-fcgi /home/rtorrent/pyrotorrent/pyrotorrent.py \
+    /usr/bin/spawn-fcgi /home/rtorrent/πϱtorrent/πϱtorrent.py \
     -s /tmp/torrent.sock-1 \
     -u lighttpd -g lighttpd \
-    -d /home/rtorrent/pyrotorrent/
+    -d /home/rtorrent/πϱtorrent/
 
 Where the socket path is defined by *-s*, the user and group of the pid
 are set with *-u* and *-g*, and finally, the directory to change to is
 defined by *-d*.
 
-Now that you've spawned a pyroTorrent process, let's check that it's still
+Now that you've spawned a πϱTorrent process, let's check that it's still
 alive:
 
 .. code-block:: bash
 
     # ps xua  |grep python
-    lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/pyrotorrent/pyrotorrent.py
-
-Apache
-~~~~~~
-
-TODO.
-
-Nginx
-~~~~~
-
-TODO.
-
-pyroTorrent configuration
--------------------------
+    lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/πϱtorrent/πϱtorrent.py
 
 
-The pyroTorrent configuration file is trivial.
+πϱTorrent configuration
+-----------------------
 
-Basic pyroTorrent configuration
+
+The πϱTorrent configuration file is trivial.
+
+Basic πϱTorrent configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A basic configuration file (just enough for the famous ``test.py``) looks like
@@ -252,13 +359,37 @@ this:
 
 .. code-block:: python
 
+    # Exemplary SCGI setup using unix socket
+    #rtorrent_config = {
+    #    'scgi' : {
+    #        'unix-socket' : '/tmp/rtorrent.sock'
+    #    }
+    #}
+    #
+    # Exemplary SCGI setup using scgi over network
+    #rtorrent_config = {
+    #    'scgi' : {
+    #        'host' : '192.168.1.70',
+    #        'port' : 80
+    #    }
+    #}
+
+    # Exemplary HTTP setup using remote XMLRPC server. (SCGI is handled by the HTTPD
+    # in this case)
     rtorrent_config = {
-            'host' : '192.168.1.70', # IP where your HTTPD+rtorrent resides.
-            'port' : 80, # HTTPD port
-            'url'  : '', # URL can typically be empty.
+        'http' : {
+            'host' : '192.168.1.70',
+            'port' : 80,
+            'url'  : '/RPC2',
         }
-pyroTorrent configuration for webpages
-``````````````````````````````````````
+    }
+
+With examples for all of the three communication methods, uncomment the one you
+want to use and comment the other ones. (And make sure you adjust the
+information such as host, port or path)
+
+πϱTorrent configuration for webpages
+````````````````````````````````````
 
 To actually serve webpages over FCGI, we need to extend the configuration file a
 bit:
@@ -272,11 +403,30 @@ bit:
     # HTTP URL for the static files
     STATIC_URL = '/static/torrent'
 
+    # Exemplary SCGI setup using unix socket
+    #rtorrent_config = {
+    #    'scgi' : {
+    #        'unix-socket' : '/tmp/rtorrent.sock'
+    #    }
+    #}
+    #
+    # Exemplary SCGI setup using scgi over network
+    #rtorrent_config = {
+    #    'scgi' : {
+    #        'host' : '192.168.1.70',
+    #        'port' : 80
+    #    }
+    #}
+
+    # Exemplary HTTP setup using remote XMLRPC server. (SCGI is handled by the HTTPD
+    # in this case)
     rtorrent_config = {
-            'host' : '192.168.1.70', # IP where your HTTPD+rtorrent resides.
-            'port' : 80, # HTTPD port
-            'url'  : '', # URL can typically be empty.
+        'http' : {
+            'host' : '192.168.1.70',
+            'port' : 80,
+            'url'  : '/RPC2',
         }
+    }
 
     session_options = {
         'session.cookie_expires' : True
@@ -284,3 +434,12 @@ bit:
 
 Make sure the *BASE_URL* matches the URL you set in your HTTPD setup; the same
 goes for *STATIC_URL*.
+
+When you're done
+----------------
+
+Congratulations. (Some stuff here on what to do if you ran into problems, and
+also hint that people can now start looking at the code to add features, ro how
+to request features)
+
+Oh, and enjoy πϱTorrent.
