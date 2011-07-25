@@ -347,7 +347,7 @@ alive:
 .. code-block:: bash
 
     # ps xua  |grep python
-    lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/πϱtorrent/πϱtorrent.py
+    lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/pyrotorrent/pyrotorrent.py
 
 
 πϱTorrent configuration
