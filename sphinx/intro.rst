@@ -126,7 +126,7 @@ by the HTTPD as well. An interesting problem is that you have to make it
 writable every time you restart rTorrent. (or find a nice way to set up the
 permissions)
 
-Or, if you prefer a network socket to a a unix socket:
+Or, if you prefer a network socket to a unix socket:
 
 .. code-block:: bash
 
