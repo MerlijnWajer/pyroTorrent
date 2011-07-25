@@ -11,17 +11,16 @@ items in the view. (For example, :ref:`torrentrequester-class` implements a
 method to get the name of each torrent in a view by simply calling .get_name().
 """
 
-import xmlrpclib
+from lib.xmlrpc import RTorrentXMLRPC
 
 class BaseRequester(object):
     """
     """
 
-    def __init__(self, host, port=80, url='/RPC2'):
+    def __init__(self):
         """
         """
-        self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
-        self.host, self.port, self.url = host, port, url
+        self.s = RTorrentXMLRPC()
 
         # Stack to put commands on
         self.commandstack = []

@@ -36,11 +36,11 @@ class RTorrentQuery(MultiBase):
         XMLRPC command, thus heavily decreasing loading times.
     """
 
-    def __init__(self, host, port=80, url='/RPC2', *args):
+    def __init__(self, *args):
         """
         Pass the host, port, url and possible default arguments.
         """
 
-        MultiBase.__init__(self, host, port, url, *args)
+        MultiBase.__init__(self, *args)
         self._rpc_methods = rtorrent._rpc_methods
 

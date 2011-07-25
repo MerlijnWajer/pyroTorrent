@@ -27,7 +27,7 @@ rtorrent_config = {
     'http' : {
         'host' : '192.168.1.70',
         'port' : 80,
-        'url'  : '',
+        'url'  : '/RPC2',
     }
 }
 

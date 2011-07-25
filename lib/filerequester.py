@@ -35,7 +35,7 @@ class TorrentFileRequester(BaseRequester):
     """
     """
     def __init__(self, *first_args):
-        BaseRequester.__init__(self, **rtorrent_config)
+        BaseRequester.__init__(self)
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):

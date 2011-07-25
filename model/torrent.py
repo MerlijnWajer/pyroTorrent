@@ -10,7 +10,7 @@ It is instantiated with a Torrent specific hash,
 and connection information similar to :ref:`rtorrent-class`.
 """
 
-import xmlrpclib
+from lib.xmlrpc import RTorrentXMLRPC
 import types
 
 from config import rtorrent_config
@@ -19,12 +19,8 @@ class Torrent(object):
     """
     """
     def __init__(self, _hash):
-        host = rtorrent_config['host']
-        port = rtorrent_config['port']
-        url = rtorrent_config['url']
+        self.s = RTorrentXMLRPC()
         self._hash = _hash
-        self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
-        self.host, self.port, self.url = host, port, url
 
     def query(self):
         """
@@ -34,7 +30,7 @@ class Torrent(object):
         See :ref:`torrentquery-class`
         """
         from lib.torrentquery import TorrentQuery
-        return TorrentQuery(self.host, self.port, self.url, self._hash)
+        return TorrentQuery(self._hash)
 
     def get_peers(self):
         pass

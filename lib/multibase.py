@@ -24,16 +24,16 @@ make usage simple:
 import xmlrpclib
 import socket
 
+from lib.xmlrpc import RTorrentXMLRPC
+
 class MultiBase(object):
     """
     """
-    def __init__(self, host, port=80, url='/RPC2', *args):
+    def __init__(self, *args):
         """
         """
-        self.s = xmlrpclib.ServerProxy('http://%s:%i%s' % (host, port, url))
+        self.s = RTorrentXMLRPC()
         self.m = xmlrpclib.MultiCall(self.s)
-
-        self.host, self.port, self.url = host, port, url
 
         # Stack to put commands on
         self._groups = [[]]
