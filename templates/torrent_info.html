@@ -22,8 +22,18 @@
 {% block main %}
 {% if torrent %}
     <div style="margin: 2em">
+    {% if torrent.get_message %}
+    <p> Message: {{ torrent.get_message }} </p>
+    {% endif %}
+    <p> Active:
+    {% if torrent.is_active %}
+    True
+    {% else %}
+    False
+    {% endif %}
+    </p>
         <p> {{ torrent.get_name }}
-        ({{ torrent.get_size_bytes - torrent.get_bytes_left }} /
+        ({{ torrent.get_download_total }} /
         {{ torrent.get_size_bytes }}) </p>
     <p> Loaded file: {{ torrent.get_loaded_file }} </p>
     <p>

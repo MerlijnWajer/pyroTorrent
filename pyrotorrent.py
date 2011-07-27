@@ -132,7 +132,8 @@ def torrent_info_page(env, torrent_hash):
     try:
         t = Torrent(torrent_hash)
         q = t.query()
-        q.get_name().get_size_bytes().get_bytes_left().get_loaded_file()
+        q.get_name().get_size_bytes().get_download_total().get_loaded_file()\
+                .get_message().is_active()
         torrentinfo = q.all()[0] # .first() ?
 
     except InvalidTorrentException, e:
@@ -154,11 +155,31 @@ def torrent_info_page(env, torrent_hash):
     return template_render(tmpl, {'session' : env['beaker.session'],
         'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data} )
 
-def torrent_action(env, action):
+def torrent_action(env, torrent_hash, action):
     """
-    Start, Stop, Pause, Delete torrent. I suppose. XXX TODO
+    Start, Stop, Pause, Resume, Delete torrent. I suppose. XXX TODO
     """
-    pass
+    # TODO: Implement Delete()
+    try:
+        t = Torrent(torrent_hash)
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
+
+    # TODO: Check torrent status, return something like a JSON or Pickle result?
+    # (Whether the stop/start/pause failed, etc)
+
+    if action == 'start':
+        t.start()
+    elif action == 'stop':
+        t.stop()
+    elif action == 'pause':
+        t.pause()
+    elif action == 'resume':
+        t.resume()
+    else:
+        raise Exception('Invalid torrent action')
+
+    return 'lol'
 
 def add_torrent_page(env):
     """
