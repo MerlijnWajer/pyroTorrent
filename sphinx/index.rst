@@ -17,7 +17,7 @@ code of this project sucks too, just less than any PHP project. pyroTorrent is
 still very much work in progress. It can only show some basic information about
 torrents, list them and you can add torrents by passing the URL. The design
 sucks. But it is quite fast. Faster than most rtorrent (did I mention it's for
-rtorrent? Now I did.) web interfaces. 
+rtorrent? Now I did.) web interfaces.
 
 Features
 --------
@@ -37,6 +37,7 @@ Planned features:
     -   Encryption policy management.
     -   Support for transmission
     -   Add lots of statistics. (database, graphs?)
+    -   Multiple RTorrent interfaces. (Will require a large rewrite)
 
 Download / Source code
 ----------------------
@@ -54,6 +55,7 @@ Git source code:
     :maxdepth: 2
 
     intro.rst
+    develintro.rst
     rtorrent.rst
     torrent.rst
     baserequester.rst

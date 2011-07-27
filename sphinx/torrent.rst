@@ -1,3 +1,5 @@
+.. _torrent:
+
 Torrent Model
 =============
 

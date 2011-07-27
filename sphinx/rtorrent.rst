@@ -1,5 +1,7 @@
-RTorrent Model
-==============
+.. _rtorrent:
+
+RTorrent
+=========
 
 .. automodule:: rtorrent
     :members:
