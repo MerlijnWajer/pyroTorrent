@@ -21,11 +21,11 @@
 [ ] d.add_peer
 [/] d.check_hash # Partially implemented. (Need to figure out how to use it, see
                  # when it is done etc)
-[ ] d.close
+[X] d.close
 [ ] d.create_link
 [ ] d.delete_link
 [ ] d.delete_tied
-[ ] d.erase
+[X] d.erase
 [ ] d.get_base_filename
 [X] d.get_base_path # Returns the base path. Torrent.get_full_path
 [ ] d.get_bitfield
@@ -61,7 +61,7 @@
 [ ] d.get_local_id_html
 [ ] d.get_max_file_size
 [ ] d.get_max_size_pex
-[ ] d.get_message
+[X] d.get_message
 [ ] d.get_mode
 [X] d.get_name  # Torrent.get_name
 [ ] d.get_peer_exchange
@@ -80,7 +80,7 @@
 [ ] d.get_size_pex
 [ ] d.get_skip_rate
 [ ] d.get_skip_total
-[ ] d.get_state
+[X] d.get_state
 [ ] d.get_state_changed
 [ ] d.get_state_counter
 [ ] d.get_throttle_name
@@ -93,8 +93,8 @@
 [ ] d.get_uploads_max
 [ ] d.initialize_logs
 [X] d.is_active
-[ ] d.is_hash_checked
-[ ] d.is_hash_checking
+[X] d.is_hash_checked
+[X] d.is_hash_checking
 [ ] d.is_multi_file
 [X] d.is_open
 [ ] d.is_pex_active
@@ -134,7 +134,7 @@
 [T] d.views
 [ ] d.views.has
 [ ] d.views.push_back
-[ ] d.views.push_back_unique
+[ ] d.views.push_back_uniqu.
 [ ] d.views.remove
 [ ] delete_link
 [ ] dht
