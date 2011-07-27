@@ -6,20 +6,20 @@ BASE_URL = '/torrent'
 STATIC_URL = '/static/torrent'
 
 
-# # Exemplary SCGI setup using unix socket
-# rtorrent_config = {
-#     'scgi' : {
-#         'unix-socket' : '/tmp/rtorrent.sock'
-#     }
-# }
+## Exemplary SCGI setup using unix socket
+#rtorrent_config = {
+#    'scgi' : {
+#        'unix-socket' : '/tmp/rtorrent.sock'
+#    }
+#}
 #
-# # Exemplary SCGI setup using scgi over network
-# rtorrent_config = {
-#     'scgi' : {
-#         'host' : '192.168.1.70',
-#         'port' : 80
-#     }
-# }
+## Exemplary SCGI setup using scgi over network
+#rtorrent_config = {
+#    'scgi' : {
+#        'host' : '192.168.1.70',
+#        'port' : 80
+#    }
+#}
 
 # Exemplary HTTP setup using remote XMLRPC server. (SCGI is handled by the HTTPD
 # in this case)
