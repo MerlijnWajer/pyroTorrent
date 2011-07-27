@@ -32,14 +32,16 @@ Here's a very flawed and probably unfair comparison, with PHP admittedly compile
 
 Loading the main/overview page with about ~150 torrents in queue:
 
-=============== ============ =============
-  pyroTorrent       rTWi      wTorrent
-=============== ============ =============
- 1 - 2 seconds   10+ seconds  8 seconds
-=============== ============ =============
+==================== ============ =============
+  pyroTorrent           rTWi      wTorrent
+==================== ============ =============
+ ~400 milli seconds   10+ seconds  8 seconds
+==================== ============ =============
+
+All tests are done on a Sheevaplug with 1,2 Ghz ARM processor, softfloat.
 
 One of pyroTorrent's design goals is to be fast. One of the ways to achieve this
-is to minimise the amount of XMLRPC calls.
+is to minimise the amount of XMLRPC calls with so called *multicalls*.
 
 Multicalls
 ----------
@@ -54,7 +56,8 @@ connections per page load; and since XMLRPC is stateless you'll have to actually
 do 500 requests, each with their own connection.
 
 pyroTorrent makes use of both these multicall mechanisms. Typically it should
-not open more than a few connections per page load.
+not open more than a few connections per page load. Current in release 0.03,
+pyroTorrent does only two XMLRPC requests to load the main overview page.
 
 
 xmlrpclib Multicall
