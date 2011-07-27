@@ -92,11 +92,11 @@
 [X] d.get_up_total # Torrent.get_upload_total
 [ ] d.get_uploads_max
 [ ] d.initialize_logs
-[ ] d.is_active
+[X] d.is_active
 [ ] d.is_hash_checked
 [ ] d.is_hash_checking
 [ ] d.is_multi_file
-[ ] d.is_open
+[X] d.is_open
 [ ] d.is_pex_active
 [ ] d.is_private
 [X] d.multicall

@@ -22,6 +22,10 @@ class Torrent(object):
         self.s = RTorrentXMLRPC()
         self._hash = _hash
 
+    def __repr__(self):
+        return 'Torrent(%s): %s' % (self._hash, self.get_name())
+
+
     def query(self):
         """
         Query returns a new TorrentQuery object with the host, port, url and
@@ -108,30 +112,41 @@ _rpc_methods = {
     'hashing_failed' : ('d.get_hashing_failed',
         """
         """),
-    'perform_hash_check' : (' d.check_hash',
+    'perform_hash_check' : ('d.check_hash',
         """
         Performs a hash check. Returns 0 immediately.
         """),
-    'start' : (' d.start',
+    'start' : ('d.start',
         """
         Start a torrent.
         """),
-    'stop' : (' d.stop',
+    'stop' : ('d.stop',
         """
         Stop a torrent.
         """),
-    'open' : (' d.open',
+    'open' : ('d.open',
         """
         Open a torrent.
         """),
-    'pause' : (' d.pause',
+    'pause' : ('d.pause',
         """
         Pause a torrent.
         """),
-    'resume' : (' d.resume',
+    'resume' : ('d.resume',
         """
         Resume a torrent.
-        """)
+        """),
+    'is_active' : ('d.is_active',
+        """
+        Returns 1 if the torrent is active; 0 when it is not active.
+
+        XXX: As of yet we're not completely sure what ``active'' means.
+        """),
+    'is_open' : ('d.is_open',
+        """
+        Returns 1 if the torrent is open, 0 otherwise.
+        """
+        )
 }
 
 # RPC Methods for Torrent. These do not pass any argument automatically. (See
