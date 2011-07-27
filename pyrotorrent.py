@@ -4,6 +4,7 @@ pyroTorrent module.
 """
 
 from flup.server.fcgi import WSGIServer
+
 from jinja2 import Environment, PackageLoader
 
 from webtool import WebTool, read_post_data
@@ -238,5 +239,8 @@ if __name__ == '__main__':
 
     #WSGIServer(SessionMiddleware(pyroTorrentApp), \
     #        session_options).run()
-    WSGIServer(SessionMiddleware(SessionHack(pyroTorrentApp, error_page), \
-            session_options)).run()
+    app = pyroTorrentApp
+    app = SessionHack(app, error_page)
+    app = SessionMiddleware(app, session_options)
+
+    WSGIServer(app).run()
