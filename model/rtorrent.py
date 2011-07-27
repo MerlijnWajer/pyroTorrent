@@ -208,7 +208,7 @@ for x, y in _rpc_methods.iteritems():
 #   argument checking
 
     caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
-    caller.__doc__ = y[1]
+    caller.__doc__ = y[1] + '\nOriginal libTorrent method: ``%s``' % y[0]
     setattr(RTorrent, x, types.MethodType(caller, None, RTorrent))
 
     del caller

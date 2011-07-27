@@ -116,6 +116,14 @@ _rpc_methods = {
         """
         Performs a hash check. Returns 0 immediately.
         """),
+    'open' : ('d.open',
+        """
+        Open a torrent.
+        """),
+    'close' : ('d.close',
+        """
+        Close a torrent.
+        """),
     'start' : ('d.start',
         """
         Start a torrent.
@@ -124,10 +132,6 @@ _rpc_methods = {
         """
         Stop a torrent.
         """),
-    'open' : ('d.open',
-        """
-        Open a torrent.
-        """),
     'pause' : ('d.pause',
         """
         Pause a torrent.
@@ -135,6 +139,10 @@ _rpc_methods = {
     'resume' : ('d.resume',
         """
         Resume a torrent.
+        """),
+    'erase' : ('d.erase',
+        """
+        Erase a torrent.
         """),
     'is_active' : ('d.is_active',
         """
@@ -146,7 +154,25 @@ _rpc_methods = {
         """
         Returns 1 if the torrent is open, 0 otherwise.
         """
-        )
+        ),
+    'is_hash_checked' : ('d.is_hash_checked',
+        """
+        Returns 1 if the hash has been checked, 0 is otherwise.
+        """),
+    'is_hash_checking' : ('d.is_hash_checking',
+        """
+        Returns 1 if the hash is currently being checked, 0 otherwise?
+        TODO
+        """), # TODO
+    'get_state' : ('d.get_state',
+        """
+        No clue as to what this returns yet.
+        TODO
+        """),# TODO
+    'get_message' : ('d.get_message',
+        """
+        Returns the torrent *message*.
+        """)
 }
 
 # RPC Methods for Torrent. These do not pass any argument automatically. (See
@@ -165,7 +191,7 @@ for x, y in _rpc_methods.iteritems():
     #caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
 
     caller = (lambda name: lambda self, *args: getattr(self.s, name)(self._hash, *args))(y[0])
-    caller.__doc__ = y[1]
+    caller.__doc__ = y[1] + '\nOriginal libTorrent method: ``%s``' % y[0]
     setattr(Torrent, x, types.MethodType(caller, None, Torrent))
 
     del caller
