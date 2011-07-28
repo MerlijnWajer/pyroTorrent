@@ -58,8 +58,10 @@ Git source code:
     develintro.rst
     rtorrent.rst
     torrent.rst
+    peer.rst
     baserequester.rst
     torrentrequester.rst
+    peerrequester.rst
     multibase.rst
     torrentquery.rst
     rtorrentquery.rst
