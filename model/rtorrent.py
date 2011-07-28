@@ -185,7 +185,10 @@ _rpc_methods = {
     'get_ip' : ('get_ip',
         """
         Returns the IP rtorrent is bound to. (For XMLRPC?)
-        """) # XXX:For XMLRPC? ^
+        """), # XXX:For XMLRPC? ^
+    'get_view_list' : ('view_list',
+        """
+        """)
 }
 
 

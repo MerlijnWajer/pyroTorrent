@@ -96,7 +96,7 @@ def fetch_global_info():
     try:
         r = global_rtorrent.query().get_upload_rate().get_download_rate().get_ip()\
             .get_hostname().get_memory_usage().get_max_memory_usage()\
-            .get_libtorrent_version()
+            .get_libtorrent_version().get_view_list()
         return r.first()
     except InvalidConnectionException, e:
         return {}
@@ -104,8 +104,16 @@ def fetch_global_info():
 # These *_page functions are what you would call ``controllers''.
 def main_page(env):
 
+    return main_view_page(env, 'default')
+
+def main_view_page(env, view):
+    rtorrent_data = fetch_global_info()
+
+    if view not in rtorrent_data.get_view_list:
+        return error_page(env, 'Invalid view: %s' % view)
+
     try:
-        t = TorrentRequester('')
+        t = TorrentRequester(view)
 
         t.get_name().get_download_rate().get_upload_rate() \
                 .is_complete().get_size_bytes().get_download_total().get_hash()
@@ -115,12 +123,11 @@ def main_page(env):
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
-    rtorrent_data = fetch_global_info()
-
     tmpl = jinjaenv.get_template('download_list.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrents' : torrents, 'rtorrent_data' : rtorrent_data} )
+        'torrents' : torrents, 'rtorrent_data' : rtorrent_data,
+        'view' : view} )
 
 def error_page(env, error='No error?'):
     rtorrent_data = fetch_global_info()
