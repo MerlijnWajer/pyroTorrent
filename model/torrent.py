@@ -172,15 +172,11 @@ _rpc_methods = {
     'get_message' : ('d.get_message',
         """
         Returns the torrent *message*.
+        """),
+    'get_views' : ('d.views',
+        """
         """)
 }
-
-# RPC Methods for Torrent. These do not pass any argument automatically. (See
-# above comments)
-_rpc_methods_noautoarg = {
-
-}
-
 
 for x, y in _rpc_methods.iteritems():
 
@@ -195,18 +191,3 @@ for x, y in _rpc_methods.iteritems():
     setattr(Torrent, x, types.MethodType(caller, None, Torrent))
 
     del caller
-
-for x, y in _rpc_methods_noautoarg.iteritems():
-
-    caller = (lambda name: lambda self, *args: getattr(self.s, name)(*args))(y[0])
-    caller.__doc__ = y[1]
-    setattr(Torrent, x, types.MethodType(caller, None, Torrent))
-
-    del caller
-
-# XXX: End hacks
-
-if __name__ == '__main__':
-    t = Torrent('0D4E955B2341EB065836AE1972C4282708886506', 'sheeva')
-
-    print t.get_name()

@@ -1,6 +1,5 @@
 Unclassified:
     -   Double check the [R]TorrentQuery implementation / design.
-    -   TorrentRequester should support views other than the default one.
 
 Admin panel:
     -   User Management                                     [ ]
@@ -30,6 +29,7 @@ Version 0.0:
     -   Add torrent link                                    [X]
     -   Show current up and down speed                      [X]
     -   Add torrents                                        [X]
+    -   Add support for views                               [X]
     -   Global progress bar                                 [ ]
     -   Change torrent status                               [ ]
     -   List torrent peers                                  [ ]
@@ -41,7 +41,7 @@ Version 0.0:
         -   Clean up the root name of the file tree         [ ]
         -   Fix markup for files tree                       [ ]
 
-    -   Interface should work without a rtorrent connection [ ]
+    -   Interface should work without a rtorrent connection [X]
     -   Implement XMLRPC Exceptions, own wrapper?           [X]
 
     -   Download torrent files                              [ ]
@@ -60,4 +60,5 @@ Far fetched TODO:
     -   Database support
     -   FTP Access / Download torrent files via web interface,
     -   Advanced security. Download limit per user, etc.
+    -   Private views per user?
 

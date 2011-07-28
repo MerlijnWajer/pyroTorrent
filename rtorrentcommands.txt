@@ -460,10 +460,10 @@
 [ ] view.set_visible
 [ ] view.size
 [ ] view.size_not_visible
-[ ] view_add
+[X] view_add
 [ ] view_filter
 [ ] view_filter_on
-[ ] view_list
+[X] view_list
 [ ] view_set
 [ ] view_sort
 [ ] view_sort_current

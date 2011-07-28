@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 .. _rtorrent-class:
 
@@ -188,6 +187,13 @@ _rpc_methods = {
         """), # XXX:For XMLRPC? ^
     'get_view_list' : ('view_list',
         """
+        Returns a list of all views.
+        """),
+    'create_view' : ('view_add',
+        """
+        Creates a view; requires a single argument: A name for the view.
+        WARNING: If you add an already existing view; rtorrent will simply crash
+        (at least 0.8.6 does).
         """)
 }
 
