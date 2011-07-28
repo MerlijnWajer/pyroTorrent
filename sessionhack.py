@@ -33,5 +33,5 @@ class SessionHack(object):
             pass
 
         if error:
-            start_response('200 OK', [('Content-Type', 'text/html')])
+            start_response('200 OK', [('Content-Type', 'text/html;charset=utf8')])
         return ret
