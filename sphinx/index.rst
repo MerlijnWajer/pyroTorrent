@@ -28,11 +28,11 @@ It's features include but are not limited to:
     -   Efficient XMLRPC usage.
     -   Browse the files of your torrents.
     -   Add torrents via direct links to .torrent files
+    -   Basic support for rtorrent views. (Using /view/<viewname>)
+    -   Direct SCGI communication over Unix sockets as well as HTTP XMLRPC.
 
 Planned features:
 
-    -   Implement direct SCGI communication.
-    -   Support torrent views.
     -   Add events / schedulers.
     -   Encryption policy management.
     -   Support for transmission
