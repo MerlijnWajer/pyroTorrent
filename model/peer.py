@@ -23,7 +23,6 @@ class Peer(object):
         """
         Initialise the Peer object.
         """
-
         self.s = RTorrentXMLRPC()
 
 import types

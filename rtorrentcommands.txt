@@ -315,8 +315,8 @@
 [X] p.get_up_total
 [X] p.is_encrypted
 [X] p.is_incoming
-[ ] p.is_obfuscated
-[ ] p.is_snubbed
+[X] p.is_obfuscated
+[X] p.is_snubbed
 [X] p.multicall
 [ ] print
 [ ] ratio.disable
