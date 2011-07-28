@@ -1,7 +1,7 @@
 .. _introduction:
 
 Setting up πϱTorrent
-======================
+====================
 
 Requirements
 ------------

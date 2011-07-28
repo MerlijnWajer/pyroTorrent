@@ -1,18 +1,18 @@
 Introduction for Developers
 ===========================
 
-This page presents a introduction to the pyroTorrent design decisions, as well
-as a small description per python class.
+This page presents an introduction to the pyroTorrent design goals.
 
 Understanding pyroTorrent
 -------------------------
 
 pyroTorrent's codebase might look complex at first, but it's ultimitely trivial
 once you understand *why* we made certain design decisions. (Let's hope they
-turn out to be right ones).
+turn out to be right ones, it seems like they are so far).
 
 The easiest way to help you understand our design decisions, is to simply share
 our experiences and thoughts when we were planning to write pyroTorrent.
+
 Since I currently suck as a writer, don't worry if you at some point don't
 understand what I'm trying to say, just keep on reading. It will probably make
 sense after you've read the entire page. If not, read it again. If you still
@@ -56,8 +56,8 @@ connections per page load; and since XMLRPC is stateless you'll have to actually
 do 500 requests, each with their own connection.
 
 pyroTorrent makes use of both these multicall mechanisms. Typically it should
-not open more than a few connections per page load. Current in release 0.03,
-pyroTorrent does only two XMLRPC requests to load the main overview page.
+not open more than a few connections per page load. Current in release 0.04,
+pyroTorrent does *only 2* XMLRPC requests to load the main overview page.
 
 
 xmlrpclib Multicall
@@ -165,9 +165,6 @@ In the file ``model/rtorrent.py`` all the RPC methods are stored in a dict:
             Set the upload throttle.
             Pass the new throttle size in bytes.
             """),
-
-            ....
-
         'get_ip' : ('get_ip',
             """
             Returns the IP rtorrent is bound to. (For XMLRPC?)
@@ -188,10 +185,6 @@ For each entry in the dictionary, a method is generated and added to the
 
 .. GETRIDOFVIMHIGHLIGHTBUG*
 
-We do something similar for the :ref:`torrent` class, but we have divided the
-:ref:`torrent` methods into two dictionaries, one in which all the methods have
-a default argument: the hash, and one where the methods do not have any default
-arguments. Although the latter dictionary is currently empty and will probably
-be removed.
+We do something similar for the :ref:`torrent` class.
 
 

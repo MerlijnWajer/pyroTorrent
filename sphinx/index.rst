@@ -35,9 +35,22 @@ Planned features:
 
     -   Add events / schedulers.
     -   Encryption policy management.
+    -   Manage lots of rtorrent settings.
+    -   Move torrents to views
+    -   Add statistics. (graphs)
+    -   Multiple rtorrent sources. (Will require a large rewrite)
+    -   Support for user management, each with their own views. (db and
+        flat file)
+    -   And a lot more...
+
+Far fetched:
+
     -   Support for transmission
-    -   Add lots of statistics. (database, graphs?)
-    -   Multiple RTorrent interfaces. (Will require a large rewrite)
+
+Additionally, pyroTorrent tries to document most of the rTorrent XMLRPC methods
+it uses. Its documentation of the rTorrent XMLRPC methods is probably far more
+complete than rTorrent's own documentation. We hope to send our documentation to
+the rTorrent project at some point and make the world a less chaotic place.
 
 Download / Source code
 ----------------------
@@ -48,13 +61,15 @@ Git source code:
 
     git clone git://github.com/MerlijnWajer/pyroTorrent.git
 
+Web view (mirror) https://git.wizzup.org/pyroTorrent.git/.
+
 πϱTorrent's documentation
 =========================
 
 .. toctree::
     :maxdepth: 2
 
-    intro.rst
+    setup.rst
     develintro.rst
     rtorrent.rst
     torrent.rst
