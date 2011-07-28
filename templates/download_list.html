@@ -1,7 +1,10 @@
 {% extends "base.jinja2" %}
 
+{% block nav %}
+View: {{ view}}
+{% endblock %}
+
 {% block main %}
-<p> View: {{ view}} </p>
 {% if torrents %}
     <ul>
     {% for x in torrents %}
