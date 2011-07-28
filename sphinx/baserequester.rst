@@ -4,4 +4,5 @@ BaseRequester
 =============
 
 .. automodule:: baserequester
+    :members:
 

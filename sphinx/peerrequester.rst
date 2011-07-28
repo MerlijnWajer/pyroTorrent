@@ -4,4 +4,5 @@ PeerRequester
 =============
 
 .. automodule:: peerrequester
+    :members:
 
