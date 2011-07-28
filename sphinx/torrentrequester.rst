@@ -4,4 +4,5 @@ TorrentRequester
 ================
 
 .. automodule:: torrentrequester
+    :members:
 
