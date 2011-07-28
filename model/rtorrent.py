@@ -81,6 +81,8 @@ class RTorrent(object):
             *   'active'
             *   'hashing'
             *   'seeding'
+
+        Plus all custom defined views.
         """
         # FIXME: List is not complete(?) + exception should be raised.
         if _type not in ('complete', 'incomplete', 'started', 'stopped',
@@ -212,18 +214,3 @@ for x, y in _rpc_methods.iteritems():
     setattr(RTorrent, x, types.MethodType(caller, None, RTorrent))
 
     del caller
-
-# XXX: End hacks
-
-if __name__ == '__main__':
-    x = RTorrent('sheeva')
-
-    # Simple test.
-    old = x.get_upload_throttle()
-    print 'Throttle:', old
-    print 'Return:', x.set_upload_throttle(20000)
-    print 'Throttle:', x.get_upload_throttle()
-    print 'Return:', x.set_upload_throttle(old)
-    print 'Throttle:', x.get_upload_throttle()
-
-    print 'Download list', x.get_download_list()
