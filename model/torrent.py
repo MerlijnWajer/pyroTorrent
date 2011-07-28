@@ -13,7 +13,7 @@ and connection information similar to :ref:`rtorrent-class`.
 from lib.xmlrpc import RTorrentXMLRPC
 import types
 
-from config import rtorrent_config
+#from lib.peerrequester import PeerRequester
 
 class Torrent(object):
     """
@@ -24,7 +24,6 @@ class Torrent(object):
 
     def __repr__(self):
         return 'Torrent(%s): %s' % (self._hash, self.get_name())
-
 
     def query(self):
         """

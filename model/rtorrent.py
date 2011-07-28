@@ -39,8 +39,6 @@ A simple test:
     print 'Download list', x.get_download_list()
 """
 
-# TODO:  SCGI support (with xmlrpc2scgi.py from rtorrent wiki)
-
 from lib.xmlrpc import RTorrentXMLRPC
 
 class RTorrent(object):

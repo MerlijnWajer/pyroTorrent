@@ -1,7 +1,7 @@
 """
-.. _torrentrequester-class:
+.. _peerrequester-class:
 
-TorrentRequester
+PeerRequester
 ================
 
 The TorrentRequester is a class created to quickly and efficiently query all the
@@ -23,12 +23,10 @@ Example usage:
 # Properly implement flush?
 
 import xmlrpclib
-from model import torrent
+from model import peer
 from lib.baserequester import BaseRequester, InvalidTorrentCommandException
 
-from config import rtorrent_config
-
-class TorrentRequester(BaseRequester):
+class PeerRequester(BaseRequester):
     """
     """
     def __init__(self, *first_args):
@@ -36,23 +34,15 @@ class TorrentRequester(BaseRequester):
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):
-        return self.s.d.multicall(*(self.first_args + rpc_commands))
+        return self.s.p.multicall(*(self.first_args + (' ',) + rpc_commands))
 
     def _convert_command(self, command):
         """
         Convert command based on torrent._rpc_methods to rtorrent command.
         """
-        if command in torrent._rpc_methods:
-            return torrent._rpc_methods[command][0]
+        if command in peer._rpc_methods:
+            return peer._rpc_methods[command][0]
         else:
             raise InvalidTorrentCommandException("%s is not a valid command" %
                     command)
-
-if __name__ == '__main__':
-
-    t = TorrentRequester('192.168.1.75')
-    t.get_name().get_hash().get_name()
-    for x in t.all():
-        print x
-
 

@@ -300,24 +300,24 @@
 [ ] on_start
 [ ] on_stop
 [ ] or
-[ ] p.get_address
-[ ] p.get_client_version
-[ ] p.get_completed_percent
-[ ] p.get_down_rate
-[ ] p.get_down_total
-[ ] p.get_id
+[X] p.get_address
+[X] p.get_client_version
+[X] p.get_completed_percent
+[X] p.get_down_rate
+[X] p.get_down_total
+[X] p.get_id
 [ ] p.get_id_html
 [ ] p.get_options_str
-[ ] p.get_peer_rate
-[ ] p.get_peer_total
-[ ] p.get_port
-[ ] p.get_up_rate
-[ ] p.get_up_total
-[ ] p.is_encrypted
-[ ] p.is_incoming
+[X] p.get_peer_rate
+[X] p.get_peer_total
+[X] p.get_port
+[X] p.get_up_rate
+[X] p.get_up_total
+[X] p.is_encrypted
+[X] p.is_incoming
 [ ] p.is_obfuscated
 [ ] p.is_snubbed
-[ ] p.multicall
+[X] p.multicall
 [ ] print
 [ ] ratio.disable
 [ ] ratio.enable

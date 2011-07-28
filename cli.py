@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from model.torrent import Torrent
 from model.rtorrent import RTorrent
+from model.peer import Peer
 
 from lib.torrentrequester import TorrentRequester
+from lib.peerrequester import PeerRequester
 
 r = RTorrent()
 
