@@ -400,12 +400,12 @@
 [ ] set_xmlrpc_size_limit
 [ ] start_tied
 [ ] stop_untied
-[ ] system.client_version
+[X] system.client_version
 [ ] system.file_allocate
 [ ] system.file_allocate.set
 [ ] system.file_status_cache.prune
 [ ] system.file_status_cache.size
-[ ] system.get_cwd
+[X] system.get_cwd
 [X] system.hostname # RTorrent.get_hostname()
 [X] system.library_version
 [ ] system.method.erase
@@ -415,7 +415,7 @@
 [ ] system.method.list_keys
 [ ] system.method.set
 [ ] system.method.set_key
-[ ] system.pid
+[X] system.pid
 [ ] system.set_cwd
 [ ] system.set_umask
 [ ] system.time

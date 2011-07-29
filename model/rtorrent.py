@@ -155,7 +155,11 @@ _rpc_methods = {
         """),
     'get_libtorrent_version' : ('system.library_version',
         """
-        Returns the libtorrent version.
+        Returns the libTorrent version.
+        """),
+    'get_client_version' : ('system.client_version',
+        """
+        Returns the rTorrent version.
         """),
     'get_hostname' : ('system.hostname',
         """
@@ -192,6 +196,14 @@ _rpc_methods = {
         Creates a view; requires a single argument: A name for the view.
         WARNING: If you add an already existing view; rtorrent will simply crash
         (at least 0.8.6 does).
+        """),
+    'get_process_id' : ('system.pid',
+        """
+        Returns the process ID.
+        """),
+    'get_cwd' : ('system.get_cwd',
+        """
+        Returns the current working directory.
         """)
 }
 
