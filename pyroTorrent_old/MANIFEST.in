@@ -1,3 +1,0 @@
-include pyrotorrent/config/deployment.ini_tmpl
-recursive-include pyrotorrent/public *
-recursive-include pyrotorrent/templates *
