@@ -11,8 +11,8 @@
     <div class="logo">πϱTorrent v0.05 (libTorrent {{
         rtorrent_data.get_libtorrent_version }})</div>
     {% if rtorrent_data %}
-    <div class="up">Upload rate: {{ rtorrent_data.get_upload_rate }}</div>
-    <div class="down">Download rate: {{ rtorrent_data.get_download_rate }}</div>
+    <div class="up">Upload rate: {{ wn(rtorrent_data.get_upload_rate) }}</div>
+    <div class="down">Download rate: {{ wn(rtorrent_data.get_download_rate) }}</div>
     <div class="ip">IP: {{ rtorrent_data.get_ip }}</div>
     <div class="ip">Memory: {{ rtorrent_data.get_memory_usage }} / {{
         rtorrent_data.get_max_memory_usage }}</div>

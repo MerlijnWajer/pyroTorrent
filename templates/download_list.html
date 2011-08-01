@@ -15,21 +15,17 @@ View: {{ view}}
     {% if not x.is_complete %}
     <!-- Needs icons -->
     <span class="download_rate">
-        <span class="download_icon"></span>
         {% if x.get_download_rate > 0 %}
-        {{ x.get_download_rate }}
-        {% else %}
-        {{ x.get_download_rate }}
+        <span class="download_icon"></span>
+        {{ wn(x.get_download_rate) }}
         {% endif %}
     </span>
     {% endif %}
 
     <span class="upload_rate">
-        <span class="upload_icon"></span>
         {% if x.get_upload_rate > 0 %}
-        {{ x.get_upload_rate }}</span>
-        {% else %}
-        {{ x.get_upload_rate }}
+        <span class="upload_icon"></span>
+        {{ wn(x.get_upload_rate) }}
         {% endif %}
     </span>
 
@@ -41,9 +37,9 @@ View: {{ view}}
         {% endif %}
         <span class="progress_text">
             {% if x.is_complete %}
-            {{ x.get_size_bytes }}
+            {{ wn(x.get_size_bytes )}}
             {% else %}
-            {{ x.get_download_total }} / {{ x.get_size_bytes }}
+            {{ wn(x.get_download_total) }} / {{ wn(x.get_size_bytes )}}
             {% endif %}
         </span>
     </span>

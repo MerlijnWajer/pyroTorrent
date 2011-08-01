@@ -33,8 +33,8 @@
     {% endif %}
     </p>
         <p> {{ torrent.get_name }}
-        ({{ torrent.get_download_total }} /
-        {{ torrent.get_size_bytes }}) </p>
+        ({{ wn(torrent.get_download_total) }} /
+        {{ wn(torrent.get_size_bytes) }}) </p>
     <p> Loaded file: {{ torrent.get_loaded_file }} </p>
     <p>
     <ul>

@@ -76,6 +76,26 @@ def pyroTorrentApp(env, start_response):
     # Response data
     return [r]
 
+# Pulled somewhere from the net.
+def wiz_normalise(a):
+    a = float(a)
+    if a >= 1099511627776:
+        terabytes = a / 1099511627776
+        size = '%.2fT' % terabytes
+    elif a >= 1073741824:
+        gigabytes = a / 1073741824
+        size = '%.2fG' % gigabytes
+    elif a >= 1048576:
+        megabytes = a / 1048576
+        size = '%.2fM' % megabytes
+    elif a >= 1024:
+        kilobytes = a / 1024
+        size = '%.2fK' % kilobytes
+    else:
+        size = '%.2fb' % a
+    return size
+
+
 def template_render(template, vars, default_page=True):
     """
         Template Render is a helper that initialisaes basic template variables
@@ -83,6 +103,7 @@ def template_render(template, vars, default_page=True):
     """
     vars['base_url'] = BASE_URL
     vars['static_url'] = STATIC_URL
+    vars['wn'] = wiz_normalise
 
     return unicode(template.render(vars)).encode('utf8')
 
