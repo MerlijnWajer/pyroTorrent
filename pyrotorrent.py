@@ -115,7 +115,8 @@ def fetch_global_info():
     """
     global global_rtorrent
     try:
-        r = global_rtorrent.query().get_upload_rate().get_download_rate().get_ip()\
+        r = global_rtorrent.query().get_upload_rate().get_download_rate()\
+            .get_upload_throttle().get_download_throttle().get_ip()\
             .get_hostname().get_memory_usage().get_max_memory_usage()\
             .get_libtorrent_version().get_view_list()
         return r.first()
@@ -205,6 +206,8 @@ def torrent_action(env, torrent_hash, action):
         t.pause()
     elif action == 'resume':
         t.resume()
+    elif action == 'erase':
+        t.erase()
     else:
         raise Exception('Invalid torrent action')
 
