@@ -18,8 +18,10 @@ import types
 class Torrent(object):
     """
     """
-    def __init__(self, _hash):
-        self.s = RTorrentXMLRPC()
+    def __init__(self, target, _hash):
+        self.target = target
+        assert isinstance(target, dict)
+        self.s = RTorrentXMLRPC(target)
         self._hash = _hash
 
     def __repr__(self):
@@ -33,7 +35,7 @@ class Torrent(object):
         See :ref:`torrentquery-class`
         """
         from lib.torrentquery import TorrentQuery
-        return TorrentQuery(self._hash)
+        return TorrentQuery(self.target, self._hash)
 
     def get_peers(self):
         pass

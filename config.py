@@ -24,10 +24,20 @@ STATIC_URL = '/static/torrent'
 # Exemplary HTTP setup using remote XMLRPC server. (SCGI is handled by the HTTPD
 # in this case)
 rtorrent_config = {
-    'http' : {
-        'host' : '192.168.1.70',
-        'port' : 80,
-        'url'  : '/RPC2',
+    'sheeva' : {
+        'http' : {
+            'host' : '192.168.1.70',
+            'port' : 80,
+            'url'  : '/RPC2',
+        }
+    }
+    ,
+    'sheevareborn' : {
+        'http' : {
+            'host' : '42.42.42.42',
+            'port' : 80,
+            'url'  : '/RPC2',
+        }
     }
 }
 

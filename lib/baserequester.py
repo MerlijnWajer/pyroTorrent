@@ -17,10 +17,10 @@ class BaseRequester(object):
     """
     """
 
-    def __init__(self):
+    def __init__(self, target):
         """
         """
-        self.s = RTorrentXMLRPC()
+        self.s = RTorrentXMLRPC(target)
 
         # Stack to put commands on
         self.commandstack = []

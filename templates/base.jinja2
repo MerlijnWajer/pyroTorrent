@@ -8,33 +8,18 @@
 <body>
 
 <header>
-    <div class="logo">πϱTorrent v0.05 (libTorrent {{
-        rtorrent_data.get_libtorrent_version }})</div>
-    {% if rtorrent_data %}
-    <div class="up">
-        Upload rate: {{ wn(rtorrent_data.get_upload_rate) }} /
-        {% if rtorrent_data.get_upload_throttle != 0 %}
-                     {{ wn(rtorrent_data.get_upload_throttle) }}
-        {% else %}
-        ∞
-        {% endif %}
-    </div>
-    <div class="down">
-        Download rate: {{ wn(rtorrent_data.get_download_rate) }} /
-        {% if rtorrent_data.get_download_throttle != 0 %}
-                       {{ wn(rtorrent_data.get_download_throttle) }}
-        {% else %}
-        ∞
-        {% endif %}
-    </div>
+
+    {#
     <div class="ip">IP: {{ rtorrent_data.get_ip }}</div>
     <div class="ip">Memory: {{ rtorrent_data.get_memory_usage }} / {{
         rtorrent_data.get_max_memory_usage }}</div>
     <div class="ip"> Hostname: {{ rtorrent_data.get_hostname }} </div>
     {% endif %}
-    <div class="up"> <a href="{{base_url}}">Home</a> </div>
-    <div class="up"> <a href="{{base_url}}/add_torrent">Add Torrent</a> </div>
-    <div class="up"> <a href="{{base_url}}">Admin</a> </div>
+    #}
+
+    <span class="logo">πϱTorrent v0.06</span>
+    <span> <a href="{{base_url}}">Home</a> </span>
+    <span> <a href="{{base_url}}">Admin</a> </span>
     {% block nav %}
     {% endblock %}
 </header>

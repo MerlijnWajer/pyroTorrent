@@ -53,7 +53,7 @@ class RTorrent(object):
     """
 
     # FIXME: If we leave URL at '' xmlrpclib will default to /RPC2 as well.
-    def __init__(self):
+    def __init__(self, target):
         """
         Initialise the RTorrent object.
         Host is the hostname of the server where the XMLRPC interface is
@@ -62,8 +62,8 @@ class RTorrent(object):
         URL defaults to '/RPC2', you shouldn't change this unless you know
         what you are doing.
         """
-
-        self.s = RTorrentXMLRPC()
+        self.target = target
+        self.s = RTorrentXMLRPC(target)
 
     def get_download_list(self, _type=''):
         """
@@ -104,7 +104,7 @@ class RTorrent(object):
         See :ref:`rtorrentquery-class` on how to use it.
         """
         from lib.rtorrentquery import RTorrentQuery
-        return RTorrentQuery()
+        return RTorrentQuery(self.target)
 
 # XXX: Begin hacks
 

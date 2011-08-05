@@ -13,9 +13,10 @@ class TorrentFile(object):
     """
     """
 
-    def __init__(self):
+    def __init__(self, target):
 
-        self.s = RTorrentXMLRPC()
+        self.target = target
+        self.s = RTorrentXMLRPC(target)
 
     def query(self):
         """

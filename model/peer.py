@@ -19,11 +19,12 @@ class Peer(object):
     """
 
     # FIXME: If we leave URL at '' xmlrpclib will default to /RPC2 as well.
-    def __init__(self):
+    def __init__(self, target):
         """
         Initialise the Peer object.
         """
-        self.s = RTorrentXMLRPC()
+        self.target = target
+        self.s = RTorrentXMLRPC(target)
 
 import types
 

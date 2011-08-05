@@ -29,7 +29,12 @@ from beaker.middleware import SessionMiddleware
 # Future: for JSON.
 import simplejson as json
 
-from config import *
+# For sys.exit(), etc
+import sys
+
+from config import BASE_URL, STATIC_URL, rtorrent_config, session_options
+from lib.config_parser import parse_config_part, RTorrentConfigException, \
+            CONNECTION_SCGI, CONNECTION_HTTP
 
 from sessionhack import SessionHack, SessionHackException
 
@@ -98,7 +103,7 @@ def wiz_normalise(a):
 
 def template_render(template, vars, default_page=True):
     """
-        Template Render is a helper that initialisaes basic template variables
+        Template Render is a helper that initialises basic template variables
         and handles unicode encoding.
     """
     vars['base_url'] = BASE_URL
@@ -113,42 +118,53 @@ def fetch_global_info():
         -   Down/Up Rate.
         -   IP (perhaps move to static global)
     """
-    global global_rtorrent
-    try:
-        r = global_rtorrent.query().get_upload_rate().get_download_rate()\
-            .get_upload_throttle().get_download_throttle().get_ip()\
-            .get_hostname().get_memory_usage().get_max_memory_usage()\
-            .get_libtorrent_version().get_view_list()
-        return r.first()
-    except InvalidConnectionException, e:
-        return {}
+    res = {}
+    for target in targets:
+        rtorrent = RTorrent(target)
+        try:
+            r = rtorrent.query().get_upload_rate().get_download_rate()\
+                .get_upload_throttle().get_download_throttle().get_ip()\
+                .get_hostname().get_memory_usage().get_max_memory_usage()\
+                .get_libtorrent_version().get_view_list()
+            res[target['name']] = r.first()
+        except InvalidConnectionException, e:
+            print 'InvalidConnectionException:', e
+            # Do we want to return or just not get data for this target?
+            # I'd say return for now.
+            return {}
+
+    return res
 
 # These *_page functions are what you would call ``controllers''.
 def main_page(env):
 
     return main_view_page(env, 'default')
 
+# TODO: Implement target filters.
 def main_view_page(env, view):
     rtorrent_data = fetch_global_info()
 
-    if view not in rtorrent_data.get_view_list:
-        return error_page(env, 'Invalid view: %s' % view)
+#    if view not in rtorrent_data.get_view_list:
+#        return error_page(env, 'Invalid view: %s' % view)
 
-    try:
-        t = TorrentRequester(view)
+    torrents = {}
+    for target in targets:
 
-        t.get_name().get_download_rate().get_upload_rate() \
-                .is_complete().get_size_bytes().get_download_total().get_hash()
+        try:
+            t = TorrentRequester(target, view)
 
-        torrents = t.all()
+            t.get_name().get_download_rate().get_upload_rate() \
+                    .is_complete().get_size_bytes().get_download_total().get_hash()
 
-    except InvalidTorrentException, e:
-        return error_page(env, str(e))
+            torrents[target['name']] = t.all()
+
+        except InvalidTorrentException, e:
+            return error_page(env, str(e))
 
     tmpl = jinjaenv.get_template('download_list.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrents' : torrents, 'rtorrent_data' : rtorrent_data,
+        'torrents_list' : torrents, 'rtorrent_data' : rtorrent_data,
         'view' : view} )
 
 def error_page(env, error='No error?'):
@@ -158,9 +174,12 @@ def error_page(env, error='No error?'):
         'error' : error,
         'rtorrent_data' : rtorrent_data })
 
-def torrent_info_page(env, torrent_hash):
+def torrent_info_page(env, torrent_hash, target):
+    target = lookup_target(target)
+    if target is None:
+        return None # 404
     try:
-        t = Torrent(torrent_hash)
+        t = Torrent(target, torrent_hash)
         q = t.query()
         q.get_name().get_size_bytes().get_download_total().get_loaded_file()\
                 .get_message().is_active()
@@ -171,7 +190,7 @@ def torrent_info_page(env, torrent_hash):
 
     # FIXME THIS IS UGLY
 
-    files = TorrentFileRequester(t._hash, '')\
+    files = TorrentFileRequester(target, t._hash, '')\
             .get_path_components().all()
 
     files = map(lambda x: x['get_path_components'], files)
@@ -189,7 +208,6 @@ def torrent_action(env, torrent_hash, action):
     """
     Start, Stop, Pause, Resume, Delete torrent. I suppose. XXX TODO
     """
-    # TODO: Implement Delete()
     try:
         t = Torrent(torrent_hash)
     except InvalidTorrentException, e:
@@ -213,7 +231,7 @@ def torrent_action(env, torrent_hash, action):
 
     return 'lol'
 
-def add_torrent_page(env):
+def add_torrent_page(env, target):
     """
     Page for adding torrents.
     Works: Adding a correct torrent (URL only)
@@ -222,6 +240,9 @@ def add_torrent_page(env):
         Uploading .torrent files
         Option to add and start, or not start on add
     """
+    target = lookup_target(target)
+    if target is None:
+        return None # 404
 
     return_code = None
 
@@ -238,8 +259,8 @@ def add_torrent_page(env):
 
             torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
 
-            global global_rtorrent
-            return_code = global_rtorrent.add_torrent_raw(torrent_raw_bin)
+            rtorrent = RTorrent(target)
+            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
 
     rtorrent_data = fetch_global_info()
 
@@ -254,10 +275,33 @@ def add_torrent_page(env):
 
     return template_render(tmpl, {'session' : env['beaker.session'],
         'rtorrent_data' : rtorrent_data,
-        'torrent_added': torrent_added} )
+        'torrent_added': torrent_added,
+        'target' : target['name'] } )
 
+def parse_config():
+
+    targets = []
+    for x in rtorrent_config:
+        try:
+            info = parse_config_part(rtorrent_config[x], x)
+        except RTorrentConfigException, e:
+            print 'Invalid config: ', e
+            sys.exit(1)
+
+        targets.append(info)
+
+    return targets
+
+# Beh
+def lookup_target(name):
+
+    for x in targets:
+        if x['name'] == name:
+            return x
+    return None
 
 if __name__ == '__main__':
+    targets = parse_config()
     jinjaenv = Environment(loader=PackageLoader('pyrotorrent', 'templates'))
     jinjaenv.autoescape = True
     wt = WebTool()
@@ -265,8 +309,7 @@ if __name__ == '__main__':
     # Add all rules
     execfile('rules.py')
 
-    # Global helpers
-    global_rtorrent = RTorrent()
+
 
     #WSGIServer(SessionMiddleware(pyroTorrentApp), \
     #        session_options).run()

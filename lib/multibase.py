@@ -29,10 +29,10 @@ from lib.xmlrpc import RTorrentXMLRPC
 class MultiBase(object):
     """
     """
-    def __init__(self, *args):
+    def __init__(self, target, *args):
         """
         """
-        self.s = RTorrentXMLRPC()
+        self.s = RTorrentXMLRPC(target)
         self.m = xmlrpclib.MultiCall(self.s)
 
         # Stack to put commands on

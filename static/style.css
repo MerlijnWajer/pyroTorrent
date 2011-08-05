@@ -15,23 +15,32 @@ a {
 }
 
 #torrent_list {
-    margin: 20px 0 0 0;
+/*    margin: 20px 0 0 0; */
+    margin: 1em;
     padding: 0;
+
 }
 
 #torrent_list ul {
-    margin: 0;
+    margin: 0em;
     padding: 0;
 }
 
 #torrent_list li {
-    margin: 1px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
     padding: 2px 6px;
     list-style: none;
+
+
+    /*
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    */
 }
 
-div.logo {
-    float: right;
+span.logo {
     font-size: 22px;
     line-height: 33px;
     color: #ddd;
@@ -39,19 +48,23 @@ div.logo {
     margin-right: 10px;
 }
 
-div.up {
-    float: left;
-    margin-right: 1em;
+span.up {
     color: #0C0;
-    font-weight: bold;
 }
 
-div.down {
+span.down {
     color: #C00;
-    font-weight: bold;
 }
 
-div.ip {
+h1.target_header {
+    padding-top: 1em;
+}
+
+div.target_header_bottom {
+    padding-bottom: 1em;
+}
+
+span.ip {
     color: #fff;
     font-weight: bold;
 }
@@ -77,8 +90,13 @@ span.progress {
     border: 1px solid #272;
     width: 140px;
     height: 14px;
-    right: 4px;
+    right: 20px;
     line-height: 16px;
+
+    /*
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    */
 }
 
 span.download_rate {
@@ -92,6 +110,21 @@ span.upload_rate {
 span.progress {
     color: #aaa;
     margin-right: 0px;
+}
+
+div.target_info {
+    border: 1px;
+    background-color: #222;
+    font-size: 14px;
+/*    margin: 1em; */
+
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    border: 2em;
+}
+
+div.inner_target_info {
+    margin: 2em;
 }
 
 li.torrent_complete span.progress {
@@ -111,6 +144,11 @@ li.torrent_incomplete span.progress_bar {
     float: left;
     position: absolute;
     z-index: 1;
+
+    /*
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    */
 }
 
 li.torrent_incomplete span.progress_text {
@@ -126,14 +164,15 @@ li.torrent_incomplete span.progress_text {
 span.download_icon, span.upload_icon {
     float: right;
     height: 16px;
-    width: 16px;
-    margin-left: 4px;
+    width: 20px;
+    margin-left: 0em;
+    margin-right: 1em;
 }
 
 span.download_icon {
-    background: transparent url(/static/icons/arrow_down.png);
+    background: transparent url(/static/torrent/icons/arrow_down.png);
 }
 span.upload_icon {
-    background: transparent url(/static/icons/arrow_up.png);
+    background: transparent url(/static/torrent/icons/arrow_up.png);
 }
 

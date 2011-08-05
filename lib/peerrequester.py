@@ -14,8 +14,8 @@ from lib.baserequester import BaseRequester, InvalidTorrentCommandException
 class PeerRequester(BaseRequester):
     """
     """
-    def __init__(self, *first_args):
-        BaseRequester.__init__(self)
+    def __init__(self, target, *first_args):
+        BaseRequester.__init__(self, target)
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):
