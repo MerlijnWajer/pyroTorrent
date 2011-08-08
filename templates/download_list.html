@@ -33,6 +33,7 @@ View: {{ view}}
       </div>
       </div>
 
+      <div class="torrent_list_wiz">
       <ul>
       {% for x in torrents %}
       <li class="torrent torrent_{% if not x.is_complete %}in{% endif %}complete">
@@ -74,6 +75,7 @@ View: {{ view}}
       </li>
       {% endfor %}
       </ul>
+      </div>
 
   {% endfor %}
 {% endif %}
