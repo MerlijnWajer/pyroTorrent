@@ -270,10 +270,15 @@ To actually view any content, we still need to set up the page serving.
 Using the built-in HTTPD
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-I'm not completely done integration the built-in HTTPD just yet... :-)
-
 Anyway, you'll typically have to select that you want to use the built-in HTTPD
 in the config file, and just run ``πϱtorrent.py``.
+
+To enable the built-in HTTPD, make sure the value ``USE_OWN_HTTPD`` in
+``config.py`` is set to ``True``:
+
+.. code-block:: python
+
+    USE_OWN_HTTPD = True
 
 Lighttpd
 ~~~~~~~~
@@ -311,7 +316,6 @@ This is the tricky part. You'll need to ensure that a couple of things work:
     -   An empty file is required in your document root to prevent 404's before
         the FCGI contact is made.
     -   You have the appropriate *rewrite-once* rule.
-    -   You have an *alias.url* for the static files.
     -   You have the correct *fastcgi.server* line.
 
 .. code-block:: lua
@@ -328,7 +332,6 @@ This is the tricky part. You'll need to ensure that a couple of things work:
          )
        )
      )
-    alias.url += ("/static/torrent/" => "/home/rtorrent/pyrotorrent/static/")
 
 And don't forget to create the empty file:
 
@@ -428,25 +431,22 @@ bit:
     # ``Base'' URL for your HTTP website
     BASE_URL = '/torrent'
     # HTTP URL for the static files
-    STATIC_URL = '/static/torrent'
+    STATIC_URL = BASE_URL + '/static'
+    USE_OWN_HTTPD = True
 
 
     ## Exemplary SCGI setup using unix socket
     #rtorrent_config = {
-    #   'sheeva': {
-    #        'scgi' : {
-    #            'unix-socket' : '/tmp/rtorrent.sock'
-    #        }
+    #    'scgi' : {
+    #        'unix-socket' : '/tmp/rtorrent.sock'
     #    }
     #}
     #
     ## Exemplary SCGI setup using scgi over network
     #rtorrent_config = {
-    #    'sheeva': {
-    #        'scgi' : {
-    #            'host' : '192.168.1.70',
-    #            'port' : 80
-    #        }
+    #    'scgi' : {
+    #        'host' : '192.168.1.70',
+    #        'port' : 80
     #    }
     #}
 
@@ -475,8 +475,7 @@ bit:
         'session.cookie_expires' : True
     }
 
-Make sure the *BASE_URL* matches the URL you set in your HTTPD setup; the same
-goes for *STATIC_URL*.
+Make sure the *BASE_URL* matches the URL you set in your HTTPD setup.
 
 When you're done
 ----------------
