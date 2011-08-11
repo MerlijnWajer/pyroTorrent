@@ -4,7 +4,7 @@
 
 {% if torrent_added %}
 
-    <div class="torrent-def-div"
+<div class="torrent-def-div">
     {% if torrent_added == "SUCCES" %}
     <p> Torrent added :-) </p>
     {% else %}
@@ -14,7 +14,7 @@
 
 {% endif %}
 
-<div class="torrent-def-div"
+<div class="torrent-def-div">
 <form method="post" action="{{base_url}}/target/{{target}}/add_torrent">
     <p> Enter the Torrent URL here: <input type="text"
     name="torrent_url"></input> </p>
