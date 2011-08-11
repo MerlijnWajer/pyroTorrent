@@ -204,6 +204,14 @@ _rpc_methods = {
     'get_cwd' : ('system.get_cwd',
         """
         Returns the current working directory.
+        """),
+    'get_xmlrpc_size_limit' : ('get_xmlrpc_size_limit',
+        """
+        Returns the XMLRPC Size Limit
+        """),
+    'set_xmlrpc_size_limit' : ('set_xmlrpc_size_limit',
+        """
+        Set the XMLRPC size limit.
         """)
 }
 
