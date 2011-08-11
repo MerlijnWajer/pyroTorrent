@@ -227,13 +227,28 @@ Onto the testing of the communication.
 
     from model.rtorrent import RTorrent
     import socket
+    import sys
 
-    r = RTorrent()
+    from config import rtorrent_config
+    from lib.config_parser import parse_config_part, RTorrentConfigException
 
-    try:
-        print 'libTorrent version:', r.get_libtorrent_version()
-    except socket.error, e:
-        print 'Failed to connect to libTorrent:', str(e)
+    targets = []
+    for x in rtorrent_config:
+        try:
+            info = parse_config_part(rtorrent_config[x], x)
+        except RTorrentConfigException, e:
+            print 'Invalid config: ', e
+            sys.exit(1)
+
+        targets.append(info)
+
+    for x in targets:
+        r = RTorrent(x)
+
+        try:
+            print '[', x['name'], '] libTorrent version:', r.get_libtorrent_version()
+        except socket.error, e:
+            print 'Failed to connect to libTorrent:', str(e)
 
 Which should return your rTorrent version on success, and otherwise will tell
 you what went wrong. However, we cannot yet test our connection with πϱTorrent
@@ -364,30 +379,37 @@ this:
 
 .. code-block:: python
 
-    # Exemplary SCGI setup using unix socket
+    ## Exemplary SCGI setup using unix socket
     #rtorrent_config = {
-    #    'scgi' : {
-    #        'unix-socket' : '/tmp/rtorrent.sock'
+    #   'sheeva': {
+    #        'scgi' : {
+    #            'unix-socket' : '/tmp/rtorrent.sock'
+    #        }
     #    }
     #}
     #
-    # Exemplary SCGI setup using scgi over network
+    ## Exemplary SCGI setup using scgi over network
     #rtorrent_config = {
-    #    'scgi' : {
-    #        'host' : '192.168.1.70',
-    #        'port' : 80
+    #    'sheeva': {
+    #        'scgi' : {
+    #            'host' : '192.168.1.70',
+    #            'port' : 80
+    #        }
     #    }
     #}
 
     # Exemplary HTTP setup using remote XMLRPC server. (SCGI is handled by the HTTPD
     # in this case)
     rtorrent_config = {
-        'http' : {
-            'host' : '192.168.1.70',
-            'port' : 80,
-            'url'  : '/RPC2',
+        'sheeva' : {
+            'http' : {
+                'host' : '192.168.1.70',
+                'port' : 80,
+                'url'  : '/RPC2',
+            }
         }
     }
+
 
 With examples for all of the three communication methods, uncomment the one you
 want to use and comment the other ones. (And make sure you adjust the
@@ -408,31 +430,47 @@ bit:
     # HTTP URL for the static files
     STATIC_URL = '/static/torrent'
 
-    # Exemplary SCGI setup using unix socket
+
+    ## Exemplary SCGI setup using unix socket
     #rtorrent_config = {
-    #    'scgi' : {
-    #        'unix-socket' : '/tmp/rtorrent.sock'
+    #   'sheeva': {
+    #        'scgi' : {
+    #            'unix-socket' : '/tmp/rtorrent.sock'
+    #        }
     #    }
     #}
     #
-    # Exemplary SCGI setup using scgi over network
+    ## Exemplary SCGI setup using scgi over network
     #rtorrent_config = {
-    #    'scgi' : {
-    #        'host' : '192.168.1.70',
-    #        'port' : 80
+    #    'sheeva': {
+    #        'scgi' : {
+    #            'host' : '192.168.1.70',
+    #            'port' : 80
+    #        }
     #    }
     #}
 
     # Exemplary HTTP setup using remote XMLRPC server. (SCGI is handled by the HTTPD
     # in this case)
     rtorrent_config = {
-        'http' : {
-            'host' : '192.168.1.70',
-            'port' : 80,
-            'url'  : '/RPC2',
+        'sheeva' : {
+            'http' : {
+                'host' : '192.168.1.70',
+                'port' : 80,
+                'url'  : '/RPC2',
+            }
+        }
+        ,
+        'sheevareborn' : {
+            'http' : {
+                'host' : '42.42.42.42',
+                'port' : 80,
+                'url'  : '/RPC2',
+            }
         }
     }
 
+    # TODO: Remove from config.
     session_options = {
         'session.cookie_expires' : True
     }
