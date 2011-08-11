@@ -1,5 +1,6 @@
 from model.rtorrent import RTorrent
 import socket
+import sys
 
 from config import rtorrent_config
 from lib.config_parser import parse_config_part, RTorrentConfigException
