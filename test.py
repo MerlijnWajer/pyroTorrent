@@ -18,6 +18,6 @@ for x in targets:
     r = RTorrent(x)
 
     try:
-        print 'libTorrent version:', r.get_libtorrent_version()
+        print '[', x['name'], '] libTorrent version:', r.get_libtorrent_version()
     except socket.error, e:
         print 'Failed to connect to libTorrent:', str(e)
