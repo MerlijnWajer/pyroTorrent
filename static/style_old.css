@@ -205,3 +205,14 @@ span.upload_icon {
     background: transparent url(/static/torrent/icons/arrow_up.png);
 }
 
+div.torrent-def-div {
+    background-color: rgba(100, 100, 100, 0.4);
+   /* background-color: rgba(34, 34, 34, 0.4);*/
+    color: #fff;
+
+    margin-top: 2em;
+    padding: 1em;
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}

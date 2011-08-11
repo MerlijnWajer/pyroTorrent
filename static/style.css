@@ -1,6 +1,6 @@
 body {
-    background-color: rgb(68, 68, 68);
-/*    background-image: url('/static/torrent/cat.jpg');*/
+    /*background-color: rgb(68, 68, 68); */
+    background-image: url('/static/torrent/cat.jpg');
     color: #fff;
     font: 12px/18px "Liberation Sans", Arial, Verdana, Sans;
     margin: 0;
@@ -139,16 +139,15 @@ a:visited {
 }
 
 div.target_info {
-    border: 1px;
     background-color: rgba(34, 34, 34, 0.4);
     color: #fff;
 
     font-size: 14px;
     font-weight: bold;
 
+    border: 2em;
     -moz-border-radius: 15px;
     border-radius: 15px;
-    border: 2em;
 }
 
 div.inner_target_info {
@@ -202,3 +201,15 @@ span.upload_icon {
     background: transparent url(/static/torrent/icons/arrow_up.png);
 }
 
+
+div.torrent-def-div {
+    background-color: rgba(100, 100, 100, 0.4);
+   /* background-color: rgba(34, 34, 34, 0.4);*/
+    color: #fff;
+
+    margin-top: 2em;
+    padding: 1em;
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}

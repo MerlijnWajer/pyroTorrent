@@ -4,18 +4,22 @@
 
 {% if torrent_added %}
 
+    <div class="torrent-def-div"
     {% if torrent_added == "SUCCES" %}
     <p> Torrent added :-) </p>
     {% else %}
     <p> Torrent could not be added. Reason: TODO </p>
     {% endif %}
+    </div>
 
 {% endif %}
 
+<div class="torrent-def-div"
 <form method="post" action="{{base_url}}/target/{{target}}/add_torrent">
     <p> Enter the Torrent URL here: <input type="text"
     name="torrent_url"></input> </p>
     <input type="submit" value="Add torrent"></input>
 </form>
+</div>
 
 {% endblock %}

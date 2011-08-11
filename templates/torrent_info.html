@@ -21,26 +21,28 @@
 
 {% block main %}
 {% if torrent %}
-    <div style="margin: 2em">
-    {% if torrent.get_message %}
-    <p> Message: {{ torrent.get_message }} </p>
-    {% endif %}
-    <p> Active:
-    {% if torrent.is_active %}
-    True
-    {% else %}
-    False
-    {% endif %}
-    </p>
-        <p> {{ torrent.get_name }}
-        ({{ wn(torrent.get_download_total) }} /
-        {{ wn(torrent.get_size_bytes) }}) </p>
-    <p> Loaded file: {{ torrent.get_loaded_file }} </p>
-    <p>
-    <ul>
-        {{ dfs(tree) }}
-    </ul>
-    </p>
+        <div class="torrent-def-div">
+        <h1> {{ torrent.get_name }}
+            ({{ wn(torrent.get_download_total) }} /
+            {{ wn(torrent.get_size_bytes) }}) </h1>
+        <p> Loaded file: {{ torrent.get_loaded_file }} </p>
+        {% if torrent.get_message %}
+        <p> Message: {{ torrent.get_message }} </p>
+        {% endif %}
+        <p> Active:
+        {% if torrent.is_active %}
+        True
+        {% else %}
+        False
+        {% endif %}
+        </p>
+        </div>
+        <div class="torrent-def-div">
+        <p>
+        <ul>
+            {{ dfs(tree) }}
+        </ul>
+        </p>
     </div>
 {% endif %}
 {% endblock %}
