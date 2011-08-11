@@ -4,6 +4,7 @@
 BASE_URL = '/torrent'
 # HTTP URL for the static files
 STATIC_URL = BASE_URL + '/static'
+USE_OWN_HTTPD = True
 
 
 ## Exemplary SCGI setup using unix socket

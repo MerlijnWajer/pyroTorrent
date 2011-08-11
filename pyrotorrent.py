@@ -3,8 +3,6 @@
 pyroTorrent module.
 """
 
-from flup.server.fcgi import WSGIServer
-
 from jinja2 import Environment, PackageLoader
 
 from webtool import WebTool, read_post_data
@@ -33,6 +31,11 @@ import simplejson as json
 import sys
 
 from config import BASE_URL, STATIC_URL, rtorrent_config, session_options
+try:
+    from config import USE_OWN_HTTPD
+except ImportError:
+    USE_OWN_HTTPD = False # sane default?
+
 from lib.config_parser import parse_config_part, RTorrentConfigException, \
             CONNECTION_SCGI, CONNECTION_HTTP
 
@@ -58,7 +61,8 @@ def pyroTorrentApp(env, start_response):
 
     # Log here if you want
 
-    r = wt.apply_rule(env['REQUEST_URI'], env)
+    r = wt.apply_rule(env['PATH_INFO'], env)
+#    r = wt.apply_rule(env['REQUEST_URI'], env)
 
     # 404
     if r is None:
@@ -68,7 +72,8 @@ def pyroTorrentApp(env, start_response):
         rtorrent_data = fetch_global_info()
 
         return template_render(tmpl, {
-            'url' : env['REQUEST_URI'], 'session' : env['beaker.session'],
+            'url' : env['PATH_INFO'], 'session' : env['beaker.session'],
+            #'url' : env['REQUEST_URI'], 'session' : env['beaker.session'],
             'rtorrent_data' : rtorrent_data},
             default_page=False)
 
@@ -290,7 +295,7 @@ def static_serve(env, static_file):
     if mimetype[0] == None:
         return None
 
-    print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
+    #print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
 
     try:
         f = open('./static/' + static_file)
@@ -331,10 +336,15 @@ if __name__ == '__main__':
 
 
 
-    #WSGIServer(SessionMiddleware(pyroTorrentApp), \
-    #        session_options).run()
+    from wsgiref.simple_server import make_server
+
     app = pyroTorrentApp
     app = SessionHack(app, error_page)
     app = SessionMiddleware(app, session_options)
 
-    WSGIServer(app).run()
+    if USE_OWN_HTTPD:
+        httpd = make_server('', 8000, app)
+        httpd.serve_forever()
+    else:
+        from flup.server.fcgi import WSGIServer
+        WSGIServer(app).run()
