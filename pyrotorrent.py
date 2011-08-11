@@ -54,6 +54,7 @@ from lib.filetree import FileTree
 import mimetypes
 
 
+# Main app
 def pyroTorrentApp(env, start_response):
     """
     pyroTorrent main function.
@@ -62,7 +63,6 @@ def pyroTorrentApp(env, start_response):
     # Log here if you want
 
     r = wt.apply_rule(env['PATH_INFO'], env)
-#    r = wt.apply_rule(env['REQUEST_URI'], env)
 
     # 404
     if r is None:
@@ -73,7 +73,6 @@ def pyroTorrentApp(env, start_response):
 
         return template_render(tmpl, {
             'url' : env['PATH_INFO'], 'session' : env['beaker.session'],
-            #'url' : env['REQUEST_URI'], 'session' : env['beaker.session'],
             'rtorrent_data' : rtorrent_data},
             default_page=False)
 
@@ -89,7 +88,7 @@ def pyroTorrentApp(env, start_response):
     # Response data
     return [r]
 
-# Pulled somewhere from the net.
+# Pulled somewhere from the net. Used in jinja.
 def wiz_normalise(a):
     a = float(a)
     if a >= 1099511627776:
@@ -108,7 +107,17 @@ def wiz_normalise(a):
         size = '%.2fb' % a
     return size
 
+def lookup_target(name):
+    """
+    Simple helper to find the target with the name ``name``.
+    """
 
+    for x in targets:
+        if x['name'] == name:
+            return x
+    return None
+
+# Function to render the jinja template and pass some simple vars / functions.
 def template_render(template, vars, default_page=True):
     """
         Template Render is a helper that initialises basic template variables
@@ -120,6 +129,7 @@ def template_render(template, vars, default_page=True):
 
     return unicode(template.render(vars)).encode('utf8')
 
+# Fetch some useful rtorrent info from all targets.
 def fetch_global_info():
     """
     Fetch global stuff (always displayed):
@@ -145,11 +155,18 @@ def fetch_global_info():
 
 # These *_page functions are what you would call ``controllers''.
 def main_page(env):
-
+    """
+    Default page, calls main_view_page() with default view.
+    """
     return main_view_page(env, 'default')
+
 
 # TODO: Implement target filters.
 def main_view_page(env, view):
+    """
+    Main page. Shows all torrents, per target.
+    Does two XMLRPC calls per target.
+    """
     rtorrent_data = fetch_global_info()
 
 #    if view not in rtorrent_data.get_view_list:
@@ -176,6 +193,9 @@ def main_view_page(env, view):
         'view' : view} )
 
 def error_page(env, error='No error?'):
+    """
+    Called on exceptions, when something goes wrong.
+    """
     rtorrent_data = fetch_global_info()
     tmpl = jinjaenv.get_template('error.html')
     return template_render(tmpl, {'session' : env['beaker.session'],
@@ -183,6 +203,9 @@ def error_page(env, error='No error?'):
         'rtorrent_data' : rtorrent_data })
 
 def torrent_info_page(env, torrent_hash, target):
+    """
+    Page for torrent information. Files, messages, active, etc.
+    """
     target = lookup_target(target)
     if target is None:
         return None # 404
@@ -214,7 +237,7 @@ def torrent_info_page(env, torrent_hash, target):
 
 def torrent_action(env, target, torrent_hash, action):
     """
-    Start, Stop, Pause, Resume, Delete torrent. I suppose. XXX TODO
+    Start, Stop, Pause, Resume, Delete torrent.
     """
     target = lookup_target(target)
     if target is None:
@@ -241,6 +264,7 @@ def torrent_action(env, target, torrent_hash, action):
     else:
         raise Exception('Invalid torrent action')
 
+    # FIXME
     return 'lol'
 
 def add_torrent_page(env, target):
@@ -291,6 +315,10 @@ def add_torrent_page(env, target):
         'target' : target['name'] } )
 
 def static_serve(env, static_file):
+    """
+    Serve static files ourselves. Most browsers will cache them after one
+    request anyway, so there's not a lot of overhead.
+    """
     mimetype = mimetypes.guess_type('./static/' + static_file)
     if mimetype[0] == None:
         return None
@@ -304,6 +332,11 @@ def static_serve(env, static_file):
         return None
 
 def parse_config():
+    """
+    Use lib.config_parser to parse each target in the rtorrent_config dict.
+    I suppose it's more like verifying than parsing. Returns a list of dicts,
+    one dict per target.
+    """
 
     targets = []
     for x in rtorrent_config:
@@ -317,13 +350,6 @@ def parse_config():
 
     return targets
 
-# Beh
-def lookup_target(name):
-
-    for x in targets:
-        if x['name'] == name:
-            return x
-    return None
 
 if __name__ == '__main__':
     targets = parse_config()
