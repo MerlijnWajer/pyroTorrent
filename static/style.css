@@ -195,10 +195,10 @@ span.download_icon, span.upload_icon {
 }
 
 span.download_icon {
-    background: transparent url(/static/torrent/icons/arrow_down.png);
+    background: transparent url(/torrent/static/icons/arrow_down.png);
 }
 span.upload_icon {
-    background: transparent url(/static/torrent/icons/arrow_up.png);
+    background: transparent url(/torrent/static/icons/arrow_up.png);
 }
 
 
