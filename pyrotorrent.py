@@ -204,12 +204,16 @@ def torrent_info_page(env, torrent_hash, target):
     return template_render(tmpl, {'session' : env['beaker.session'],
         'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data} )
 
-def torrent_action(env, torrent_hash, action):
+def torrent_action(env, target, torrent_hash, action):
     """
     Start, Stop, Pause, Resume, Delete torrent. I suppose. XXX TODO
     """
+    target = lookup_target(target)
+    if target is None:
+        return None # 404
+
     try:
-        t = Torrent(torrent_hash)
+        t = Torrent(target, torrent_hash)
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
