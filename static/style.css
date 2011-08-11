@@ -1,6 +1,6 @@
 body {
     /*background-color: rgb(68, 68, 68); */
-    background-image: url('/static/torrent/cat.jpg');
+    background-image: url('/torrent/static/cat.jpg');
     color: #fff;
     font: 12px/18px "Liberation Sans", Arial, Verdana, Sans;
     margin: 0;

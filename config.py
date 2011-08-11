@@ -3,7 +3,7 @@
 # ``Base'' URL for your HTTP website
 BASE_URL = '/torrent'
 # HTTP URL for the static files
-STATIC_URL = '/static/torrent'
+STATIC_URL = BASE_URL + '/static'
 
 
 ## Exemplary SCGI setup using unix socket
@@ -31,14 +31,14 @@ rtorrent_config = {
             'url'  : '/RPC2',
         }
     }
-    ,
-    'sheevareborn' : {
-        'http' : {
-            'host' : '42.42.42.42',
-            'port' : 80,
-            'url'  : '/RPC2',
-        }
-    }
+#    ,
+#    'sheevareborn' : {
+#        'http' : {
+#            'host' : '42.42.42.42',
+#            'port' : 80,
+#            'url'  : '/RPC2',
+#        }
+#    }
 }
 
 # TODO: Remove from config.

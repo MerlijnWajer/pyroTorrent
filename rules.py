@@ -17,5 +17,8 @@ wt.add_rule(re.compile('^%s/target/(%s)/add_torrent/?$' % (BASE_URL, TARGET_REGE
 wt.add_rule(re.compile('^%s/view/([A-z]+)$' % BASE_URL), main_view_page,
         ['view'])
 
+wt.add_rule(re.compile('^%s/static/(.*)$' % BASE_URL), static_serve,
+        ['static_file'])
+
 # This should be the last rule.
 wt.add_rule(re.compile('^%s/?$' % BASE_URL), main_page, [])

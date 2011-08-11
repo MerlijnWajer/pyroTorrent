@@ -47,6 +47,9 @@ from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
+# For MIME
+import mimetypes
+
 
 def pyroTorrentApp(env, start_response):
     """
@@ -281,6 +284,19 @@ def add_torrent_page(env, target):
         'rtorrent_data' : rtorrent_data,
         'torrent_added': torrent_added,
         'target' : target['name'] } )
+
+def static_serve(env, static_file):
+    mimetype = mimetypes.guess_type('./static/' + static_file)
+    if mimetype[0] == None:
+        return None
+
+    print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
+
+    try:
+        f = open('./static/' + static_file)
+        return [mimetype[0], f.read()]
+    except IOError:
+        return None
 
 def parse_config():
 
