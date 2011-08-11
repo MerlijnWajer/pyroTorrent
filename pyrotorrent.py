@@ -295,7 +295,7 @@ def static_serve(env, static_file):
     if mimetype[0] == None:
         return None
 
-    #print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
+    # print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
 
     try:
         f = open('./static/' + static_file)
@@ -334,15 +334,12 @@ if __name__ == '__main__':
     # Add all rules
     execfile('rules.py')
 
-
-
-    from wsgiref.simple_server import make_server
-
     app = pyroTorrentApp
     app = SessionHack(app, error_page)
     app = SessionMiddleware(app, session_options)
 
     if USE_OWN_HTTPD:
+        from wsgiref.simple_server import make_server
         httpd = make_server('', 8000, app)
         httpd.serve_forever()
     else:
