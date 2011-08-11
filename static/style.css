@@ -1,15 +1,15 @@
 body {
-    background-color: #EEEEEE;
-    color: #555555;
+    background-color: rgb(68, 68, 68);
+/*    background-image: url('/static/torrent/cat.jpg');*/
+    color: #fff;
     font: 12px/18px "Liberation Sans", Arial, Verdana, Sans;
     margin: 0;
     padding: 0;
 }
 
 header {
-
-    background-color: #BED4EB;
-    color: #212224;
+    background-color: rgba(85, 85, 85, 0.4);
+    color: #fff;
     font-weight: bold;
 
     -moz-border-radius: 15px;
@@ -33,7 +33,7 @@ span.logo {
 }
 
 div.torrent_list_wiz {
-    background-color: #D8DEE3;
+    background-color: rgba(102, 102, 102, 0.4);
     padding: 1em;
 
     -moz-border-radius: 15px;
@@ -62,11 +62,11 @@ div.torrent_list_wiz {
 
 
 span.up {
-    color: #1D1;
+    color: #0CC;
 }
 
 span.down {
-    color: #D11;
+    color: #C90;
 }
 
 h1.target_header {
@@ -83,11 +83,11 @@ span.ip {
 }
 
 li.torrent_complete {
-    background-color: rgba(120, 120, 200, 0.5);
+    background-color: rgba(34, 153, 34, 0.4);
 }
 
 li.torrent_incomplete {
-    background-color: rgba(190, 190, 240, 0.5);
+    background-color: rgba(190, 190, 240, 0.4);
 }
 
 span.upload_rate, span.download_rate, span.progress {
@@ -121,27 +121,27 @@ span.upload_rate {
 }
 
 span.progress {
-    color: #000;
+    color: #000; /* #aaa; */
     margin-right: 0px;
 }
 
 a {
-    color: #000;
+    color: #fff;
 }
 
 a:link {
-    color: #000;
+    color: #fff;
 }
 
 a:visited {
-    color: #222;
+    color: #ddd;
 
 }
 
 div.target_info {
     border: 1px;
-    background-color: #C8D5E3;
-    color: #212224;
+    background-color: rgba(34, 34, 34, 0.4);
+    color: #fff;
 
     font-size: 14px;
     font-weight: bold;
@@ -157,7 +157,7 @@ div.inner_target_info {
 
 
 li.torrent_complete span.progress {
-    color: #000;
+    color: #eee;
     border: 0;
     padding: 1px 5px;
 }
@@ -166,7 +166,7 @@ li.torrent_incomplete span.progress_bar {
     /* Made the background colour more visible. I probably lack taste so
      * feel free to change it to a more fitting (but still noticable!) colour
      */
-    background-color: rgba(50, 200, 60, .6);
+    background-color: rgba(50, 200, 60, 0.4);
     width: 20%;
     height: 14px;
     display: block;
@@ -184,7 +184,7 @@ li.torrent_incomplete span.progress_text {
     width: 100%;
     z-index: 2;
 
-    color: #000;
+    color: #eee;
 }
 
 span.download_icon, span.upload_icon {
