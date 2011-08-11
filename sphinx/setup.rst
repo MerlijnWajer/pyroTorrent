@@ -260,7 +260,7 @@ Once you've done this, verify that πϱTorrent works:
 .. code-block:: bash
 
     $ python test.py
-    libTorrent version: 0.12.6
+    [ sheeva ] libTorrent version: 0.12.6
 
 Serving webpages
 ----------------
