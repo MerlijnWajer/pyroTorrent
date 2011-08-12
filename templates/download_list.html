@@ -9,73 +9,74 @@ View: {{ view}}
   {% for target in torrents_list %}
   {% set torrents = torrents_list[target] %}
   {% set rtorrent = rtorrent_data[target] %}
-      <div class="target_info">
-      <div class="inner_target_info">
-      <h1 class="target_header"> {{ target }} </h1>
-      <div class="target_header_bottom">
-          <span> libTorrent version: {{ rtorrent.get_libtorrent_version }} </span>
-          <span class="up">
-          Up:
-          {{ wn(rtorrent.get_upload_rate) }} /
-          {{ wn(rtorrent.get_upload_throttle) }}
-          </span>
-          <span class="down">
-          Down:
-          {{ wn(rtorrent.get_download_rate) }} /
-          {{ wn(rtorrent.get_download_throttle) }}
-          </span>
-          <span>
+    <div class="target_info">
+    <div class="inner_target_info">
+    <h1 class="target_header"> {{ target }} </h1>
+    <div class="target_header_bottom">
+        <span> libTorrent version: {{ rtorrent.get_libtorrent_version }} </span>
+        <span class="up">
+        Up:
+        {{ wn(rtorrent.get_upload_rate) }} /
+        {{ wn(rtorrent.get_upload_throttle) }}
+        </span>
+        <span class="down">
+        Down:
+        {{ wn(rtorrent.get_download_rate) }} /
+        {{ wn(rtorrent.get_download_throttle) }}
+        </span>
+        <span>
               <a href="{{base_url}}/target/{{target}}/add_torrent">
-                  Add Torrent
+              <span class="add_torrent_icon"></span>
               </a>
-          </span>
-      </div>
-      </div>
-      </div>
+        </span>
+    </div>
+    </div>
+    </div>
 
-      <div class="torrent_list_wiz">
-      <ul>
-      {% for x in torrents %}
-      <li class="torrent torrent_{% if not x.is_complete %}in{% endif %}complete">
-      <a href="{{base_url}}/target/{{target}}/torrent/{{ x.get_hash }}">{{ x.get_name }} </a>
-          <!-- Place other options/ icons here.... Resume... Pause... Delete...
-          View -->
-      {% if not x.is_complete %}
-      <!-- Needs icons -->
-      <span class="download_rate">
-          {% if x.get_download_rate > 0 %}
-          <span class="download_icon"></span>
-          {{ wn(x.get_download_rate) }}
-          {% endif %}
-      </span>
-      {% endif %}
+    <div class="torrent_list_wiz">
+    <ul>
+    {% for x in torrents %}
+    <li class="torrent_{% if not x.is_complete %}in{% endif %}complete">
+    <a href="{{base_url}}/target/{{target}}/torrent/{{ x.get_hash }}">{{ x.get_name }} </a>
+        <!-- Place other options/ icons here.... Resume... Pause... Delete...
+        View -->
 
-      <span class="upload_rate">
-          {% if x.get_upload_rate > 0 %}
-          <span class="upload_icon"></span>
-          {{ wn(x.get_upload_rate) }}
-          {% endif %}
-      </span>
+    {% if not x.is_complete %}
+    <!-- Needs icons -->
+    <span class="download_rate">
+        {% if x.get_download_rate > 0 %}
+        <span class="download_icon"></span>
+        {{ wn(x.get_download_rate) }}
+        {% endif %}
+    </span>
+    {% endif %}
 
-      <span class="progress">
-          {% if not x.is_complete %}
+    <span class="upload_rate">
+        {% if x.get_upload_rate > 0 %}
+        <span class="upload_icon"></span>
+        {{ wn(x.get_upload_rate) }}
+        {% endif %}
+    </span>
 
-          <span class="progress_bar" style="width: {{ x.get_download_total /
-              x.get_size_bytes * 100.0 }}%"></span>
-          {% endif %}
-          <span class="progress_text">
-              {% if x.is_complete %}
-              {{ wn(x.get_size_bytes )}}
-              {% else %}
-              {{ wn(x.get_download_total) }} / {{ wn(x.get_size_bytes )}}
-              {% endif %}
-          </span>
-      </span>
+    <span class="progress">
+        {% if not x.is_complete %}
 
-      </li>
-      {% endfor %}
-      </ul>
-      </div>
+        <span class="progress_bar" style="width: {{ x.get_download_total /
+            x.get_size_bytes * 100.0 }}%"></span>
+        {% endif %}
+        <span class="progress_text">
+            {% if x.is_complete %}
+            {{ wn(x.get_size_bytes )}}
+            {% else %}
+            {{ wn(x.get_download_total) }} / {{ wn(x.get_size_bytes )}}
+            {% endif %}
+        </span>
+    </span>
+
+    </li>
+    {% endfor %}
+    </ul>
+    </div>
 
   {% endfor %}
 {% endif %}

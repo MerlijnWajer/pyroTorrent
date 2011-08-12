@@ -127,15 +127,16 @@ span.progress {
 
 a {
     color: #fff;
+    text-decoration: none;
 }
 
 a:link {
     color: #fff;
 }
 
-a:visited {
-    color: #ddd;
-
+a:hover {
+    color: #888;
+    text-decoration: underline;
 }
 
 div.target_info {
@@ -174,6 +175,10 @@ li.torrent_incomplete span.progress_bar {
     z-index: 1;
 }
 
+li.torrent_incomplete:hover, li.torrent_complete:hover {
+    background-color: rgba(0, 0, 0, 0.0); /* Fully transparent background */
+}
+
 li.torrent_incomplete span.progress_text {
     display: inline-block;
     float: right;
@@ -201,6 +206,15 @@ span.upload_icon {
     background: transparent url(/torrent/static/icons/arrow_up.png);
 }
 
+span.add_torrent_icon {
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+}
+
+span.add_torrent_icon {
+    background: transparent url('/torrent/static/icons/add.png');
+}
 
 div.torrent-def-div {
     background-color: rgba(100, 100, 100, 0.4);
