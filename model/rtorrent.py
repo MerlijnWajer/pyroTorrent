@@ -212,6 +212,10 @@ _rpc_methods = {
     'set_xmlrpc_size_limit' : ('set_xmlrpc_size_limit',
         """
         Set the XMLRPC size limit.
+        """),
+    'execute_command' : ('execute_capture',
+        """
+        Execute command as rtorrent user and return output as string.
         """)
 }
 

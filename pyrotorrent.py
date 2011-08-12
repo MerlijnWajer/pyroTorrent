@@ -5,7 +5,7 @@ pyroTorrent module.
 
 from jinja2 import Environment, PackageLoader
 
-from webtool import WebTool, read_post_data
+from lib.webtool import WebTool, read_post_data
 
 import datetime
 import time
@@ -18,6 +18,9 @@ import urllib2
 
 # Binary object encoding
 import xmlrpclib
+
+# base64 dec+enc
+import base64
 
 # Regex
 import re
@@ -39,7 +42,7 @@ except ImportError:
 from lib.config_parser import parse_config_part, RTorrentConfigException, \
             CONNECTION_SCGI, CONNECTION_HTTP
 
-from sessionhack import SessionHack, SessionHackException
+from lib.sessionhack import SessionHack, SessionHackException
 
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
@@ -52,7 +55,6 @@ from lib.filetree import FileTree
 
 # For MIME
 import mimetypes
-
 
 # Main app
 def pyroTorrentApp(env, start_response):
@@ -212,8 +214,8 @@ def torrent_info_page(env, torrent_hash, target):
     try:
         t = Torrent(target, torrent_hash)
         q = t.query()
-        q.get_name().get_size_bytes().get_download_total().get_loaded_file()\
-                .get_message().is_active()
+        q.get_hash().get_name().get_size_bytes().get_download_total().\
+                get_loaded_file().get_message().is_active()
         torrentinfo = q.all()[0] # .first() ?
 
     except InvalidTorrentException, e:
@@ -233,7 +235,8 @@ def torrent_info_page(env, torrent_hash, target):
     tmpl = jinjaenv.get_template('torrent_info.html')
 
     return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data} )
+        'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data,
+        'target' : target} )
 
 def torrent_action(env, target, torrent_hash, action):
     """
@@ -313,6 +316,26 @@ def add_torrent_page(env, target):
         'rtorrent_data' : rtorrent_data,
         'torrent_added': torrent_added,
         'target' : target['name'] } )
+
+def torrent_file(env, target, torrent_hash):
+    """
+    """
+    target = lookup_target(target)
+    if target is None:
+        return None # 404
+
+    try:
+        r = RTorrent(target)
+        t = Torrent(target, torrent_hash)
+        filepath = t.get_loaded_file()
+        contents = r.execute_command('sh', '-c', 'cat ' + filepath + \
+                ' | base64')
+
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
+
+    return ['application/x-bittorrent', base64.b64decode(contents)]
+
 
 def static_serve(env, static_file):
     """

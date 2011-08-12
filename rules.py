@@ -11,6 +11,10 @@ wt.add_rule(re.compile('^%s/target/(%s)/torrent/(%s)/action/([A-z]+)?$' % \
     (BASE_URL, TARGET_REGEX, TORRENT_REGEX)),
     torrent_action, ['target', 'torrent_hash', 'action'])
 
+wt.add_rule(re.compile('^%s/target/(%s)/torrent/(%s).torrent$' % \
+    (BASE_URL, TARGET_REGEX, TORRENT_REGEX)),
+    torrent_file, ['target', 'torrent_hash'])
+
 wt.add_rule(re.compile('^%s/target/(%s)/add_torrent/?$' % (BASE_URL, TARGET_REGEX)),
         add_torrent_page, ['target'])
 

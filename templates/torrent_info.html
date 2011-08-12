@@ -25,7 +25,12 @@
         <h1> {{ torrent.get_name }}
             ({{ wn(torrent.get_download_total) }} /
             {{ wn(torrent.get_size_bytes) }}) </h1>
-        <p> Loaded file: {{ torrent.get_loaded_file }} </p>
+        <p> Loaded file: 
+        <a
+            href="{{base_url}}/target/{{target['name']}}/torrent/{{torrent.get_hash}}.torrent">
+            {{ torrent.get_loaded_file }}
+        </a>
+        </p>
         {% if torrent.get_message %}
         <p> Message: {{ torrent.get_message }} </p>
         {% endif %}
