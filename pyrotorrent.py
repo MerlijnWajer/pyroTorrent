@@ -288,18 +288,35 @@ def add_torrent_page(env, target):
     # Check for POST vars
     if str(env['REQUEST_METHOD']) == 'POST':
         data = read_post_data(env)
-        if data is None:
-            return str('Error: Invalid POST data')
-        torrent_url = data['torrent_url'] if 'torrent_url' in data else None
-        if torrent_url:
-            torrent_url = urllib.unquote_plus(torrent_url)
-            response = urllib2.urlopen(torrent_url)
-            torrent_raw = response.read()
+        #print 'POST DATA:', data
+        #print env
 
-            torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
+        if 'torrent_url' in data:
+            print "It's a URL!"
+            torrent_url = data['torrent_url'].value
+            if torrent_url:
+                print "Loading URL:", torrent_url
+                torrent_url = urllib.unquote_plus(torrent_url)
+                response = urllib2.urlopen(torrent_url)
+                torrent_raw = response.read()
+
+                torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
+
+                rtorrent = RTorrent(target)
+                return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+        elif 'torrent_file' in data:
+            print "It's a file!"
+            # If someone is messing around with the forms, check for it
+            if not data['torrent_file'].file:
+                return "Error: Form field 'torrent_file' not a file!"
+
+            print "Loading file:", data['torrent_file'].filename
+            torrent_raw_bin = xmlrpclib.Binary(data['torrent_file'].value)
 
             rtorrent = RTorrent(target)
             return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+        else:
+            return str("Error: Invalid POST data")
 
     rtorrent_data = fetch_global_info()
 
@@ -328,6 +345,8 @@ def torrent_file(env, target, torrent_hash):
         r = RTorrent(target)
         t = Torrent(target, torrent_hash)
         filepath = t.get_loaded_file()
+
+        # TODO: Check for errors. (Permission denied, non existing file, etc)
         contents = r.execute_command('sh', '-c', 'cat ' + filepath + \
                 ' | base64')
 

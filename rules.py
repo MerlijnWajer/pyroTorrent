@@ -1,6 +1,6 @@
 import re
 
-TARGET_REGEX = '[A-Za-z]+' # Limit this
+TARGET_REGEX = '[0-9A-Za-z_-]+' # Limit this
 TORRENT_REGEX = '[0-9,A-Z]{40}'
 
 wt.add_rule(re.compile('^%s/target/(%s)/torrent/(%s)/?$' % \

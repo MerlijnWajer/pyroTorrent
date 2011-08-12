@@ -22,4 +22,12 @@
 </form>
 </div>
 
+<div class="torrent-def-div">
+<form method="post" action="{{base_url}}/target/{{target}}/add_torrent"
+    enctype="multipart/form-data">
+    <p> Select torrent file here: <input type="file" name="torrent_file">
+        </input> </p>
+    <p> <input type="submit" value="Add torrent"></input> </p>
+</div>
+
 {% endblock %}

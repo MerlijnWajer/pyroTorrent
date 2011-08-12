@@ -4,6 +4,9 @@
 # REQUEST_URI = /mai/linkoe
 # IP = REMOTE_ADDR
 
+# Handle post data using FieldStorage
+import cgi
+
 class WebToolException(Exception):
     """
         Raised on an exception in the WebTool.
@@ -48,10 +51,26 @@ class WebTool(object):
         return None
 
 def read_post_data(env):
-    postdata = env['wsgi.input'].read()
-    splitdata = [x.split('=') for x in postdata.split('&')]
-    try:
-        data = dict(splitdata)
-    except (TypeError, ValueError):
-        data = None
-    return data
+#    if env['CONTENT_TYPE'] == 'multipart/form-data' :
+    if True:
+
+        # Code taken from:
+        # http://stackoverflow.com/questions/530526/accessing-post-data-from-wsgi
+        post_env = env.copy()
+        post_env['QUERY_STRING'] = ''
+        post = cgi.FieldStorage(
+            fp=env['wsgi.input'],
+            environ=post_env,
+            keep_blank_values=True
+        )
+
+        #print "Form fields: " + repr(post)
+        return post
+
+#    else:
+#        splitdata = [x.split('=') for x in postdata.split('&')]
+#        try:
+#            data = dict(splitdata)
+#        except (TypeError, ValueError):
+#            data = None
+#        return data
