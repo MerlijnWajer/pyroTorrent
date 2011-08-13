@@ -33,7 +33,7 @@ import simplejson as json
 # For sys.exit(), etc
 import sys
 
-from config import BASE_URL, STATIC_URL, rtorrent_config, session_options
+from config import BASE_URL, STATIC_URL, BACKGROUND_IMAGE, rtorrent_config
 try:
     from config import USE_OWN_HTTPD
 except ImportError:
@@ -373,6 +373,12 @@ def static_serve(env, static_file):
     except IOError:
         return None
 
+def style_serve(env):
+    tmpl = jinjaenv.get_template('style.css')
+
+    return ['text/css', template_render(tmpl,
+            {'background_image' : 'space1.png'})]
+
 def parse_config():
     """
     Use lib.config_parser to parse each target in the rtorrent_config dict.
@@ -398,6 +404,10 @@ if __name__ == '__main__':
     jinjaenv = Environment(loader=PackageLoader('pyrotorrent', 'templates'))
     jinjaenv.autoescape = True
     wt = WebTool()
+
+    session_options = {
+        'session.cookie_expires' : True
+    }
 
     # Add all rules
     execfile('rules.py')

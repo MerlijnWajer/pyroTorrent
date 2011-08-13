@@ -1,3 +1,9 @@
+Caching:
+    -   Our own static_serve does *not* do any caching.
+        It should at least send something like Expires and
+        last modified. (where last modified is when the file is modified,
+        not when we read the file and passed it to WSGI)
+
 Unclassified:
     -   Double check the [R]TorrentQuery implementation / design.
 
@@ -44,7 +50,7 @@ Version 0.0:
     -   Interface should work without a rtorrent connection [X]
     -   Implement XMLRPC Exceptions, own wrapper?           [X]
 
-    -   Download torrent files                              [ ]
+    -   Download torrent files                              [X]
     -   RTorrent ``info'' page, where we show all the available rtorrent
     information. (eg, all rtorrent calls that return info)  [ ]
 

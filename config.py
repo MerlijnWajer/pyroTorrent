@@ -4,7 +4,7 @@
 BASE_URL = '/torrent'
 # HTTP URL for the static files
 STATIC_URL = BASE_URL + '/static'
-USE_OWN_HTTPD = True
+USE_OWN_HTTPD = False
 
 
 ## Exemplary SCGI setup using unix socket
@@ -42,7 +42,4 @@ rtorrent_config = {
 #    }
 }
 
-# TODO: Remove from config.
-session_options = {
-    'session.cookie_expires' : True
-}
+BACKGROUND_IMAGE = 'space1.png'
