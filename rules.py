@@ -26,5 +26,9 @@ wt.add_rule(re.compile('^%s/(.*)$' % STATIC_URL), static_serve,
 
 wt.add_rule(re.compile('^%s/style.css$' % BASE_URL), style_serve, [])
 
+wt.add_rule(re.compile('^%s/login' % BASE_URL), handle_login, [])
+
+wt.add_rule(re.compile('^%s/logout' % BASE_URL), handle_logout, [])
+
 # This should be the last rule.
 wt.add_rule(re.compile('^%s/?$' % BASE_URL), main_page, [])

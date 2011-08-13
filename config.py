@@ -6,19 +6,34 @@ BASE_URL = '/torrent'
 STATIC_URL = BASE_URL + '/static'
 USE_OWN_HTTPD = False
 
+BACKGROUND_IMAGE = 'space1.png'
+
+USE_AUTH = False
+
+torrent_users = {
+    'test' : {
+        'targets' : [],
+        'background-image' : 'cat.png',
+        'password' : 'test'
+    }
+}
 
 ## Exemplary SCGI setup using unix socket
 #rtorrent_config = {
-#    'scgi' : {
-#        'unix-socket' : '/tmp/rtorrent.sock'
+#    'sheeva' : {
+#        'scgi' : {
+#            'unix-socket' : '/tmp/rtorrent.sock'
+#        }
 #    }
 #}
 #
 ## Exemplary SCGI setup using scgi over network
 #rtorrent_config = {
-#    'scgi' : {
-#        'host' : '192.168.1.70',
-#        'port' : 80
+#    'sheeva' : {
+#        'scgi' : {
+#            'host' : '192.168.1.70',
+#            'port' : 80
+#        }
 #    }
 #}
 
@@ -41,5 +56,3 @@ rtorrent_config = {
 #        }
 #    }
 }
-
-BACKGROUND_IMAGE = 'space1.png'

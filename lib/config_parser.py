@@ -1,3 +1,5 @@
+from model.pyro.user import PyroUser
+
 CONNECTION_SCGI, CONNECTION_HTTP = range(2)
 
 class RTorrentConfigException(Exception):
@@ -42,3 +44,34 @@ def parse_config_part(config_dict, name):
         }
     else:
         raise RTorrentConfigException('Config lacks scgi of http information')
+
+def parse_user_part(config_dict, name):
+    user = PyroUser()
+
+    user.name = name
+
+    if not config_dict.has_key('targets'):
+        raise RTorrentConfigException('User %s has no ``targets'' entry' % name)
+    elif type(config_dict['targets']) not in (list,):
+        raise RTorrentConfigException('User %s ``targets'' needs to be a list'\
+                                         % name)
+
+    user.targets = config_dict['targets']
+
+    if not config_dict.has_key('background-image'):
+        user.background_image = '' # XXX: WAT DO?
+    elif type(config_dict['background-image']) not in (str,):
+        raise RTorrentConfigException('User %s ``background-image'' must be a str'\
+                                         % name)
+
+    user.background_image = config_dict['background-image']
+
+    if not config_dict.has_key('password'):
+        raise RTorrentConfigException('User %s has no ``password'' entry' % name)
+    elif type(config_dict['password']) not in (str,):
+        raise RTorrentConfigException('User %s ``password'' must be a str'\
+                                         % name)
+
+    user.password = config_dict['password']
+
+    return user

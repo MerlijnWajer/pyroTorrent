@@ -33,16 +33,18 @@ import simplejson as json
 # For sys.exit(), etc
 import sys
 
-from config import BASE_URL, STATIC_URL, BACKGROUND_IMAGE, rtorrent_config
+from config import BASE_URL, STATIC_URL, BACKGROUND_IMAGE, USE_AUTH, \
+    rtorrent_config, torrent_users
 try:
     from config import USE_OWN_HTTPD
 except ImportError:
     USE_OWN_HTTPD = False # sane default?
 
-from lib.config_parser import parse_config_part, RTorrentConfigException, \
-            CONNECTION_SCGI, CONNECTION_HTTP
+from lib.config_parser import parse_config_part, parse_user_part, \
+    RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
 
 from lib.sessionhack import SessionHack, SessionHackException
+from lib.login import verify_target
 
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
@@ -61,7 +63,6 @@ def pyroTorrentApp(env, start_response):
     """
     pyroTorrent main function.
     """
-
     # Log here if you want
 
     r = wt.apply_rule(env['PATH_INFO'], env)
@@ -73,10 +74,9 @@ def pyroTorrentApp(env, start_response):
 
         rtorrent_data = fetch_global_info()
 
-        return template_render(tmpl, {
-            'url' : env['PATH_INFO'], 'session' : env['beaker.session'],
-            'rtorrent_data' : rtorrent_data},
-            default_page=False)
+        return template_render(tmpl, env,
+            {'url' : env['PATH_INFO'],
+            'rtorrent_data' : rtorrent_data})
 
     elif type(r) in (tuple, list) and len(r) >= 1:
         # Respond with custom type.
@@ -119,17 +119,40 @@ def lookup_target(name):
             return x
     return None
 
+def lookup_user(name):
+    """
+    """
+
+    for x in users:
+        if x.name == name:
+            return x
+    return None
+
+def loggedin(env):
+   return 'user_name' in env['beaker.session']
+
+def loggedin_and_require(env):
+    if USE_AUTH:
+        return loggedin(env)
+    else:
+        return True
+
 # Function to render the jinja template and pass some simple vars / functions.
-def template_render(template, vars, default_page=True):
+def template_render(template, env, vars):
     """
         Template Render is a helper that initialises basic template variables
         and handles unicode encoding.
     """
     vars['base_url'] = BASE_URL
     vars['static_url'] = STATIC_URL
+    vars['use_auth' = USE_AUTH
     vars['wn'] = wiz_normalise
+    vars['login'] = env['beaker.session']['user_name'] if \
+        env['beaker.session'].has_key('user_name') else None
 
-    return unicode(template.render(vars)).encode('utf8')
+    ret = unicode(template.render(vars)).encode('utf8')
+
+    return ret
 
 # Fetch some useful rtorrent info from all targets.
 def fetch_global_info():
@@ -169,13 +192,26 @@ def main_view_page(env, view):
     Main page. Shows all torrents, per target.
     Does two XMLRPC calls per target.
     """
+    if not loggedin_and_require(env):
+        return handle_login(env)
+
     rtorrent_data = fetch_global_info()
+
+    try:
+        user_name = env['beaker.session']['user_name']
+        user = lookup_user(user_name)
+    except KeyError, e:
+        user = None
 
 #    if view not in rtorrent_data.get_view_list:
 #        return error_page(env, 'Invalid view: %s' % view)
 
     torrents = {}
     for target in targets:
+        if user == None and USE_AUTH:
+            continue
+        if user and (target['name'] not in user.targets):
+            continue
 
         try:
             t = TorrentRequester(target, view)
@@ -190,9 +226,8 @@ def main_view_page(env, view):
 
     tmpl = jinjaenv.get_template('download_list.html')
 
-    return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrents_list' : torrents, 'rtorrent_data' : rtorrent_data,
-        'view' : view} )
+    return template_render(tmpl, env, {'torrents_list' : torrents,
+        'rtorrent_data' : rtorrent_data, 'view' : view} )
 
 def error_page(env, error='No error?'):
     """
@@ -200,17 +235,23 @@ def error_page(env, error='No error?'):
     """
     rtorrent_data = fetch_global_info()
     tmpl = jinjaenv.get_template('error.html')
-    return template_render(tmpl, {'session' : env['beaker.session'],
-        'error' : error,
+    return template_render(tmpl, env, {'error' : error,
         'rtorrent_data' : rtorrent_data })
 
 def torrent_info_page(env, torrent_hash, target):
     """
     Page for torrent information. Files, messages, active, etc.
     """
+    if not loggedin_and_require(env):
+        return handle_login(env)
+
     target = lookup_target(target)
     if target is None:
         return None # 404
+
+    if not verify_target(env, target):
+        return None # 404
+
     try:
         t = Torrent(target, torrent_hash)
         q = t.query()
@@ -234,16 +275,22 @@ def torrent_info_page(env, torrent_hash, target):
 
     tmpl = jinjaenv.get_template('torrent_info.html')
 
-    return template_render(tmpl, {'session' : env['beaker.session'],
-        'torrent' : torrentinfo, 'tree' : tree, 'rtorrent_data' : rtorrent_data,
+    return template_render(tmpl, env, {'torrent' : torrentinfo,
+        'tree' : tree, 'rtorrent_data' : rtorrent_data,
         'target' : target} )
 
 def torrent_action(env, target, torrent_hash, action):
     """
     Start, Stop, Pause, Resume, Delete torrent.
     """
+    if not loggedin_and_require(env):
+        return handle_login(env)
+
     target = lookup_target(target)
     if target is None:
+        return None # 404
+
+    if not verify_target(env, target):
         return None # 404
 
     try:
@@ -279,8 +326,14 @@ def add_torrent_page(env, target):
         Uploading .torrent files
         Option to add and start, or not start on add
     """
+    if not loggedin_and_require(env):
+        return handle_login(env)
+
     target = lookup_target(target)
     if target is None:
+        return None # 404
+
+    if not verify_target(env, target):
         return None # 404
 
     return_code = None
@@ -288,8 +341,6 @@ def add_torrent_page(env, target):
     # Check for POST vars
     if str(env['REQUEST_METHOD']) == 'POST':
         data = read_post_data(env)
-        #print 'POST DATA:', data
-        #print env
 
         if 'torrent_url' in data:
             print "It's a URL!"
@@ -329,16 +380,20 @@ def add_torrent_page(env, target):
     else:
         torrent_added = ''
 
-    return template_render(tmpl, {'session' : env['beaker.session'],
-        'rtorrent_data' : rtorrent_data,
-        'torrent_added': torrent_added,
-        'target' : target['name'] } )
+    return template_render(tmpl, env, {'rtorrent_data' : rtorrent_data,
+        'torrent_added': torrent_added, 'target' : target['name'] } )
 
 def torrent_file(env, target, torrent_hash):
     """
     """
+    if not loggedin_and_require(env):
+        return handle_login(env)
+
     target = lookup_target(target)
     if target is None:
+        return None # 404
+
+    if not verify_target(env, target):
         return None # 404
 
     try:
@@ -376,8 +431,46 @@ def static_serve(env, static_file):
 def style_serve(env):
     tmpl = jinjaenv.get_template('style.css')
 
-    return ['text/css', template_render(tmpl,
+    return ['text/css', template_render(tmpl, env,
             {'background_image' : 'space1.png'})]
+
+def handle_login(env):
+    tmpl = jinjaenv.get_template('loginform.html')
+
+    if str(env['REQUEST_METHOD']) == 'POST':
+        data = read_post_data(env)
+
+        if 'user' not in data or 'pass' not in data:
+            return template_render(tmpl, env,
+            {   'session' : env['beaker.session'], 'loginfail' : True}  )
+
+        user = urllib.unquote_plus(data['user'].value)
+        pass_ = urllib.unquote_plus(data['pass'].value)
+
+#        pass = hashlib.sha256(pass).hexdigest()
+        u = lookup_user(user)
+        if u is None:
+            return template_render(tmpl, env,
+            {   'session' : env['beaker.session'], 'loginfail' : True}  )
+
+        if u.password == pass_:
+            env['beaker.session']['user_name'] = user
+            env['beaker.session'].save()
+            return main_page(env)
+        else:
+            return template_render(tmpl, env,
+            {   'session' : env['beaker.session'], 'loginfail' : True}  )
+
+    return template_render(tmpl, env, { })
+
+def handle_logout(env):
+    if loggedin(env):
+        s = env['beaker.session']
+        s.delete()
+    else:
+        return error_page(env, 'Not logged in')
+
+    return main_page(env)
 
 def parse_config():
     """
@@ -398,9 +491,28 @@ def parse_config():
 
     return targets
 
+def parse_users():
+    """
+    """
+    users = []
+    for x in torrent_users:
+        try:
+            user = parse_user_part(torrent_users[x], x)
+        except RTorrentConfigException, e:
+            print 'Invalid config: ', e
+            sys.exit(1)
+
+        users.append(user)
+
+    return users
+
+session_options = {
+    'session.cookie_expires' : True
+}
 
 if __name__ == '__main__':
     targets = parse_config()
+    users = parse_users()
     jinjaenv = Environment(loader=PackageLoader('pyrotorrent', 'templates'))
     jinjaenv.autoescape = True
     wt = WebTool()

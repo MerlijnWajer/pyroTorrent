@@ -48,11 +48,3 @@ class TorrentRequester(BaseRequester):
             raise InvalidTorrentCommandException("%s is not a valid command" %
                     command)
 
-if __name__ == '__main__':
-
-    t = TorrentRequester('192.168.1.75')
-    t.get_name().get_hash().get_name()
-    for x in t.all():
-        print x
-
-

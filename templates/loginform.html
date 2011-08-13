@@ -1,0 +1,45 @@
+{% extends "base.jinja2" %}
+
+{% block title %}
+    pyroTorrent - Login
+{% endblock %}
+
+{% block main %}
+
+<div class="torrent-def-div">
+
+    {% if loginsuccess %}
+
+    <p> You are now logged in. </p>
+    {#
+    <p> Redirecting you to your own
+    <a href="{{baseurl}}/user/{{user.id}}">page</a>
+    in 5 seconds... </p>
+    <meta http-equiv="refresh" content="5 ;URL={{baseurl}}/" />
+    #}
+
+    {% elif loginfail %}
+        <p> Invalid username or password. </p>
+
+    {% else %}
+        {% if user_name %}
+
+            <p> You are already logged in </p>
+
+        {% else %}
+        <form method="post" action="{{base_url}}/login">
+
+            <p> You can log in with your pyroTorrent user here. </p>
+
+            <p>User:  <input type="text" name="user"></input> </p>
+            <p>Pass:  <input type="password" name="pass"></input> </p>
+            <br/>
+            <input type="submit" value="Log in"> </input>
+        </form>
+
+        {% endif %}
+    {% endif %}
+
+</div>
+
+{% endblock %}
