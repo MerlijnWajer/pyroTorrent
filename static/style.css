@@ -227,3 +227,20 @@ div.torrent-def-div {
     -moz-border-radius: 15px;
     border-radius: 15px;
 }
+
+/* Form styling */
+
+input, input.file {
+    background-color: rgba(0, 0, 0, 0.0);
+    color: #FFFFFF;
+}
+
+/* Hack from
+http://www.dreamincode.net/forums/topic/15621-styling-a-file-browse-button/
+*/
+input.hide {
+    position: absolute;
+    left: -137px;
+    opacity: 0;
+    z-index: 2;
+}

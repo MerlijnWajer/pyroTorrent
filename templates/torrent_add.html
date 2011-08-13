@@ -15,19 +15,40 @@
 {% endif %}
 
 <div class="torrent-def-div">
-<form method="post" action="{{base_url}}/target/{{target}}/add_torrent">
-    <p> Enter the Torrent URL here: <input type="text"
-    name="torrent_url"></input> </p>
-    <input type="submit" value="Add torrent"></input>
-</form>
+    <h1> Add a torrent with a direct link </h1>
+    <form method="post" action="{{base_url}}/target/{{target}}/add_torrent">
+        <p> Enter the Torrent URL here: <input type="text"
+        name="torrent_url"></input> </p>
+        <input type="submit" value="Add torrent"></input>
+    </form>
 </div>
 
+<script type="text/javascript">
+<!-- hack from http://www.dreamincode.net/forums/topic/15621-styling-a-file-browse-button/ -->
+function buttonPush (buttonStatus) {
+   if (buttonStatus == "depressed")
+      document.getElementById("pseudobutton").style.borderStyle = "inset";
+   else
+      document.getElementById("pseudobutton").style.borderStyle = "outset";
+}
+</script>
+
 <div class="torrent-def-div">
-<form method="post" action="{{base_url}}/target/{{target}}/add_torrent"
-    enctype="multipart/form-data">
-    <p> Select torrent file here: <input type="file" name="torrent_file">
-        </input> </p>
-    <p> <input type="submit" value="Add torrent"></input> </p>
+    <h1> Add a local torrent file </h1>
+    <form method="post" action="{{base_url}}/target/{{target}}/add_torrent"
+        enctype="multipart/form-data">
+
+    <p>
+    <input type="button" class="red" id="pseudobutton" value="Open File">
+
+    <input type="file" class="hide" name="torrent_file"
+           onmousedown="buttonPush('depressed');"
+           onmouseup="buttonPush('normal');"
+           onmouseout="buttonPush('phased');" >
+    </p>
+
+     <p> <input type="submit" value="Add torrent"></input> </p>
+    </form>
 </div>
 
 {% endblock %}
