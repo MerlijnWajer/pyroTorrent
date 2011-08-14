@@ -44,7 +44,6 @@ from lib.config_parser import parse_config_part, parse_user_part, \
     RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
 
 from lib.sessionhack import SessionHack, SessionHackException
-from lib.login import verify_target
 
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
@@ -249,7 +248,13 @@ def torrent_info_page(env, torrent_hash, target):
     if target is None:
         return None # 404
 
-    if not verify_target(env, target):
+    try:
+        user_name = env['beaker.session']['user_name']
+        user = lookup_user(user_name)
+    except KeyError, e:
+        user = None
+
+    if user == None or target['name'] not in user.targets:
         return None # 404
 
     try:
@@ -333,7 +338,13 @@ def add_torrent_page(env, target):
     if target is None:
         return None # 404
 
-    if not verify_target(env, target):
+    try:
+        user_name = env['beaker.session']['user_name']
+        user = lookup_user(user_name)
+    except KeyError, e:
+        user = None
+
+    if user == None or target['name'] not in user.targets:
         return None # 404
 
     return_code = None
