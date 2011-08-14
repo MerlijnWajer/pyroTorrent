@@ -7,9 +7,6 @@ from jinja2 import Environment, PackageLoader
 
 from lib.webtool import WebTool, read_post_data
 
-import datetime
-import time
-
 # For unescaping
 import urllib
 
@@ -57,6 +54,15 @@ from lib.filetree import FileTree
 # For MIME
 import mimetypes
 
+
+# For stat
+import os
+import stat
+
+import datetime
+import time
+
+
 # Main app
 def pyroTorrentApp(env, start_response):
     """
@@ -77,10 +83,10 @@ def pyroTorrentApp(env, start_response):
             {'url' : env['PATH_INFO'],
             'rtorrent_data' : rtorrent_data})
 
-    elif type(r) in (tuple, list) and len(r) >= 1:
-        # Respond with custom type.
-        start_response('200 OK', [('Content-Type', r[0])])
-        r = r[1]
+    elif type(r) in (tuple, list) and len(r) == 3:
+        # Respond with custom headers
+        start_response(r[0], r[1])
+        r = r[2]
 
     # 200
     else:
@@ -419,7 +425,8 @@ def torrent_file(env, target, torrent_hash):
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
-    return ['application/x-bittorrent', base64.b64decode(contents)]
+    headers = [('Content-Type', 'application/x-bittorrent')]
+    return ['200 OK', headers, base64.b64decode(contents)]
 
 
 def static_serve(env, static_file):
@@ -434,9 +441,31 @@ def static_serve(env, static_file):
     # print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
 
     try:
+        st = os.stat('./static/' + static_file)
+        d = datetime.datetime.fromtimestamp(st[stat.ST_MTIME])
+
+        headers = [('Content-Type', mimetype[0]),
+                   ('Last-Modified', d.strftime('%a, %d %b %Y %H:%M:%S GMT'))
+                   ]
+
+        if 'HTTP_IF_MODIFIED_SINCE' in env:
+            try:
+                prev_date = datetime.datetime.strptime( \
+                        env['HTTP_IF_MODIFIED_SINCE'], \
+                        '%a, %d %b %Y %H:%M:%S GMT')
+                if prev_date >= d:
+                    print '%s: Not modified' % static_file
+                    return ['304 Not Modified', headers, '']
+                else:
+                    print '%s: Modified' % static_file
+            except ValueError, e:
+                pass
+
         f = open('./static/' + static_file)
-        return [mimetype[0], f.read()]
+        return ['200 OK', headers, f.read()]
     except IOError:
+        return None
+    except OSError:
         return None
 
 def style_serve(env):
@@ -453,7 +482,8 @@ def style_serve(env):
     if user and user.background_image != None:
         background = user.background_image
 
-    return ['text/css', template_render(tmpl, env,
+    headers = [('Content-Type', 'text/css')]
+    return ['200 OK', headers, template_render(tmpl, env,
             {'background_image' : background})]
 
 def handle_login(env):
