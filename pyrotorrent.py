@@ -431,8 +431,19 @@ def static_serve(env, static_file):
 def style_serve(env):
     tmpl = jinjaenv.get_template('style.css')
 
+    background = BACKGROUND_IMAGE
+
+    try:
+        user_name = env['beaker.session']['user_name']
+        user = lookup_user(user_name)
+    except KeyError, e:
+        user = None
+
+    if user:
+        background = user.background_image
+
     return ['text/css', template_render(tmpl, env,
-            {'background_image' : 'space1.png'})]
+            {'background_image' : background})]
 
 def handle_login(env):
     tmpl = jinjaenv.get_template('loginform.html')

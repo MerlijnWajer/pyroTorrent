@@ -6,14 +6,15 @@ BASE_URL = '/torrent'
 STATIC_URL = BASE_URL + '/static'
 USE_OWN_HTTPD = False
 
-BACKGROUND_IMAGE = 'space1.png'
+# Default background
+BACKGROUND_IMAGE = 'cat.jpg'
 
-USE_AUTH = False
+USE_AUTH = True
 
 torrent_users = {
     'test' : {
         'targets' : [],
-        'background-image' : 'cat.png',
+        'background-image' : 'space1.png',
         'password' : 'test'
     }
 }
