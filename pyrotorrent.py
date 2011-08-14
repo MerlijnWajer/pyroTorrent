@@ -439,7 +439,7 @@ def style_serve(env):
     except KeyError, e:
         user = None
 
-    if user:
+    if user and user.background_image != None:
         background = user.background_image
 
     return ['text/css', template_render(tmpl, env,
