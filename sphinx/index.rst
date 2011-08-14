@@ -30,22 +30,23 @@ It's features include but are not limited to:
     -   Add torrents via direct links to .torrent files
     -   Basic support for rtorrent views. (Using /view/<viewname>)
     -   Direct SCGI communication over Unix sockets as well as HTTP XMLRPC.
+    -   Multiple rtorrent sources. (``targets``)
+    -   Support for basic user management. (config file + per target)
 
 Planned features:
 
+    -   Advanced user management.
     -   Add events / schedulers.
     -   Encryption policy management.
     -   Manage lots of rtorrent settings.
     -   Move torrents to views
     -   Add statistics. (graphs)
-    -   Multiple rtorrent sources. (Will require a large rewrite)
-    -   Support for user management, each with their own views. (db and
-        flat file)
     -   And a lot more...
 
 Far fetched:
 
     -   Support for transmission
+    -   Support for other clients.
 
 Additionally, pyroTorrent tries to document most of the rTorrent XMLRPC methods
 it uses. Its documentation of the rTorrent XMLRPC methods is probably far more
