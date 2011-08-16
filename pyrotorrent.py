@@ -586,8 +586,11 @@ if __name__ == '__main__':
     app = SessionMiddleware(app, session_options)
 
     if USE_OWN_HTTPD:
-        from wsgiref.simple_server import make_server
-        httpd = make_server('', 8000, app)
+        from wsgiref.simple_server import make_server, \
+                WSGIServer, WSGIRequestHandler
+        WSGIRequestHandler.log_message = lambda *x: None
+        httpd = make_server('', 8000, app, server_class=WSGIServer,
+                handler_class=WSGIRequestHandler)
         httpd.serve_forever()
     else:
         from flup.server.fcgi import WSGIServer
