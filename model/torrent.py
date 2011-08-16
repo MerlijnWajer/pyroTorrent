@@ -100,7 +100,7 @@ _rpc_methods = {
         """),
     'get_loaded_file' : ('d.get_loaded_file',
         """
-        Returns the size of the torrent in files.
+        Returns absolute path to .torrent file.
         """),
 
     'get_hash' :  ('d.get_hash',

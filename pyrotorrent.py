@@ -254,14 +254,16 @@ def torrent_info_page(env, torrent_hash, target):
     if target is None:
         return None # 404
 
+    # XXX: Security code, beware of copy/pasta
     try:
         user_name = env['beaker.session']['user_name']
         user = lookup_user(user_name)
     except KeyError, e:
         user = None
 
-    if user == None or target['name'] not in user.targets:
-        return None # 404
+    if USE_AUTH:
+        if user == None or target['name'] not in user.targets:
+            return None # 404
 
     try:
         t = Torrent(target, torrent_hash)
@@ -301,8 +303,8 @@ def torrent_action(env, target, torrent_hash, action):
     if target is None:
         return None # 404
 
-    if not verify_target(env, target):
-        return None # 404
+    # if not verify_target(env, target):
+    #     return None # 404
 
     try:
         t = Torrent(target, torrent_hash)
@@ -350,8 +352,9 @@ def add_torrent_page(env, target):
     except KeyError, e:
         user = None
 
-    if user == None or target['name'] not in user.targets:
-        return None # 404
+    if USE_AUTH:
+        if user == None or target['name'] not in user.targets:
+            return None # 404
 
     return_code = None
 
@@ -402,6 +405,8 @@ def add_torrent_page(env, target):
 
 def torrent_file(env, target, torrent_hash):
     """
+    This function returns a torrent's
+    .torrent file to the user.
     """
     if not loggedin_and_require(env):
         return handle_login(env)
@@ -410,8 +415,8 @@ def torrent_file(env, target, torrent_hash):
     if target is None:
         return None # 404
 
-    if not verify_target(env, target):
-        return None # 404
+    # if not verify_target(env, target):
+    #     return None # 404
 
     try:
         r = RTorrent(target)
