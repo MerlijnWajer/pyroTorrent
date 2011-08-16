@@ -1,6 +1,7 @@
 body {
     /*background-color: rgb(68, 68, 68); */
     background-image: url('{{static_url}}/{{background_image}}');
+    background-size: 100%;
 /*    background-image: url('/torrent/static/space1.png');*/
     color: #fff;
     font: 12px/18px "Liberation Sans", Arial, Verdana, Sans;
@@ -94,7 +95,7 @@ li.torrent_incomplete {
 span.upload_rate, span.download_rate, span.progress {
     clear: none;
     display: inline-block;
-    margin-top: -17px;
+/*    margin-top: -17px; */
     position: absolute;
     right: 0%;
     text-align: right;
@@ -114,11 +115,11 @@ span.progress {
 }
 
 span.download_rate {
-    margin-right: 210px;
+    margin-right: 220px;
 }
 
 span.upload_rate {
-    margin-right: 152px;
+    margin-right: 162px;
 }
 
 span.progress {
