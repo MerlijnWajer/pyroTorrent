@@ -110,6 +110,8 @@ span.progress {
 }
 
 span.progress_text {
+    position: absolute;
+    right: 30px;
     display: clear;
     text-align: right;
     width: 100%;
