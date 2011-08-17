@@ -152,6 +152,7 @@ def template_render(template, env, vars):
     vars['static_url'] = STATIC_URL
     vars['use_auth'] = USE_AUTH
     vars['wn'] = wiz_normalise
+    vars['trans'] = 0.4
     vars['login'] = env['beaker.session']['user_name'] if \
         env['beaker.session'].has_key('user_name') else None
 

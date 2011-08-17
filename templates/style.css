@@ -1,6 +1,5 @@
 body {
-    /*background-color: rgb(68, 68, 68); */
-    background-image: url('{{static_url}}/{{background_image}}');
+    background: url('{{static_url}}/{{background_image}}') rgb(68, 68, 68);
     background-size: 100%;
 /*    background-image: url('/torrent/static/space1.png');*/
     color: #fff;
@@ -10,7 +9,7 @@ body {
 }
 
 header {
-    background-color: rgba(85, 85, 85, 0.4);
+    background-color: rgba(85, 85, 85, {{ trans }});
     color: #fff;
     font-weight: bold;
 
@@ -35,7 +34,7 @@ span.logo {
 }
 
 div.torrent_list_wiz {
-    background-color: rgba(102, 102, 102, 0.4);
+    background-color: rgba(102, 102, 102, {{trans}});
     padding: 1em;
 
     -moz-border-radius: 15px;
@@ -130,7 +129,7 @@ span.progress_text {
 span.progress_bar {
     position: absolute;
     max-width: 140px;
-    background-color: rgba(50, 200, 60, 0.4);
+    background-color: rgba(50, 200, 60, {{trans}});
     /*width: 10px; */
     height: 14px;
     /* float: left; */
@@ -155,7 +154,7 @@ a:hover {
 }
 
 div.target_info {
-    background-color: rgba(34, 34, 34, 0.4);
+    background-color: rgba(34, 34, 34, {{trans}});
     color: #fff;
 
     font-size: 14px;
@@ -171,14 +170,14 @@ div.inner_target_info {
 }
 
 li.torrent_complete {
-    background-color: rgba(34, 153, 34, 0.4);
+    background-color: rgba(34, 153, 34, {{trans}});
 
     border: 0;
     padding: 1px 5px;
 }
 
 li.torrent_incomplete {
-    background-color: rgba(190, 190, 240, 0.4);
+    background-color: rgba(190, 190, 240, {{trans}});
 
     border: 0;
     z-index: 2;
@@ -213,8 +212,8 @@ span.add_torrent_icon {
 }
 
 div.torrent-def-div {
-    background-color: rgba(100, 100, 100, 0.4);
-   /* background-color: rgba(34, 34, 34, 0.4);*/
+    background-color: rgba(100, 100, 100, {{trans}});
+   /* background-color: rgba(34, 34, 34, {{trans}});*/
     color: #fff;
 
     margin-top: 2em;
