@@ -25,7 +25,6 @@ A simple test:
 
 .. code-block: python
 
-
     x = RTorrent('sheeva')
 
     # Simple test.
@@ -37,6 +36,7 @@ A simple test:
     print 'Throttle:', x.get_upload_throttle()
 
     print 'Download list', x.get_download_list()
+
 """
 
 from lib.xmlrpc import RTorrentXMLRPC

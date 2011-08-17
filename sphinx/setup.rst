@@ -31,8 +31,9 @@ as `lighttpd <http://www.lighttpd.net/>`_ or directly via SCGI.
 
 To run the web interface, πϱTorrent can either serve pages using a FastCGI-aware
 HTTPD (`lighttpd`_, but also Apache and Nginx) or it can simply run it's
-own *very basic* HTTPD. Currently I have not played a lot with it's own Simple
-HTTPD, so I recommend using an external HTTPD with FastCGI support.
+own built-in *basic* HTTPD. A professional HTTPD such as `lighttpd`_ is
+recommended, but the built-in HTTPD works well if you don't need extreme
+performance and is a lot easier to set up.
 
 Now that all the option have been layed out, you have a few options.
 
@@ -60,15 +61,17 @@ direct SCGI ability to talk to rTorrent.
 This uses a HTTPD to talk to rTorrent, but use πϱTorrent's built-in HTTPD to
 serve web pages.
 
-.. note::
-
-    *THIS IS SILLY, DO NOT USE THIS METHOD!*
+Notes
+~~~~~
 
 Personally I suggest using a professional HTTPD (like `lighttpd`_) to serve
 the pages and using πϱTorrent's direct SCGI capabilities to talk to rTorrent
-directly over a unix socket file. Alternatively you can use `lighttpd`_'s SCGI
-capabilities to act as middle man for the communication between rtorrent and
-πϱTorrent. (πϱTorrent will then talk over HTTP using XMLRPC instead of SCGI)
+directly over a unix socket file. But really, there's not a huge difference. If
+you just want to try out pyroTorrent, the built-in HTTPD is fine.
+
+Alternatively you can use `lighttpd`_'s SCGI capabilities to act as middle man
+for the communication between rtorrent and πϱTorrent.
+(πϱTorrent will then talk over HTTP using XMLRPC instead of SCGI)
 
 Getting started
 ---------------
@@ -364,7 +367,7 @@ alive:
 
 .. code-block:: bash
 
-    # ps xua  |grep python
+    # ps xua  | grep python
     lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/pyrotorrent/pyrotorrent.py
 
 
@@ -375,7 +378,7 @@ alive:
 The πϱTorrent configuration file is trivial.
 
 Basic πϱTorrent configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A basic configuration file (just enough for the famous ``test.py``) looks like
 this:
@@ -419,7 +422,7 @@ want to use and comment the other ones. (And make sure you adjust the
 information such as host, port or path)
 
 πϱTorrent configuration for webpages
-````````````````````````````````````
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To actually serve webpages over FCGI, we need to extend the configuration file a
 bit:
@@ -432,21 +435,39 @@ bit:
     BASE_URL = '/torrent'
     # HTTP URL for the static files
     STATIC_URL = BASE_URL + '/static'
-    USE_OWN_HTTPD = True
 
+    # Use built-in HTTPD?
+    USE_OWN_HTTPD = False
+
+    # Default background
+    BACKGROUND_IMAGE = 'cat.jpg'
+
+    USE_AUTH = True
+
+    torrent_users = {
+        'USER NAME' : {
+            'targets' : ['sheeva', 'sheevareborn'],
+            'background-image' : 'space1.png',
+            'password' : 'FILL IN PASSWORD'
+        }
+    }
 
     ## Exemplary SCGI setup using unix socket
     #rtorrent_config = {
-    #    'scgi' : {
-    #        'unix-socket' : '/tmp/rtorrent.sock'
+    #    'sheeva' : {
+    #        'scgi' : {
+    #            'unix-socket' : '/tmp/rtorrent.sock'
+    #        }
     #    }
     #}
     #
     ## Exemplary SCGI setup using scgi over network
     #rtorrent_config = {
-    #    'scgi' : {
-    #        'host' : '192.168.1.70',
-    #        'port' : 80
+    #    'sheeva' : {
+    #        'scgi' : {
+    #            'host' : '192.168.1.70',
+    #            'port' : 80
+    #        }
     #    }
     #}
 
@@ -470,10 +491,6 @@ bit:
         }
     }
 
-    # TODO: Remove from config.
-    session_options = {
-        'session.cookie_expires' : True
-    }
 
 Make sure the *BASE_URL* matches the URL you set in your HTTPD setup.
 
@@ -481,7 +498,7 @@ When you're done
 ----------------
 
 Congratulations. (Some stuff here on what to do if you ran into problems, and
-also hint that people can now start looking at the code to add features, ro how
+also hint that people can now start looking at the code to add features, or how
 to request features)
 
 Oh, and enjoy πϱTorrent.

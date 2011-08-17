@@ -26,6 +26,7 @@ Head over to :ref:`multibase-class` to find more about the general *Query classe
     res = rq.first()
 
     print res.get_upload_rate # Note that this is an attribute.
+
 """
 from lib.multibase import MultiBase
 from model import rtorrent

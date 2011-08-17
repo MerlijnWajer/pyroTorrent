@@ -37,6 +37,7 @@ View: {{ view}}
     <ul>
     {% for x in torrents %}
     <li class="torrent_{% if not x.is_complete %}in{% endif %}complete">
+
     <a href="{{base_url}}/target/{{target}}/torrent/{{ x.get_hash }}">{{ x.get_name }} </a>
         <!-- Place other options/ icons here.... Resume... Pause... Delete...
         View -->
