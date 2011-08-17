@@ -443,6 +443,13 @@ def static_serve(env, static_file):
     if mimetype[0] == None:
         return None
 
+    pyropath = os.path.abspath(__file__)
+    filepath = os.path.abspath('./static/' + static_file)
+    pyrodir =  os.path.dirname(pyropath) + '/static'
+
+    if not filepath.startswith(pyrodir):
+        return None
+
     # print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
 
     try:
