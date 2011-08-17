@@ -50,8 +50,7 @@ View: {{ view}}
         {% if not x.is_complete %}
 
         <span class="progress_bar" style="width:
-            {{ x.get_download_total /
-            x.get_size_bytes * 100.0 }}%"></span>
+            {{ 140 * x.get_download_total / x.get_size_bytes }}px"></span>
 
         {% endif %}
         <span class="progress_text">

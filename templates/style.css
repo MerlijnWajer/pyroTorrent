@@ -103,35 +103,46 @@ span.progress {
     border-radius: 15px;
     */
 
-    color: #000; /* #aaa; */
+    /*color: #000; #aaa; */
     margin-right: 0px;
 
     color: #eee;
 }
 
 span.progress_text {
+    /*
     position: absolute;
     right: 30px;
+    */
     display: clear;
-    text-align: right;
+    /*text-align: right;*/
     width: 100%;
-    z-index: 2;
+    /* z-index: 2; */
+
+    /* meridion adds */
+    float: right;
+    min-width: 100%;
+    z-index: -1;
 
     color: #eee;
 }
 
 span.progress_bar {
+    position: absolute;
+    max-width: 140px;
     background-color: rgba(50, 200, 60, 0.4);
-    width: 10px;
+    /*width: 10px; */
     height: 14px;
-    float: left;
-    z-index: 1;
+    /* float: left; */
+    /*z-index: 1; */
+    /* z-index: 1; */
 }
-
 
 a {
     color: #fff;
     text-decoration: none;
+    /* meridion adds */
+    z-index: 100;
 }
 
 a:link {
