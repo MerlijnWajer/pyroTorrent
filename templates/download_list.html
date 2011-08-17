@@ -41,6 +41,24 @@ View: {{ view}}
         <!-- Place other options/ icons here.... Resume... Pause... Delete...
         View -->
 
+    <span class="progress">
+        {% if not x.is_complete %}
+
+        <span class="progress_bar" style="width:
+            {{ x.get_download_total /
+            x.get_size_bytes * 100.0 }}%"></span>
+
+        {% endif %}
+        <span class="progress_text">
+        {% if x.is_complete %}
+            {{ wn(x.get_size_bytes )}}
+        {% else %}
+            {{ wn(x.get_download_total) }} / {{ wn(x.get_size_bytes )}}
+        {% endif %}
+        </span>
+    </span>
+
+
     {% if not x.is_complete %}
     <!-- Needs icons -->
     <span class="download_rate">
@@ -56,21 +74,6 @@ View: {{ view}}
         <span class="upload_icon"></span>
         {{ wn(x.get_upload_rate) }}
         {% endif %}
-    </span>
-
-    <span class="progress">
-        {% if not x.is_complete %}
-
-        <span class="progress_bar" style="width: {{ x.get_download_total /
-            x.get_size_bytes * 100.0 }}%"></span>
-        {% endif %}
-        <span class="progress_text">
-            {% if x.is_complete %}
-            {{ wn(x.get_size_bytes )}}
-            {% else %}
-            {{ wn(x.get_download_total) }} / {{ wn(x.get_size_bytes )}}
-            {% endif %}
-        </span>
     </span>
 
     </li>

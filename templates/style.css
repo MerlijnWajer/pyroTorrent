@@ -84,48 +84,48 @@ span.ip {
     font-weight: bold;
 }
 
-li.torrent_complete {
-    background-color: rgba(34, 153, 34, 0.4);
-}
-
-li.torrent_incomplete {
-    background-color: rgba(190, 190, 240, 0.4);
-}
-
 span.upload_rate, span.download_rate, span.progress {
     clear: none;
     display: inline-block;
-/*    margin-top: -17px; */
-    position: absolute;
     right: 0%;
     text-align: right;
+    float: right;
 }
 
 span.progress {
     border: 1px solid #272;
     width: 140px;
     height: 14px;
-    right: 30px;
     line-height: 16px;
 
     /*
     -moz-border-radius: 15px;
     border-radius: 15px;
     */
-}
 
-span.download_rate {
-    margin-right: 220px;
-}
-
-span.upload_rate {
-    margin-right: 162px;
-}
-
-span.progress {
     color: #000; /* #aaa; */
     margin-right: 0px;
+
+    color: #eee;
 }
+
+span.progress_text {
+    display: clear;
+    text-align: right;
+    width: 100%;
+    z-index: 2;
+
+    color: #eee;
+}
+
+span.progress_bar {
+    background-color: rgba(50, 200, 60, 0.4);
+    width: 10px;
+    height: 14px;
+    float: left;
+    z-index: 1;
+}
+
 
 a {
     color: #fff;
@@ -157,41 +157,24 @@ div.inner_target_info {
     margin: 2em;
 }
 
+li.torrent_complete {
+    background-color: rgba(34, 153, 34, 0.4);
 
-li.torrent_complete span.progress {
-    color: #eee;
     border: 0;
     padding: 1px 5px;
 }
 
-li.torrent_incomplete span.progress_bar {
-    /* Made the background colour more visible. I probably lack taste so
-     * feel free to change it to a more fitting (but still noticable!) colour
-     */
-    background-color: rgba(50, 200, 60, 0.4);
-    width: 20%;
-    height: 14px;
-    display: block;
-    float: left;
-    position: absolute;
-    z-index: 1;
+li.torrent_incomplete {
+    background-color: rgba(190, 190, 240, 0.4);
+
+    border: 0;
+    z-index: 2;
 }
 
 li.torrent_incomplete:hover, li.torrent_complete:hover {
     background-color: rgba(0, 0, 0, 0.0); /* Fully transparent background */
 }
 
-li.torrent_incomplete span.progress_text {
-    display: inline-block;
-    float: right;
-    position: absolute;
-    text-align: right;
-    right: 2px;
-    width: 100%;
-    z-index: 2;
-
-    color: #eee;
-}
 
 span.download_icon, span.upload_icon {
     float: right;
@@ -212,9 +195,7 @@ span.add_torrent_icon {
     height: 16px;
     width: 16px;
     display: inline-block;
-}
 
-span.add_torrent_icon {
     background: transparent url('/torrent/static/icons/add.png');
 }
 
