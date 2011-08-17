@@ -7,6 +7,11 @@
 Introduction to πϱTorrent
 ===========================
 
+.. figure:: pyrotorrent.png
+    :scale: 25%
+
+    PyroTorrent
+
 What is πϱTorrent?
 ------------------
 
