@@ -17,10 +17,16 @@ import types
 
 class Torrent(object):
     """
+    Torrent class. This class contains most of the methods specific to a
+    torrent, such as get_name, get_hash, is_complete, get_download_rate, etc.
     """
+
     def __init__(self, target, _hash):
+        """
+        Initialise the Torrent object; pass a target dict (parsed by
+        parse_config in pyrotorrentpy) and the torrent hash.
+        """
         self.target = target
-        assert isinstance(target, dict)
         self.s = RTorrentXMLRPC(target)
         self._hash = _hash
 

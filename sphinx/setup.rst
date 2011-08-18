@@ -431,7 +431,7 @@ bit:
 
     # Place all your globals here
 
-    # ``Base'' URL for your HTTP website
+    # Base URL for your HTTP website
     BASE_URL = '/torrent'
     # HTTP URL for the static files
     STATIC_URL = BASE_URL + '/static'

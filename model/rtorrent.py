@@ -4,7 +4,7 @@
 RTorrent
 ========
 
-The RTorrent class serves as an interface to a remote RTorrent (program?).
+The RTorrent class serves as an interface to a remote RTorrent instance.
 It implements a lot of the functionality that RTorrent exposes over XMLRPC;
 currently only XMLRPC over HTTP is supported; but support for direct SCGI is
 planned. Basically, HTTP support requires a web server to direct requests to
@@ -13,9 +13,9 @@ SCGI to talk to RTorrent)
 
 The RTorrent constructor requires a host and optionally a port and url.
 
-Some of the functions documented in here are in fact auto generated (on the
-fly); We did this for a few reasons: extendability and ease of use. (We can
-easily chain calls this way)
+Some of the functions documented in here are in fact auto generated (at
+runtime); We did this for a few reasons: extendability and ease of use.
+(We can easily chain calls this way)
 They will only have one argument in the documentation: *args.
 Obviously some do not take any arguments; the docstring should
 (in the near future, anyway) explain exactly what variables
@@ -47,7 +47,6 @@ class RTorrent(object):
     (read: global functionality) in a class. Think of, current upload and
     download, libTorrent version.
 
-
     Methods specific to a Torrent can be found in the :ref:`torrent-class`
     class.
     """
@@ -56,14 +55,13 @@ class RTorrent(object):
     def __init__(self, target):
         """
         Initialise the RTorrent object.
-        Host is the hostname of the server where the XMLRPC interface is
-        running. (HTTP only at the moment)
-        Port is the port for http...
-        URL defaults to '/RPC2', you shouldn't change this unless you know
-        what you are doing.
+        ``target`` is target dict as parsed by parse_config (pyrotorrent.py).
         """
         self.target = target
         self.s = RTorrentXMLRPC(target)
+
+    def __repr__(self):
+        return 'RTorrent(%s)' % self.target['name']
 
     def get_download_list(self, _type=''):
         """
@@ -79,7 +77,7 @@ class RTorrent(object):
             *   'hashing'
             *   'seeding'
 
-        Plus all custom defined views.
+        Plus all customly defined views.
         """
         # FIXME: List is not complete(?) + exception should be raised.
         if _type not in ('complete', 'incomplete', 'started', 'stopped',
@@ -95,8 +93,8 @@ class RTorrent(object):
 
     def query(self):
         """
-        Query returns a new RTorrentQuery object with the host, port, url and
-        hash from the current RTorrent object.
+        Query returns a new RTorrentQuery object with the target
+        from the current RTorrent object.
 
         Use this to execute several (different) calls on the RTorrent class in
         one request. This can increase performance and reduce latency and load.
@@ -218,21 +216,6 @@ _rpc_methods = {
         Execute command as rtorrent user and return output as string.
         """)
 }
-
-
-# A quick and dirty attempt at implementing ``argument-checking'' as well.
-# It probably wouldn't really allow all the checking one would really want, and
-# I doubt we'll need it too.
-
-#def ex():
-#    raise Exception('jeej')
-#
-#def create_caller(name, arg_check):
-#    return lambda self, *args: getattr(self.s, name)(*args) if arg_check(*args) else ex()
-#
-#def create_argcheck(arg_valid):
-#    return lambda *args: len(args) == len(arg_valid) \
-#        and all(map(lambda x, y: type(x) is y, args, arg_valid))
 
 # Hack in all the methods in _rpc_methods!
 for x, y in _rpc_methods.iteritems():

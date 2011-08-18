@@ -10,7 +10,7 @@ Introduction to πϱTorrent
 .. figure:: pyrotorrent.png
     :scale: 25%
 
-    PyroTorrent
+    A picture is worth a thousand words.
 
 What is πϱTorrent?
 ------------------

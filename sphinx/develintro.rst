@@ -186,5 +186,3 @@ For each entry in the dictionary, a method is generated and added to the
 .. GETRIDOFVIMHIGHLIGHTBUG*
 
 We do something similar for the :ref:`torrent` class.
-
-
