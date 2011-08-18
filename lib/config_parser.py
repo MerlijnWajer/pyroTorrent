@@ -68,7 +68,7 @@ def _parse_config_part_storage(config_dict, info):
             raise RTorrentConfigException('Storage mode configured to ' +
                 'invalid/unsupported state.')
 
-    info['storage_mode'] = config_dict['storage_mode']
+        info['storage_mode'] = config_dict['storage_mode']
 
     return info
 
