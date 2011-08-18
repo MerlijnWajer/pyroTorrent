@@ -180,7 +180,7 @@
 [ ] f.is_created
 [ ] f.is_open
 [ ] f.is_resize_queued
-[ ] f.multicall # First arg is hash, Second argument is empty ''... third is
+[X] f.multicall # First arg is hash, Second argument is empty ''... third is
                 # methods.
 [ ] f.set_create_queued
 [ ] f.set_priority
