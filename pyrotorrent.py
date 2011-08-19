@@ -24,14 +24,13 @@ import re
 
 from beaker.middleware import SessionMiddleware
 
-# Future: for JSON.
 import simplejson as json
 
 # For sys.exit(), etc
 import sys
 
 from config import BASE_URL, STATIC_URL, BACKGROUND_IMAGE, USE_AUTH, \
-    rtorrent_config, torrent_users
+        ENABLE_API, rtorrent_config, torrent_users
 try:
     from config import USE_OWN_HTTPD
 except ImportError:
@@ -45,11 +44,14 @@ from lib.sessionhack import SessionHack, SessionHackException
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
 
-from lib.multibase import InvalidTorrentException, InvalidConnectionException
+from lib.multibase import InvalidTorrentException, InvalidConnectionException, \
+    InvalidTorrentCommandException
 
 from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
+
+from lib.helper import wiz_normalise
 
 # For MIME
 import mimetypes
@@ -61,7 +63,6 @@ import stat
 
 import datetime
 import time
-
 
 # Main app
 def pyroTorrentApp(env, start_response):
@@ -94,25 +95,6 @@ def pyroTorrentApp(env, start_response):
 
     # Response data
     return [r]
-
-# Pulled somewhere from the net. Used in jinja.
-def wiz_normalise(a):
-    a = float(a)
-    if a >= 1099511627776:
-        terabytes = a / 1099511627776
-        size = '%.2fT' % terabytes
-    elif a >= 1073741824:
-        gigabytes = a / 1073741824
-        size = '%.2fG' % gigabytes
-    elif a >= 1048576:
-        megabytes = a / 1048576
-        size = '%.2fM' % megabytes
-    elif a >= 1024:
-        kilobytes = a / 1024
-        size = '%.2fK' % kilobytes
-    else:
-        size = '%.2fb' % a
-    return size
 
 def lookup_target(name):
     """
@@ -203,11 +185,7 @@ def main_view_page(env, view):
 
     rtorrent_data = fetch_global_info()
 
-    try:
-        user_name = env['beaker.session']['user_name']
-        user = lookup_user(user_name)
-    except KeyError, e:
-        user = None
+    user = fetch_user(env)
 
 #    if view not in rtorrent_data.get_view_list:
 #        return error_page(env, 'Invalid view: %s' % view)
@@ -256,11 +234,7 @@ def torrent_info_page(env, torrent_hash, target):
         return None # 404
 
     # XXX: Security code, beware of copy/pasta
-    try:
-        user_name = env['beaker.session']['user_name']
-        user = lookup_user(user_name)
-    except KeyError, e:
-        user = None
+    user = fetch_user(env)
 
     if USE_AUTH:
         if user == None or target['name'] not in user.targets:
@@ -292,44 +266,6 @@ def torrent_info_page(env, torrent_hash, target):
     return template_render(tmpl, env, {'torrent' : torrentinfo,
         'tree' : tree, 'rtorrent_data' : rtorrent_data,
         'target' : target} )
-
-def torrent_action(env, target, torrent_hash, action):
-    """
-    Start, Stop, Pause, Resume, Delete torrent.
-    """
-    if not loggedin_and_require(env):
-        return handle_login(env)
-
-    target = lookup_target(target)
-    if target is None:
-        return None # 404
-
-    # if not verify_target(env, target):
-    #     return None # 404
-
-    try:
-        t = Torrent(target, torrent_hash)
-    except InvalidTorrentException, e:
-        return error_page(env, str(e))
-
-    # TODO: Check torrent status, return something like a JSON or Pickle result?
-    # (Whether the stop/start/pause failed, etc)
-
-    if action == 'start':
-        t.start()
-    elif action == 'stop':
-        t.stop()
-    elif action == 'pause':
-        t.pause()
-    elif action == 'resume':
-        t.resume()
-    elif action == 'erase':
-        t.erase()
-    else:
-        raise Exception('Invalid torrent action')
-
-    # FIXME
-    return 'lol'
 
 def add_torrent_page(env, target):
     """
@@ -377,8 +313,6 @@ def add_torrent_page(env, target):
                 rtorrent = RTorrent(target)
                 return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
         elif 'torrent_file' in data:
-            print "It's a file!"
-            # If someone is messing around with the forms, check for it
             if not data['torrent_file'].file:
                 return "Error: Form field 'torrent_file' not a file!"
 
@@ -467,18 +401,13 @@ def static_serve(env, static_file):
                         env['HTTP_IF_MODIFIED_SINCE'], \
                         '%a, %d %b %Y %H:%M:%S GMT')
                 if prev_date >= d:
-                    print '%s: Not modified' % static_file
                     return ['304 Not Modified', headers, '']
-                else:
-                    print '%s: Modified' % static_file
             except ValueError, e:
                 pass
 
         f = open('./static/' + static_file)
         return ['200 OK', headers, f.read()]
-    except IOError:
-        return None
-    except OSError:
+    except (IOError, OSError):
         return None
 
 def style_serve(env):
@@ -570,6 +499,113 @@ def parse_users():
         users.append(user)
 
     return users
+
+def fetch_user(env):
+    try:
+        user_name = env['beaker.session']['user_name']
+        user = lookup_user(user_name)
+    except KeyError, e:
+        user = None
+    return user
+
+
+def handle_api_method(env, method, keys):
+    if method not in known_methods:
+        raise Exception('Unknown method')
+
+    if 'target' in keys:
+        target = k['target']
+        target = lookup_target(target)
+        if target is None:
+            print 'Returning null, target is invalid'
+            return None
+
+    u = fetch_user(env)
+    # User can't be none, since we've already passed login.
+    if USE_AUTH and target not in user.targets:
+        print 'User is not allowed to use target: %s!' % target
+
+
+    if method == 'torrentrequester':
+        return known_methods[method](keys, target)
+    else:
+        return known_methods[method](keys, method, target)
+
+
+def handle_torrentrequester(k, target):
+    if 'view' not in k or 'attributes' not in k:
+        return None
+
+    view = k['view']
+    attributes = k['attributes']
+
+    try:
+        tr = TorrentRequester(target, view)
+        for method, args in attributes:
+            getattr(tr, method)
+
+        return tr.all()
+
+    except (InvalidTorrentCommandException,):
+        return None
+
+def handle_rtorrent_torrent(k, m, target):
+    if 'attributes' not in k:
+        return None
+
+    attributes = k['attributes']
+
+    try:
+        if m == 'rtorrent':
+            a = RTorrent(target).query()
+        else:
+            if 'hash' not in k:
+                return None
+
+            _hash = k['hash']
+
+            a = Torrent(target, _hash).query()
+
+        for method, args in attributes:
+            getattr(a, method)(args)
+
+        return a.first()
+    except (InvalidTorrentException, InvalidTorrentCommandException):
+        return None
+
+known_methods = {
+    'torrentrequester' : handle_torrentrequester,
+    'rtorrent' : handle_rtorrent_torrent,
+    'torrent' : handle_rtorrent_torrent
+}
+
+def handle_api(env):
+    """
+    """
+    if str(env['REQUEST_METHOD']) != 'POST':
+        return None
+
+    if not loggedin_and_require(env):
+        return ['403 Forbidden', [('Content-Type', 'application/json')],
+                json.dumps(None, indent=' ' * 4)]
+
+    # Get JSON request via POST data
+    data = read_post_data(env)
+    request = urllib.unquote_plus(data['request'].value)
+
+    print 'Request:', repr(request)
+
+    d = json.loads(request)
+    r = []
+
+    for x in d:
+        if 'type' in x:
+            print 'Method:', x['type']
+            r.append(env, handle_api_method(x['type'], x))
+
+    return ['200 OK', [('Content-Type', 'application/json')], \
+            json.dumps(r, indent=' ' * 4)]
+
 
 session_options = {
     'session.cookie_expires' : True

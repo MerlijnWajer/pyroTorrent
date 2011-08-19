@@ -7,10 +7,6 @@ wt.add_rule(re.compile('^%s/target/(%s)/torrent/(%s)/?$' % \
     (BASE_URL, TARGET_REGEX, TORRENT_REGEX)),
     torrent_info_page, ['target', 'torrent_hash'])
 
-wt.add_rule(re.compile('^%s/target/(%s)/torrent/(%s)/action/([A-z]+)?$' % \
-    (BASE_URL, TARGET_REGEX, TORRENT_REGEX)),
-    torrent_action, ['target', 'torrent_hash', 'action'])
-
 wt.add_rule(re.compile('^%s/target/(%s)/torrent/(%s).torrent$' % \
     (BASE_URL, TARGET_REGEX, TORRENT_REGEX)),
     torrent_file, ['target', 'torrent_hash'])
@@ -29,6 +25,9 @@ wt.add_rule(re.compile('^%s/style.css$' % BASE_URL), style_serve, [])
 wt.add_rule(re.compile('^%s/login' % BASE_URL), handle_login, [])
 
 wt.add_rule(re.compile('^%s/logout' % BASE_URL), handle_logout, [])
+
+if ENABLE_API:
+    wt.add_rule(re.compile('^%s/api' % BASE_URL), handle_api, [])
 
 # This should be the last rule.
 wt.add_rule(re.compile('^%s/?$' % BASE_URL), main_page, [])

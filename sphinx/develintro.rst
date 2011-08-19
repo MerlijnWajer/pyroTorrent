@@ -186,3 +186,20 @@ For each entry in the dictionary, a method is generated and added to the
 .. GETRIDOFVIMHIGHLIGHTBUG*
 
 We do something similar for the :ref:`torrent` class.
+
+pyroTorrent JSON API
+====================
+
+PyroTorrent features a JSON API which can be used to extract most (if not all)
+information using the provided Python classes.
+
+Below is our API test, written in Python. It does a POST request to the
+``/torrent/api`` URL, where ``/torrent`` is the base url, the API resides
+at ``/api``. The POST request should contain only one variable called
+``request``; and ``request`` should contain a JSON object containing the data to
+be requested and executed.
+
+JSON API example
+----------------
+
+.. literalinclude:: ../tests/api.py

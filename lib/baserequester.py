@@ -12,6 +12,8 @@ method to get the name of each torrent in a view by simply calling .get_name().
 """
 
 from lib.xmlrpc import RTorrentXMLRPC
+from lib.multibase import InvalidTorrentCommandException
+
 
 class BaseRequester(object):
     """
@@ -49,8 +51,8 @@ class BaseRequester(object):
         """
         try:
             self.append_command(attr)
-        except InvalidTorrentCommandException, e:
-            raise AttributeError(e.message)
+        except AttributeError, e:
+            raise InvalidTorrentCommandException(e.message)
         return self
 
     def _fetch(self):
@@ -101,11 +103,6 @@ class BaseRequester(object):
         self.commandsstack = []
         self.commandisstack = []
         self.commands = {}
-
-class InvalidTorrentCommandException(Exception):
-    """
-    Thrown on an invalid command.
-    """
 
 class DictAttribute(dict):
     def __getattr__(self, attr):
