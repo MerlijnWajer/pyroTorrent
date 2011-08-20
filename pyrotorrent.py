@@ -29,8 +29,8 @@ import simplejson as json
 # For sys.exit(), etc
 import sys
 
-from config import BASE_URL, STATIC_URL, BACKGROUND_IMAGE, USE_AUTH, \
-        ENABLE_API, rtorrent_config, torrent_users
+from config import BASE_URL, STATIC_URL, FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
+        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users
 try:
     from config import USE_OWN_HTTPD
 except ImportError:
@@ -57,8 +57,9 @@ from lib.helper import wiz_normalise
 import mimetypes
 
 
-# For stat
+# For stat and path services
 import os
+import os.path
 import stat
 
 import datetime
@@ -94,7 +95,7 @@ def pyroTorrentApp(env, start_response):
         start_response('200 OK', [('Content-Type', 'text/html;charset=utf8')])
 
     # Response data
-    return [r]
+    return r
 
 def lookup_target(name):
     """
@@ -265,7 +266,7 @@ def torrent_info_page(env, torrent_hash, target):
 
     return template_render(tmpl, env, {'torrent' : torrentinfo,
         'tree' : tree, 'rtorrent_data' : rtorrent_data,
-        'target' : target} )
+        'target' : target, 'file_downloads' : target.has_key('storage_mode')})
 
 def add_torrent_page(env, target):
     """
@@ -336,7 +337,7 @@ def add_torrent_page(env, target):
         torrent_added = ''
 
     return template_render(tmpl, env, {'rtorrent_data' : rtorrent_data,
-        'torrent_added': torrent_added, 'target' : target['name'] } )
+        'torrent_added' : torrent_added, 'target' : target['name']} )
 
 def torrent_file(env, target, torrent_hash):
     """
@@ -368,6 +369,121 @@ def torrent_file(env, target, torrent_hash):
     headers = [('Content-Type', 'application/x-bittorrent')]
     return ['200 OK', headers, base64.b64decode(contents)]
 
+# Download a file contained in a torrent
+def torrent_get_file(env, target, torrent_hash, filename):
+    """
+    Download a file contained within a torrent.
+
+    env:            The WSGI environment
+    target:         The target bittorrent client
+    torrent_hash:   Hash of the torrent being examined
+    filename:       path to file within torrent
+                    (should not start with a /)
+    """
+
+    if not loggedin_and_require(env):
+        return handle_login(env)
+
+    target = lookup_target(target)
+    if target is None:
+        return None # 404
+
+    #if not verify_target(env, target):
+    #    return None # 404
+
+    # XXX: Security code, beware of copy/pasta
+    # See also torrent_info_page
+    # this is where the following came from
+    try:
+        user_name = env['beaker.session']['user_name']
+        user = lookup_user(user_name)
+    except KeyError, e:
+        user = None
+
+    # Reject user if not allowed to view this target
+    if USE_AUTH:
+        if user == None or target['name'] not in user.targets:
+            return None # 404
+
+    # Is file fetching enabled?
+    print target
+    if not target.has_key('storage_mode'):
+        print "File fetching disabled, 404"
+        return None
+    s_mode = target['storage_mode']
+
+    # Connect to torrent
+    try:
+        t = Torrent(target, torrent_hash)
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
+
+    print "Requested file:", filename
+
+    # Fetch absolute path to torrent
+    t_path = t.get_full_path()
+
+    # rtorrent is running on a remote fs mounted
+    # on this machine?
+    if 'remote_path' in s_mode:
+        # Transform remote path to locally mounted path
+        t_path = t_path.replace(s_mode['remote_path'], s_mode['local_path'], 1)
+
+    # Compute absolute file path
+    try:
+        if stat.S_ISDIR(os.stat(t_path).st_mode):
+            print "Multi file torrent."
+            file_path = os.path.abspath(t_path + '/' + filename)
+        else:
+            print "Single file torrent."
+            file_path = os.path.abspath(t_path)
+    except OSError as e:
+        print "Exception performing stat:"
+        print e
+        return None
+
+    print "Computed path:", file_path
+
+    # Now verify this path is within torrent path
+    if file_path.find(t_path) != 0:
+        print "Path rejected.."
+        return None
+    print "Path accepted."
+
+    # Open file for reading
+    try:
+        f = open(file_path, 'r')
+    except IOError as e:
+        print "Exception opening file"
+        print e
+        return None
+    print "File open."
+
+    # Setup response
+    f_size = os.path.getsize(file_path)
+    mimetype = mimetypes.guess_type(file_path)
+    if mimetype[0] == None:
+        mimetype = 'application/x-binary'
+    else:
+        mimetype = mimetype[0]
+
+    headers = [('Content-Type', mimetype),
+        ('Content-length', str(f_size)),
+        # Let browser figure out filename
+        # See also: http://greenbytes.de/tech/tc2231/
+        # and: http://stackoverflow.com/questions/1361604/how-to-encode-utf8-filename-for-http-headers-python-django
+        #('Content-Disposition', 'attachment; filename='+os.path.split(file_path)[1])]
+        ('Content-Disposition', 'attachment')]
+    print headers
+
+    # Useful code for returning files
+    # http://stackoverflow.com/questions/3622675/returning-a-file-to-a-wsgi-get-request
+    if 'wsgi.file_wrapper' in env:
+        f_ret = env['wsgi.file_wrapper'](f, FILE_BLOCK_SIZE)
+    else:
+        f_ret = iter(lambda: f.read(FILE_BLOCK_SIZE), '')
+
+    return ('200 OK', headers, f_ret)
 
 def static_serve(env, static_file):
     """
@@ -639,3 +755,4 @@ if __name__ == '__main__':
     else:
         from flup.server.fcgi import WSGIServer
         WSGIServer(app).run()
+

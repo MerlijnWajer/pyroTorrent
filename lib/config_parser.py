@@ -5,7 +5,11 @@ CONNECTION_SCGI, CONNECTION_HTTP = range(2)
 class RTorrentConfigException(Exception):
     pass
 
-def parse_config_part(config_dict, name):
+def _parse_config_part_connection(config_dict, name):
+    """
+    Parse and verify rtorrent connection configuration.
+    """
+
     if 'scgi' in config_dict and 'http' in config_dict:
         raise RTorrentConfigException('Ambigious configuration for: %s\n'
                 'You cannot have both a \'scgi\' line and a \'http\' key.' \
@@ -44,6 +48,39 @@ def parse_config_part(config_dict, name):
         }
     else:
         raise RTorrentConfigException('Config lacks scgi of http information')
+
+def _parse_config_part_storage(config_dict, info):
+    """
+    Verify and parse any file storage configuration.
+    """
+
+    if 'storage_mode' in config_dict:
+        storage_mode = config_dict['storage_mode']
+        if 'remote_path' in storage_mode:
+            if 'local_path' not in storage_mode:
+                raise RTorrentConfigException('Remote storage mode, ' + 
+                    'missing local_path to mount point')
+        elif 'local_path' in storage_mode:
+            if storage_mode['local_path'] != '/':
+                raise RTorrentConfigException('Local storage mode, not ' +
+                    'pointed to root')
+        else:
+            raise RTorrentConfigException('Storage mode configured to ' +
+                'invalid/unsupported state.')
+
+        info['storage_mode'] = config_dict['storage_mode']
+
+    return info
+
+def parse_config_part(config_dict, name):
+    """
+    Parse target configuration.
+    """
+
+    info = _parse_config_part_connection(config_dict, name)
+    info = _parse_config_part_storage(config_dict, info)
+
+    return info
 
 def parse_user_part(config_dict, name):
     user = PyroUser()

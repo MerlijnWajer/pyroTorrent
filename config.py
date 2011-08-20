@@ -6,6 +6,9 @@ BASE_URL = '/torrent'
 STATIC_URL = BASE_URL + '/static'
 USE_OWN_HTTPD = False
 
+# Default downloads blocksize
+FILE_BLOCK_SIZE = 4096
+
 # Default background
 BACKGROUND_IMAGE = 'cat.jpg'
 
