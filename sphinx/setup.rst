@@ -364,7 +364,7 @@ alive:
 
 .. code-block:: bash
 
-    # ps xua  |grep python
+    # ps xua  | grep python
     lighttpd 31639 84.5  1.6  12276  8372 ?        Rs   19:57   0:01    /usr/bin/python2.6 /home/rtorrent/pyrotorrent/pyrotorrent.py
 
 
@@ -428,7 +428,7 @@ bit:
 
     # Place all your globals here
 
-    # ``Base'' URL for your HTTP website
+    # Base URL for your HTTP website
     BASE_URL = '/torrent'
     # HTTP URL for the static files
     STATIC_URL = BASE_URL + '/static'
@@ -476,6 +476,54 @@ bit:
     }
 
 Make sure the *BASE_URL* matches the URL you set in your HTTPD setup.
+
+πϱTorrent configuration for serving downloaded files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+πϱTorrent can also act as direct download server for torrent files.
+Upon clicking on a torrent you will be presented with a list of files
+contained by that torrent. With the configuration below, the files will become
+clickable as well, upon which you will be offered to download the file.
+
+.. code-block:: python
+
+    # Example configuration with file downloading enabled
+    rtorrent_config = {
+        'woensdag' : {
+            'http' : {
+                'host' : '127.0.0.1',
+                'port' : 8080,
+                'url'  : '/RPC2',
+            },
+            'storage_mode' : {
+                'local_path' : '/home/torrent/woensdag',
+                'remote_path' : '/home/rtorrent'
+            }
+        }
+
+As you can see, the rtorrent entry ``woensdag`` has an extra ``storage_mode``
+property. There are currently 2 possible ways of configuring downloads.
+
+    1.  rtorrent runs on the same machine as πϱTorrent 
+
+    2.  rtorrent runs on another machine, but πϱTorrent can access this
+        machine's filesystem through a mounted directory.
+
+local setup
+```````````
+
+As you no doubt have guessed, the configuration above is the remote setup.
+To configure a locally running rtorrent simply drop the ``remote_path``
+from the configuration, and set the ``local_path`` property to ``/``.
+
+remote setup
+````````````
+
+In this configuration ``local_path`` represents the path to the local
+mount point. ``remote_path`` is the path on the remote host running
+rtorrent, mounted by the local machine.
+To summerize, in the above configuration we have mounted the remote directory
+``/home/rtorrent`` on the local directory ``/home/torrent/woensdag``
 
 When you're done
 ----------------
