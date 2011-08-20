@@ -63,8 +63,8 @@ def parse_user_part(config_dict, name):
     elif type(config_dict['background-image']) not in (str,):
         raise RTorrentConfigException('User %s ``background-image'' must be a str'\
                                          % name)
-
-    user.background_image = config_dict['background-image']
+    else:
+        user.background_image = config_dict['background-image']
 
     if not config_dict.has_key('password'):
         raise RTorrentConfigException('User %s has no ``password'' entry' % name)
