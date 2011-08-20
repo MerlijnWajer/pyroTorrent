@@ -292,7 +292,7 @@ def torrent_info_page(env, torrent_hash, target):
 
     return template_render(tmpl, env, {'torrent' : torrentinfo,
         'tree' : tree, 'rtorrent_data' : rtorrent_data,
-        'target' : target} )
+        'target' : target, 'file_downloads' : target.has_key('storage_mode')})
 
 def torrent_action(env, target, torrent_hash, action):
     """
@@ -403,7 +403,7 @@ def add_torrent_page(env, target):
         torrent_added = ''
 
     return template_render(tmpl, env, {'rtorrent_data' : rtorrent_data,
-        'torrent_added': torrent_added, 'target' : target['name'] } )
+        'torrent_added' : torrent_added, 'target' : target['name']} )
 
 def torrent_file(env, target, torrent_hash):
     """
@@ -496,7 +496,18 @@ def torrent_get_file(env, target, torrent_hash, filename):
         t_path = t_path.replace(s_mode['remote_path'], s_mode['local_path'], 1)
 
     # Compute absolute file path
-    file_path = os.path.abspath(t_path + '/' + filename)
+    try:
+        if stat.S_ISDIR(os.stat(t_path).st_mode):
+            print "Multi file torrent."
+            file_path = os.path.abspath(t_path + '/' + filename)
+        else:
+            print "Single file torrent."
+            file_path = os.path.abspath(t_path)
+    except IOError as e:
+        print "Exception performing stat:"
+        print e
+        return None
+
     print "Computed path:", file_path
 
     # Now verify this path is within torrent path
@@ -508,7 +519,7 @@ def torrent_get_file(env, target, torrent_hash, filename):
     # Open file for reading
     try:
         f = open(file_path, 'r')
-    except IOError as e:
+    except OSError as e:
         print "Exception opening file"
         print e
         return None
