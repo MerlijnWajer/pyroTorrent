@@ -503,7 +503,7 @@ def torrent_get_file(env, target, torrent_hash, filename):
         else:
             print "Single file torrent."
             file_path = os.path.abspath(t_path)
-    except IOError as e:
+    except OSError as e:
         print "Exception performing stat:"
         print e
         return None
@@ -519,7 +519,7 @@ def torrent_get_file(env, target, torrent_hash, filename):
     # Open file for reading
     try:
         f = open(file_path, 'r')
-    except OSError as e:
+    except IOError as e:
         print "Exception opening file"
         print e
         return None
@@ -535,7 +535,11 @@ def torrent_get_file(env, target, torrent_hash, filename):
 
     headers = [('Content-Type', mimetype),
         ('Content-length', str(f_size)),
-        ('Content-Disposition', 'attachment; filename='+os.path.split(file_path)[1])]
+        # Let browser figure out filename
+        # See also: http://greenbytes.de/tech/tc2231/
+        # and: http://stackoverflow.com/questions/1361604/how-to-encode-utf8-filename-for-http-headers-python-django
+        #('Content-Disposition', 'attachment; filename='+os.path.split(file_path)[1])]
+        ('Content-Disposition', 'attachment')]
     print headers
 
     # Useful code for returning files

@@ -77,14 +77,16 @@ class FileTree(object):
                     last_node = n
                     path = n.get_path()
                 else:
-                    n = last_node.add(y, path, leaf=False)
                     path += '/' + y
+                    n = last_node.add(y, path, leaf=False)
                     last_node = n
                 x = x[1:]
 
             # Add file
             if not len(path):
                 path = '/'
+            else:
+                path += '/'
             path += x[0]
             last_node.add(x[0], path, leaf=True)
 
