@@ -418,6 +418,8 @@ def torrent_get_file(env, target, torrent_hash, filename):
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
+    print "Requested file (un-unquoted):", filename
+    filename = urllib.unquote_plus(filename)
     print "Requested file:", filename
 
     # Fetch absolute path to torrent
