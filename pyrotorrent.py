@@ -59,7 +59,6 @@ import mimetypes
 
 # For stat and path services
 import os
-import os.path
 import stat
 
 import datetime
@@ -386,7 +385,6 @@ def torrent_get_file(env, target, torrent_hash, filename):
     filename:       path to file within torrent
                     (should not start with a /)
     """
-
     if not loggedin_and_require(env):
         return handle_login(env)
 
@@ -458,31 +456,62 @@ def torrent_get_file(env, target, torrent_hash, filename):
         return None
     print "Path accepted."
 
+    HTTP_RANGE_REQUEST = False
+    try:
+        _bytes = env['HTTP_RANGE']
+        print 'HTTP_RANGE Found'
+        _bytes = _bytes.split('=')[1]
+        _start, _end = _bytes.split('-')
+        _start = int(_start)
+        if _end:
+            _end = int(_end)
+
+        HTTP_RANGE_REQUEST = True
+
+    except KeyError, e:
+        print 'No HTTP_RANGE passed'
+    except (ValueError, IndexError), e:
+        print 'Invalid HTTP_RANGE:', e
+
+
     # Open file for reading
     try:
         f = open(file_path, 'r')
+        if HTTP_RANGE_REQUEST:
+            print 'Seeking...'
+            f.seek(_start)
     except IOError as e:
-        print "Exception opening file"
-        print e
+        print 'Exception opening file:', e
         return None
-    print "File open."
+    print 'File open.'
 
     # Setup response
     f_size = os.path.getsize(file_path)
+    if HTTP_RANGE_REQUEST:
+        # We can't set _end earlier.
+        if not _end:
+            _end = f_size
+
     mimetype = mimetypes.guess_type(file_path)
     if mimetype[0] == None:
         mimetype = 'application/x-binary'
     else:
         mimetype = mimetype[0]
 
-    headers = [('Content-Type', mimetype),
-        ('Content-length', str(f_size)),
+    headers = []
+    headers.append(('Content-Type', mimetype))
+
+    if HTTP_RANGE_REQUEST:
+        # XXX: FIXME: Implement _end
+        headers.append(('Content-length', str(_end-_start+1)))
+    else:
+        headers.append(('Content-length', str(f_size)))
+
         # Let browser figure out filename
         # See also: http://greenbytes.de/tech/tc2231/
         # and: http://stackoverflow.com/questions/1361604/how-to-encode-utf8-filename-for-http-headers-python-django
-        #('Content-Disposition', 'attachment; filename='+os.path.split(file_path)[1])]
-        ('Content-Disposition', 'attachment')]
-    print headers
+        headers.append(('Content-Disposition', 'attachment;'\
+            'filename='+os.path.split(file_path)[1]))
 
     # Useful code for returning files
     # http://stackoverflow.com/questions/3622675/returning-a-file-to-a-wsgi-get-request
@@ -491,7 +520,28 @@ def torrent_get_file(env, target, torrent_hash, filename):
     else:
         f_ret = iter(lambda: f.read(FILE_BLOCK_SIZE), '')
 
-    return ('200 OK', headers, f_ret)
+
+    if HTTP_RANGE_REQUEST:
+        # Date, Content-Location/ETag, Expires/Cache-Control
+        # Either a Content-Range header field (section 14.16) indicating
+        # the range included with this response, or a multipart/byteranges
+        # Content-Type including Content-Range fields for each part. If a
+        # Content-Length header field is present in the response, its
+        # value MUST match the actual number of OCTETs transmitted in the
+        # message-body.
+        d = datetime.datetime.now()
+
+        headers.append(('Date', d.strftime('%a, %d %b %Y %H:%M:%S GMT')))
+        headers.append(('Content-Range', 'bytes: %d-%d/%d' % (_start, _end-1,
+            f_size-1)))
+        headers.append(('Cache-Control', 'max-age=3600'))
+        headers.append(('Content-Location', filename))
+
+        print headers
+        return ('206 Partial Content', headers, f_ret)
+    else:
+        print headers
+        return ('200 OK', headers, f_ret)
 
 def static_serve(env, static_file):
     """
