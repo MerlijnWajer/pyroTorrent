@@ -95,6 +95,12 @@ def pyroTorrentApp(env, start_response):
         start_response('200 OK', [('Content-Type', 'text/html;charset=utf8')])
 
     # Response data
+
+    # If r is not a file, but a string
+    # prevent an exhausting loop
+    if type(r) == str:
+        return [r]
+
     return r
 
 def lookup_target(name):
