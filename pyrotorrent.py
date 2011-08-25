@@ -52,6 +52,7 @@ from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
 from lib.helper import wiz_normalise
+from lib.decorators import webtool_callback, require_torrent, require_rtorrent
 
 # For MIME
 import mimetypes
@@ -181,6 +182,10 @@ def main_page(env):
 
 
 # TODO: Implement target filters.
+@webtool_callback(
+    require_login = False,
+    lookup_user = True
+    )
 def main_view_page(env, view):
     """
     Main page. Shows all torrents, per target.
@@ -228,6 +233,9 @@ def error_page(env, error='No error?'):
     return template_render(tmpl, env, {'error' : error,
         'rtorrent_data' : rtorrent_data })
 
+@webtool_callback
+@require_target
+@require_torrent
 def torrent_info_page(env, torrent_hash, target):
     """
     Page for torrent information. Files, messages, active, etc.
@@ -273,6 +281,8 @@ def torrent_info_page(env, torrent_hash, target):
         'tree' : tree, 'rtorrent_data' : rtorrent_data,
         'target' : target, 'file_downloads' : target.has_key('storage_mode')})
 
+@webtool_callback
+@require_target
 def add_torrent_page(env, target):
     """
     Page for adding torrents.
@@ -344,6 +354,10 @@ def add_torrent_page(env, target):
     return template_render(tmpl, env, {'rtorrent_data' : rtorrent_data,
         'torrent_added' : torrent_added, 'target' : target['name']} )
 
+@webtool_callback
+@require_target
+@require_rtorrent
+@require_torrent
 def torrent_file(env, target, torrent_hash):
     """
     This function returns a torrent's
@@ -375,6 +389,8 @@ def torrent_file(env, target, torrent_hash):
     return ['200 OK', headers, base64.b64decode(contents)]
 
 # Download a file contained in a torrent
+@webtool_callback
+@require_target
 def torrent_get_file(env, target, torrent_hash, filename):
     """
     Download a file contained within a torrent.
@@ -543,6 +559,9 @@ def torrent_get_file(env, target, torrent_hash, filename):
         print headers
         return ('200 OK', headers, f_ret)
 
+@webtool_callback(
+    require_login = False
+    )
 def static_serve(env, static_file):
     """
     Serve static files ourselves. Most browsers will cache them after one
@@ -584,7 +603,11 @@ def static_serve(env, static_file):
     except (IOError, OSError):
         return None
 
-def style_serve(env):
+@webtool_callback(
+    require_login = False,
+    lookup_user = True
+    )
+def style_serve(env, user):
     tmpl = jinjaenv.get_template('style.css')
 
     background = BACKGROUND_IMAGE
@@ -602,6 +625,9 @@ def style_serve(env):
     return ['200 OK', headers, template_render(tmpl, env,
             {'background_image' : background})]
 
+@webtool_callback(
+    require_login = False
+    )
 def handle_login(env):
     tmpl = jinjaenv.get_template('loginform.html')
 
@@ -631,6 +657,9 @@ def handle_login(env):
 
     return template_render(tmpl, env, { })
 
+@webtool_callback(
+    require_login = False
+    )
 def handle_logout(env):
     if loggedin(env):
         s = env['beaker.session']
