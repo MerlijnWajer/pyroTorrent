@@ -103,24 +103,6 @@ def pyroTorrentApp(env, start_response):
 
     return r
 
-def lookup_target(name):
-    """
-    Simple helper to find the target with the name ``name``.
-    """
-
-    for x in targets:
-        if x['name'] == name:
-            return x
-    return None
-
-def lookup_user(name):
-    """
-    """
-
-    for x in users:
-        if x.name == name:
-            return x
-    return None
 
 def loggedin(env):
    return 'user_name' in env['beaker.session']
@@ -174,18 +156,17 @@ def fetch_global_info():
     return res
 
 # These *_page functions are what you would call ``controllers''.
+@webtool_callback(
+    require_login = False,
+    lookup_user = True
+    )
 def main_page(env):
     """
     Default page, calls main_view_page() with default view.
     """
     return main_view_page(env, 'default')
 
-
 # TODO: Implement target filters.
-@webtool_callback(
-    require_login = False,
-    lookup_user = True
-    )
 def main_view_page(env, view):
     """
     Main page. Shows all torrents, per target.
@@ -391,6 +372,7 @@ def torrent_file(env, target, torrent_hash):
 # Download a file contained in a torrent
 @webtool_callback
 @require_target
+@require_torrent
 def torrent_get_file(env, target, torrent_hash, filename):
     """
     Download a file contained within a torrent.
@@ -401,15 +383,6 @@ def torrent_get_file(env, target, torrent_hash, filename):
     filename:       path to file within torrent
                     (should not start with a /)
     """
-    if not loggedin_and_require(env):
-        return handle_login(env)
-
-    target = lookup_target(target)
-    if target is None:
-        return None # 404
-
-    #if not verify_target(env, target):
-    #    return None # 404
 
     # XXX: Security code, beware of copy/pasta
     # See also torrent_info_page
