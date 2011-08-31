@@ -502,7 +502,6 @@ def torrent_get_file(env, target, torrent_hash, filename):
     headers.append(('Content-Type', mimetype))
 
     if HTTP_RANGE_REQUEST:
-        # XXX: FIXME: Implement _end
         headers.append(('Content-length', str(_end-_start+1)))
     else:
         headers.append(('Content-length', str(f_size)))
