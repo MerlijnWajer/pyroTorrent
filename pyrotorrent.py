@@ -51,12 +51,15 @@ from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
-from lib.helper import wiz_normalise
-from lib.decorators import webtool_callback, require_torrent, require_rtorrent
+from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
+    loggedin_and_require, parse_config, parse_users, fetch_user, \
+    fetch_global_info
+from lib.decorator import webtool_callback, require_torrent, \
+    require_rtorrent, require_target
+    
 
 # For MIME
 import mimetypes
-
 
 # For stat and path services
 import os
@@ -103,64 +106,12 @@ def pyroTorrentApp(env, start_response):
 
     return r
 
-
-def loggedin(env):
-   return 'user_name' in env['beaker.session']
-
-def loggedin_and_require(env):
-    if USE_AUTH:
-        return loggedin(env)
-    else:
-        return True
-
-# Function to render the jinja template and pass some simple vars / functions.
-def template_render(template, env, vars):
-    """
-        Template Render is a helper that initialises basic template variables
-        and handles unicode encoding.
-    """
-    vars['base_url'] = BASE_URL
-    vars['static_url'] = STATIC_URL
-    vars['use_auth'] = USE_AUTH
-    vars['wn'] = wiz_normalise
-    vars['trans'] = 0.4
-    vars['login'] = env['beaker.session']['user_name'] if \
-        env['beaker.session'].has_key('user_name') else None
-
-    ret = unicode(template.render(vars)).encode('utf8')
-
-    return ret
-
-# Fetch some useful rtorrent info from all targets.
-def fetch_global_info():
-    """
-    Fetch global stuff (always displayed):
-        -   Down/Up Rate.
-        -   IP (perhaps move to static global)
-    """
-    res = {}
-    for target in targets:
-        rtorrent = RTorrent(target)
-        try:
-            r = rtorrent.query().get_upload_rate().get_download_rate()\
-                .get_upload_throttle().get_download_throttle().get_ip()\
-                .get_hostname().get_memory_usage().get_max_memory_usage()\
-                .get_libtorrent_version().get_view_list()
-            res[target['name']] = r.first()
-        except InvalidConnectionException, e:
-            print 'InvalidConnectionException:', e
-            # Do we want to return or just not get data for this target?
-            # I'd say return for now.
-            return {}
-
-    return res
-
 # These *_page functions are what you would call ``controllers''.
 @webtool_callback(
     require_login = False,
-    lookup_user = True
+    do_lookup_user = True
     )
-def main_page(env):
+def main_page(env, user):
     """
     Default page, calls main_view_page() with default view.
     """
@@ -205,39 +156,16 @@ def main_view_page(env, view):
     return template_render(tmpl, env, {'torrents_list' : torrents,
         'rtorrent_data' : rtorrent_data, 'view' : view} )
 
-def error_page(env, error='No error?'):
-    """
-    Called on exceptions, when something goes wrong.
-    """
-    rtorrent_data = fetch_global_info()
-    tmpl = jinjaenv.get_template('error.html')
-    return template_render(tmpl, env, {'error' : error,
-        'rtorrent_data' : rtorrent_data })
-
 @webtool_callback
 @require_target
 @require_torrent
-def torrent_info_page(env, torrent_hash, target):
+def torrent_info_page(env, target, torrent):
     """
     Page for torrent information. Files, messages, active, etc.
     """
-    if not loggedin_and_require(env):
-        return handle_login(env)
-
-    target = lookup_target(target)
-    if target is None:
-        return None # 404
-
-    # XXX: Security code, beware of copy/pasta
-    user = fetch_user(env)
-
-    if USE_AUTH:
-        if user == None or target['name'] not in user.targets:
-            return None # 404
 
     try:
-        t = Torrent(target, torrent_hash)
-        q = t.query()
+        q = torrent.query()
         q.get_hash().get_name().get_size_bytes().get_download_total().\
                 get_loaded_file().get_message().is_active()
         torrentinfo = q.all()[0] # .first() ?
@@ -247,7 +175,7 @@ def torrent_info_page(env, torrent_hash, target):
 
     # FIXME THIS IS UGLY
 
-    files = TorrentFileRequester(target, t._hash, '')\
+    files = TorrentFileRequester(target, torrent._hash, '')\
             .get_path_components().all()
 
     files = map(lambda x: x['get_path_components'], files)
@@ -337,30 +265,19 @@ def add_torrent_page(env, target):
 
 @webtool_callback
 @require_target
-@require_rtorrent
 @require_torrent
-def torrent_file(env, target, torrent_hash):
+@require_rtorrent
+def torrent_file(env, target, torrent, rtorrent):
     """
     This function returns a torrent's
     .torrent file to the user.
     """
-    if not loggedin_and_require(env):
-        return handle_login(env)
-
-    target = lookup_target(target)
-    if target is None:
-        return None # 404
-
-    # if not verify_target(env, target):
-    #     return None # 404
 
     try:
-        r = RTorrent(target)
-        t = Torrent(target, torrent_hash)
-        filepath = t.get_loaded_file()
+        filepath = torrent.get_loaded_file()
 
         # TODO: Check for errors. (Permission denied, non existing file, etc)
-        contents = r.execute_command('sh', '-c', 'cat ' + filepath + \
+        contents = rtorrent.execute_command('sh', '-c', 'cat ' + filepath +
                 ' | base64')
 
     except InvalidTorrentException, e:
@@ -373,7 +290,7 @@ def torrent_file(env, target, torrent_hash):
 @webtool_callback
 @require_target
 @require_torrent
-def torrent_get_file(env, target, torrent_hash, filename):
+def torrent_get_file(env, target, torrent, filename):
     """
     Download a file contained within a torrent.
 
@@ -406,17 +323,17 @@ def torrent_get_file(env, target, torrent_hash, filename):
     s_mode = target['storage_mode']
 
     # Connect to torrent
-    try:
-        t = Torrent(target, torrent_hash)
-    except InvalidTorrentException, e:
-        return error_page(env, str(e))
+    t = Torrent(target, torrent_hash)
 
     print "Requested file (un-unquoted):", filename
     filename = urllib.unquote_plus(filename)
     print "Requested file:", filename
 
     # Fetch absolute path to torrent
-    t_path = t.get_full_path()
+    try:
+        t_path = t.get_full_path()
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
 
     # rtorrent is running on a remote fs mounted
     # on this machine?
@@ -578,18 +495,12 @@ def static_serve(env, static_file):
 
 @webtool_callback(
     require_login = False,
-    lookup_user = True
+    do_lookup_user = True
     )
 def style_serve(env, user):
     tmpl = jinjaenv.get_template('style.css')
 
     background = BACKGROUND_IMAGE
-
-    try:
-        user_name = env['beaker.session']['user_name']
-        user = lookup_user(user_name)
-    except KeyError, e:
-        user = None
 
     if user and user.background_image != None:
         background = user.background_image
@@ -642,48 +553,6 @@ def handle_logout(env):
 
     return main_page(env)
 
-def parse_config():
-    """
-    Use lib.config_parser to parse each target in the rtorrent_config dict.
-    I suppose it's more like verifying than parsing. Returns a list of dicts,
-    one dict per target.
-    """
-
-    targets = []
-    for x in rtorrent_config:
-        try:
-            info = parse_config_part(rtorrent_config[x], x)
-        except RTorrentConfigException, e:
-            print 'Invalid config: ', e
-            sys.exit(1)
-
-        targets.append(info)
-
-    return targets
-
-def parse_users():
-    """
-    """
-    users = []
-    for x in torrent_users:
-        try:
-            user = parse_user_part(torrent_users[x], x)
-        except RTorrentConfigException, e:
-            print 'Invalid config: ', e
-            sys.exit(1)
-
-        users.append(user)
-
-    return users
-
-def fetch_user(env):
-    try:
-        user_name = env['beaker.session']['user_name']
-        user = lookup_user(user_name)
-    except KeyError, e:
-        user = None
-    return user
-
 
 def handle_api_method(env, method, keys):
     if method not in known_methods:
@@ -724,6 +593,7 @@ def handle_torrentrequester(k, target):
 
     except (InvalidTorrentCommandException,):
         return None
+
 
 def handle_rtorrent_torrent(k, m, target):
     if 'attributes' not in k:
@@ -790,9 +660,18 @@ session_options = {
 if __name__ == '__main__':
     targets = parse_config()
     users = parse_users()
+
     jinjaenv = Environment(loader=PackageLoader('pyrotorrent', 'templates'))
     jinjaenv.autoescape = True
     wt = WebTool()
+
+    # O GOD WTF
+    import lib.helper
+    lib.helper.targets = targets
+    lib.helper.users = users
+    lib.helper.jinjaenv = jinjaenv
+    import lib.decorator
+    lib.decorator.handle_login = handle_login
 
     session_options = {
         'session.cookie_expires' : True
