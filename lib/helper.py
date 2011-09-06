@@ -187,6 +187,12 @@ def parse_users():
     return users
 
 def fetch_user(env):
+    """
+    Unconditionally fetch credentials from the passed environment,
+    and verify against config file.
+    returns: 
+        A valid user string, or None if no valid user could be found.
+    """
     try:
         user_name = env['beaker.session']['user_name']
         user = lookup_user(user_name)

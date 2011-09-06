@@ -255,5 +255,3 @@ def require_rtorrent(func):
 
     return attach_deep_func(rtorrent_func, deep_func)
 
-# def require_torrent_requester(func):
-

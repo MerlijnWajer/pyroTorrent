@@ -53,7 +53,7 @@ from lib.filetree import FileTree
 
 from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
     loggedin_and_require, parse_config, parse_users, fetch_user, \
-    fetch_global_info
+    fetch_global_info, lookup_user
 from lib.decorator import webtool_callback, require_torrent, \
     require_rtorrent, require_target
     
@@ -301,20 +301,6 @@ def torrent_get_file(env, target, torrent, filename):
                     (should not start with a /)
     """
 
-    # XXX: Security code, beware of copy/pasta
-    # See also torrent_info_page
-    # this is where the following came from
-    try:
-        user_name = env['beaker.session']['user_name']
-        user = lookup_user(user_name)
-    except KeyError, e:
-        user = None
-
-    # Reject user if not allowed to view this target
-    if USE_AUTH:
-        if user == None or target['name'] not in user.targets:
-            return None # 404
-
     # Is file fetching enabled?
     print target
     if not target.has_key('storage_mode'):
@@ -322,16 +308,13 @@ def torrent_get_file(env, target, torrent, filename):
         return None
     s_mode = target['storage_mode']
 
-    # Connect to torrent
-    t = Torrent(target, torrent_hash)
-
     print "Requested file (un-unquoted):", filename
     filename = urllib.unquote_plus(filename)
     print "Requested file:", filename
 
     # Fetch absolute path to torrent
     try:
-        t_path = t.get_full_path()
+        t_path = torrent.get_full_path()
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
@@ -666,6 +649,7 @@ if __name__ == '__main__':
     wt = WebTool()
 
     # O GOD WTF
+    # I apologise deeply for these inconsiderate workarounds ;-)
     import lib.helper
     lib.helper.targets = targets
     lib.helper.users = users
