@@ -1,20 +1,17 @@
-Caching:
-    -   Our own static_serve does *not* do any caching.
-        It should at least send something like Expires and
-        last modified. (where last modified is when the file is modified,
-        not when we read the file and passed it to WSGI)
-
-Unclassified:
-    -   Double check the [R]TorrentQuery implementation / design.
-
 Admin panel:
     -   User Management                                     [ ]
-    -   Shutdown rtorrent?                                  [ ]
+    -   Shutdown rtorrent? (and possibly start rtorrent?)   [ ]
     -   Change encryption                                   [ ]
+
+Configuration:
+    -   Clean up                                            [ ]
+    -   Move to SQLite? (SQLAlchemy!)                       [ ]
+        CLI tools + admin interface.
 
 Download Management:
     -   List torrents.                                      [X]
-    -   Move torrents to other views?                       [ ]
+    -   Create custom views                                 [ ]
+        -   Add/Remove torrents from views.                 [ ]
     -   Add a torrent                                       [X]
 
 Events and Schedulers:
@@ -30,6 +27,20 @@ Statistics:
     -   Complete Torrents                                   [ ]
     -   Incomplete Torrents                                 [ ]
 
+API:
+    -   pyroTorrent handlers                                [X]
+    -   Initial specification                               [X]
+    -   Fine grained access per user over the API           [ ]
+
+    -   AJAX/JS support on the web page:                    [ ]
+        -   Use AJAX for the main page. Fetch parallel from
+            several rtorrent instances.                     [ ]
+
+        -   Torrent action: start,stop,pause,resume,delete  [ ]
+
+        -   Change rtorrent up/down throttle                [ ]
+        -   Change other rtorrent settings                  [ ]
+
 Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
     -   Add torrent link                                    [X]
@@ -37,12 +48,10 @@ Version 0.0:
     -   Add torrents                                        [X]
     -   Add support for views                               [X]
     -   Global progress bar                                 [ ]
-    -   Change torrent status                               [ ]
-    -   List torrent peers                                  [ ]
-    -   List trackers.                                      [ ]
-    -   Page torrents                                       [X]
-    -   Change rtorrent up/down throttle                    [ ]
-    -   Show disk usage                                     [ ]
+    -   Torrents Page                                       [X]
+        -   List torrent peers                              [ ]
+        -   List trackers.                                  [ ]
+
     -   List torrent files                                  [X]
         -   Clean up the root name of the file tree         [ ]
         -   Fix markup for files tree                       [ ]
@@ -51,6 +60,8 @@ Version 0.0:
     -   Implement XMLRPC Exceptions, own wrapper?           [X]
 
     -   Download torrent files                              [X]
+
+Debug:
     -   RTorrent ``info'' page, where we show all the available rtorrent
     information. (eg, all rtorrent calls that return info)  [ ]
 
