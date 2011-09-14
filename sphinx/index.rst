@@ -89,6 +89,7 @@ Web view (mirror) https://git.wizzup.org/pyroTorrent.git/.
     multibase.rst
     torrentquery.rst
     rtorrentquery.rst
+    decorator.rst
 
 
 Indices and tables
