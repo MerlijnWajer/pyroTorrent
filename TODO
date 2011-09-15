@@ -41,6 +41,12 @@ API:
         -   Change rtorrent up/down throttle                [ ]
         -   Change other rtorrent settings                  [ ]
 
+Front page design:
+    -   Needs a lot more icons.                             [ ]
+    -   Display when a torrent is no longer functional /
+        active with colours. A different colour when the
+        ``downloaded file'' is gone.                        [ ]
+
 Version 0.0:
     -   Show pages of torrents with: speed, completeness    [X]
     -   Add torrent link                                    [X]
