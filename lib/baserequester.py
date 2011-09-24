@@ -37,11 +37,11 @@ class BaseRequester(object):
     def __call__(self, *args):
         """
         Return self so we can chain calls:
-
         """
         if len(args):
             raise InvalidTorrentCommandException('No parameters are supported' \
                 ' yet')
+
         self.commands[self.commandstack[-1]] = args
         return self
 
@@ -54,6 +54,18 @@ class BaseRequester(object):
         except AttributeError, e:
             raise InvalidTorrentCommandException(e.message)
         return self
+
+    def append_command(self, command):
+        """
+        Add commands to the stack.
+        """
+        # TODO: Find out how set commands work.
+        oldcommand = command
+        command = self._convert_command(command)
+
+        self.commands[command] = ()
+        self.commandstack.append(command)
+        self.commandistack.append(oldcommand)
 
     def _fetch(self):
         """
@@ -83,25 +95,14 @@ class BaseRequester(object):
         _res = self._fetch()
         return _res
 
-    def append_command(self, command):
-        """
-        Add commands to the stack.
-        """
-        # TODO: Find out how set commands work.
-        oldcommand = command
-        command = self._convert_command(command)
-
-        self.commands[command] = ()
-        self.commandstack.append(command)
-        self.commandistack.append(oldcommand)
-
     # XXX: When do we use this? Do we use it all? Do we need it at all?
     # Do we have it here just as a convenience for the user?
     def flush(self):
-        del self.commandsstack
+        del self.commandstack
         del self.commands
-        self.commandsstack = []
-        self.commandisstack = []
+        del self.commandistack
+        self.commandstack = []
+        self.commandistack = []
         self.commands = {}
 
 class DictAttribute(dict):
