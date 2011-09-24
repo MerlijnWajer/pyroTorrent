@@ -56,7 +56,6 @@ from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
     fetch_global_info, lookup_user
 from lib.decorator import webtool_callback, require_torrent, \
     require_rtorrent, require_target
-    
 
 # For MIME
 import mimetypes
@@ -200,10 +199,6 @@ def add_torrent_page(env, target):
     """
     if not loggedin_and_require(env):
         return handle_login(env)
-
-    target = lookup_target(target)
-    if target is None:
-        return None # 404
 
     try:
         user_name = env['beaker.session']['user_name']
