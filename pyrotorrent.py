@@ -173,12 +173,9 @@ def torrent_info_page(env, target, torrent):
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
-    # FIXME THIS IS UGLY
-
     files = TorrentFileRequester(target, torrent._hash)\
-            .get_path_components().all()
-
-    files = map(lambda x: x['get_path_components'], files)
+            .get_path_components().get_size_chunks().get_completed_chunks()\
+            .all()
 
     tree = FileTree(files).root
 

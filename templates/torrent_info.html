@@ -4,12 +4,18 @@
 
 <li>
 {% if node.children %}
-<b>{{ node.name }}</b>
-{% else %}{% if file_downloads %}
-<a href="{{base_url}}/target/{{target['name']}}/torrent/{{torrent.get_hash}}/get_file/{{ node.get_path_no_root() }}"<i>{{ node.name }}</i></a>
+<b>{{ node.name }}</b> 
 {% else %}
-<i>{{ node.name }}</i>
-{% endif %}
+    {% if file_downloads %}
+    <a href="{{base_url}}/target/{{target['name']}}/torrent/{{torrent.get_hash}}/get_file/{{ node.get_path_no_root() }}"<i>{{ node.name }}</i>
+    </a>
+    <b>(Chunks completed: {{ node.obj.get_completed_chunks }} / {{
+        node.obj.get_size_chunks }} )</b>
+    {% else %}
+    <i>{{ node.name }}</i>
+    <b>(Chunks completed: {{ node.obj.get_completed_chunks }} / {{
+        node.obj.get_size_chunks }} )</b>
+    {% endif %}
 {% endif %}
 </li>
 

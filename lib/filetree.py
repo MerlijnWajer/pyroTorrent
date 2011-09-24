@@ -6,9 +6,11 @@ file paths in a torrent to a tree representation.
 """
 
 class Leaf(object):
-    def __init__(self, name, path):
+    def __init__(self, name, path, obj):
         self.name = name
         self.path = path
+        self.obj = obj
+        self.hoi = 'HAOI'
 
     def get_path(self):
         return self.path
@@ -19,15 +21,12 @@ class Leaf(object):
         """
         return self.path[1:]
 
-    def get_name(self):
-        return self.name
-
     def repr(self):
         return 'Leaf(%s, path)' % (self.name, self.path)
 
 class Node(Leaf):
     def __init__(self, name, path):
-        Leaf.__init__(self, name, path)
+        Leaf.__init__(self, name, path, None)
         self.children = []
 
     def find(self, name):
@@ -38,12 +37,12 @@ class Node(Leaf):
 
         return None
 
-    def add(self, name, path, leaf=False):
+    def add(self, name, path, leaf=False, obj=None):
         if self.find(name):
             raise Exception('Invalid') # FIXME
 
         if leaf:
-            n = Leaf(name, path)
+            n = Leaf(name, path, obj)
         else:
             n = Node(name, path)
         self.children.append(n)
@@ -65,7 +64,10 @@ class FileTree(object):
     def build_tree(self, files):
         root = Node('Files', '/')
 
-        for x in files:
+        for file_ in files:
+
+            x = file_.get_path_components
+
             last_node = root
             path = ''
 
@@ -88,7 +90,7 @@ class FileTree(object):
             else:
                 path += '/'
             path += x[0]
-            last_node.add(x[0], path, leaf=True)
+            last_node.add(x[0], path, leaf=True, obj=file_)
 
         return root
 
