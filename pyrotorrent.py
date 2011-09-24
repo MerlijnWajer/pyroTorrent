@@ -175,7 +175,7 @@ def torrent_info_page(env, target, torrent):
 
     # FIXME THIS IS UGLY
 
-    files = TorrentFileRequester(target, torrent._hash, '')\
+    files = TorrentFileRequester(target, torrent._hash)\
             .get_path_components().all()
 
     files = map(lambda x: x['get_path_components'], files)
