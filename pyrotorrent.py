@@ -53,7 +53,7 @@ from lib.filetree import FileTree
 
 from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
     loggedin_and_require, parse_config, parse_users, fetch_user, \
-    fetch_global_info, lookup_user
+    fetch_global_info, lookup_user, lookup_target
 from lib.decorator import webtool_callback, require_torrent, \
     require_rtorrent, require_target
 
@@ -533,7 +533,7 @@ def handle_api_method(env, method, keys):
         raise Exception('Unknown method')
 
     if 'target' in keys:
-        target = k['target']
+        target = keys['target']
         target = lookup_target(target)
         if target is None:
             print 'Returning null, target is invalid'
@@ -621,7 +621,7 @@ def handle_api(env):
     for x in d:
         if 'type' in x:
             print 'Method:', x['type']
-            r.append(env, handle_api_method(x['type'], x))
+            r.append(handle_api_method(env, x['type'], x))
 
     return ['200 OK', [('Content-Type', 'application/json')], \
             json.dumps(r, indent=' ' * 4)]
