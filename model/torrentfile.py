@@ -39,6 +39,14 @@ _rpc_methods = {
     'get_size_bytes' : ('f.get_size_bytes',
         """
         Returns the total size of the file.
+        """),
+    'get_size_chunks' : ('f.get_size_chunks',
+        """
+        Returns the size of the file in chunks.
+        """),
+    'get_completed_chunks' : ('f.get_completed_chunks',
+        """
+        Get the amount of completed chunks.
         """)
         }
 
