@@ -162,7 +162,7 @@
 [ ] execute_nothrow
 [ ] execute_raw
 [ ] execute_raw_nothrow
-[ ] f.get_completed_chunks
+[X] f.get_completed_chunks
 [X] f.get_frozen_path
 [ ] f.get_last_touched
 [ ] f.get_match_depth_next
@@ -175,7 +175,7 @@
 [ ] f.get_range_first
 [ ] f.get_range_second
 [X] f.get_size_bytes
-[ ] f.get_size_chunks
+[X] f.get_size_chunks
 [ ] f.is_create_queued
 [ ] f.is_created
 [ ] f.is_open
