@@ -154,8 +154,6 @@ _rpc_methods = {
     'is_active' : ('d.is_active',
         """
         Returns 1 if the torrent is active; 0 when it is not active.
-
-        XXX: As of yet we're not completely sure what ``active'' means.
         """),
     'is_open' : ('d.is_open',
         """
