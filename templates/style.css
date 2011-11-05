@@ -197,10 +197,10 @@ span.download_icon, span.upload_icon {
 }
 
 span.download_icon {
-    background: transparent url(/torrent/static/icons/arrow_down.png);
+    background: transparent url({{static_url}}/icons/arrow_down.png);
 }
 span.upload_icon {
-    background: transparent url(/torrent/static/icons/arrow_up.png);
+    background: transparent url({{static_url}}/icons/arrow_up.png);
 }
 
 span.add_torrent_icon {
@@ -208,7 +208,7 @@ span.add_torrent_icon {
     width: 16px;
     display: inline-block;
 
-    background: transparent url('/torrent/static/icons/add.png');
+    background: transparent url({{static_url}}/icons/add.png);
 }
 
 div.torrent-def-div {
