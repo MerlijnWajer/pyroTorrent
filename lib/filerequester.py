@@ -39,7 +39,7 @@ class TorrentFileRequester(BaseRequester):
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):
-        return self.s.f.multicall(*(self.first_args + (' ',) + rpc_commands))
+        return self.s.f.multicall(*(self.first_args + ('',) + rpc_commands))
 
     def _convert_command(self, command):
         """
