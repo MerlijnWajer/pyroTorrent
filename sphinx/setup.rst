@@ -324,7 +324,7 @@ This is the tricky part. You'll need to ensure that a couple of things work:
 .. code-block:: lua
 
     url.rewrite-once = (
-             "^/torrent" => "torrent.tfcgi"
+             "^/torrent(/.*)?$" => "torrent.tfcgi"
     )
 
     fastcgi.server += ( ".tfcgi" =>
