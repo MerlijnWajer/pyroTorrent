@@ -53,7 +53,8 @@ from lib.filetree import FileTree
 
 from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
     loggedin_and_require, parse_config, parse_users, fetch_user, \
-    fetch_global_info, lookup_user, lookup_target
+    fetch_global_info, lookup_user, lookup_target, redirect_client_prg, \
+    redirect_client
 from lib.decorator import webtool_callback, require_torrent, \
     require_rtorrent, require_target
 
@@ -507,13 +508,49 @@ def handle_login(env):
 
         if u.password == pass_:
             env['beaker.session']['user_name'] = user
+
+            # Redirect user to original page, or if not possible
+            # to the main page.
+            if 'login_redirect_url' in env['beaker.session']:
+                redir_url = env['beaker.session']['login_redirect_url']
+                #print 'Got URL from session:', redir_url
+
+                # Remove unnecessary data from session
+                del env['beaker.session']['login_redirect_url']
+
+                # Try to chop off BASE_URL from absolute URL
+                if redir_url.startswith(BASE_URL) and not redir_url == BASE_URL:
+                    redir_url = redir_url[len(BASE_URL):]
+
+                # Main page
+                else:
+                    redir_url = '/'
+            else:
+                #print 'URL not found in session'
+                redir_url = '/'
+
+            #print "Login succes, redirect to:", redir_url
+
+            # Store session
             env['beaker.session'].save()
-            return main_page(env)
+            return redirect_client_prg(redir_url)
+            #return main_page(env)
         else:
             return template_render(tmpl, env,
             {   'session' : env['beaker.session'], 'loginfail' : True}  )
 
-    return template_render(tmpl, env, { })
+    # Not logged in?
+    # Render login page, and store
+    # current URL in beaker session.
+    if not loggedin(env):
+        #print 'Not logged in, storing session data:', env['PATH_INFO']
+        env['beaker.session']['login_redirect_url'] = env['PATH_INFO']
+        env['beaker.session'].save()
+        return template_render(tmpl, env, { })
+
+    # User already loggedin, redirect to main page.
+    else:
+        return redirect_client('/')
 
 @webtool_callback(
     require_login = False
@@ -525,8 +562,7 @@ def handle_logout(env):
     else:
         return error_page(env, 'Not logged in')
 
-    return main_page(env)
-
+    return redirect_client('/')
 
 def handle_api_method(env, method, keys):
     if method not in known_methods:

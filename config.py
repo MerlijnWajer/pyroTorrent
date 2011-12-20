@@ -1,6 +1,8 @@
 # Place all your globals here
 
 # ``Base'' URL for your HTTP website
+# This URL should not end with a trailing slash
+# doing so would break redirect behaviour.
 BASE_URL = '/torrent'
 # HTTP URL for the static files
 STATIC_URL = BASE_URL + '/static'

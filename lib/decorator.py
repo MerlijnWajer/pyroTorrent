@@ -120,6 +120,9 @@ def webtool_callback(func = None, require_login = True, do_lookup_user = False):
             # Force a login if necessary
             if require_login:
                 if not loggedin_and_require(env):
+                    # If you wonder why the definition of the
+                    # following function is nowhere to be found, check
+                    # '/pyrotorrent.py'.
                     return handle_login(env)
 
             # Lookup user
