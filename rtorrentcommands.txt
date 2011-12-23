@@ -261,7 +261,7 @@
 [X] get_up_total # total uploaded data RTorrent.get_upload_rate_total
 [X] get_upload_rate # current upload _throttle_ RTorrent.get_upload_throttle
 [ ] get_use_udp_trackers
-[ ] get_xmlrpc_size_limit
+[X] get_xmlrpc_size_limit
 [ ] greater
 [ ] group.insert
 [ ] group.insert_persistent_view
@@ -397,7 +397,7 @@
 [ ] set_tracker_numwant
 [X] set_upload_rate # Set the upload throttle. RTorrent.set_upload_throttle.
 [ ] set_use_udp_trackers
-[ ] set_xmlrpc_size_limit
+[X] set_xmlrpc_size_limit
 [ ] start_tied
 [ ] stop_untied
 [X] system.client_version
