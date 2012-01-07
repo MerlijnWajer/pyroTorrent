@@ -215,8 +215,8 @@ def redirect_client_prg(url):
     Returns: tuple containing pyroTorrent custom request.
     """
 
-    # since the pyroTorrentApp parsers tuples as custom
-    # responses return a tuple containing the required info
+    # Since the pyroTorrentApp parses tuples as custom
+    # responses, return a tuple containing the required info.
     # A 303 should not result in resubmission of POST data
     # to the given location.
     return ('303 See Other', [('Location', BASE_URL + url)], '')
@@ -236,8 +236,8 @@ def redirect_client(url):
     Returns: tuple containing pyroTorrent custom request.
     """
 
-    # since the pyroTorrentApp parsers tuples as custom
-    # responses return a tuple containing the required info
+    # Since the pyroTorrentApp parses tuples as custom
+    # responses, return a tuple containing the required info
     # A 307 should not be cached unless explicitely stated so
     # by the HTTP headers.
     return ('307 Temporary Redirect', [('Location', BASE_URL + url)], '')
