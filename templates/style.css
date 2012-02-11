@@ -1,5 +1,5 @@
 body {
-    background: url('{{static_url}}/{{background_image}}') rgb(68, 68, 68);
+    background: url('{{background_image_url}}') rgb(68, 68, 68);
     background-size: 100%;
 /*    background-image: url('/torrent/static/space1.png');*/
     color: #fff;
