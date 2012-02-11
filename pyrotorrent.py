@@ -146,7 +146,14 @@ def main_view_page(env, view):
             t.get_name().get_download_rate().get_upload_rate() \
                     .is_complete().get_size_bytes().get_download_total().get_hash()
 
+            h = hash(t)
+            torrents[target['name']] = cache.get(h)
+            if torrents[target['name']] is not None:
+                continue
+
             torrents[target['name']] = t.all()
+
+            cache.set(h, torrents[target['name']], timeout=30)
 
         except InvalidTorrentException, e:
             return error_page(env, str(e))
@@ -168,16 +175,26 @@ def torrent_info_page(env, target, torrent):
         q = torrent.query()
         q.get_hash().get_name().get_size_bytes().get_download_total().\
                 get_loaded_file().get_message().is_active()
-        torrentinfo = q.all()[0] # .first() ?
+        h = hash(q)
+
+        torrentinfo = cache.get(h)
+        if torrentinfo is None:
+            torrentinfo = q.all()[0] # .first() ?
+            cache.set(h, torrentinfo, 30)
 
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
     files = TorrentFileRequester(target, torrent._hash)\
-            .get_path_components().get_size_chunks().get_completed_chunks()\
-            .all()
+            .get_path_components().get_size_chunks().get_completed_chunks()
 
-    tree = FileTree(files).root
+    h = hash(files)
+    f = cache.get(h)
+    if f is None:
+        f = files.all()
+        cache.set(h, f, 30)
+
+    tree = FileTree(f).root
 
     rtorrent_data = fetch_global_info()
 
@@ -667,6 +684,26 @@ session_options = {
     'session.cookie_expires' : True
 }
 
+
+class SimpleCache(object):
+    def __init__(self):
+        self.kv = {}
+
+    def get(self, name):
+        if name in self.kv:
+            v = self.kv[name]
+            tt = (time.time() - v[1])
+            if tt > v[2]:
+                return None
+            return v[0]
+        else:
+            return None
+
+    def set(self, name, value, timeout=1):
+        self.kv[name] = (value, time.time(), timeout)
+
+
+
 if __name__ == '__main__':
     targets = parse_config()
     users = parse_users()
@@ -675,12 +712,16 @@ if __name__ == '__main__':
     jinjaenv.autoescape = True
     wt = WebTool()
 
+    cache = SimpleCache()
+
     # O GOD WTF
     # I apologise deeply for these inconsiderate workarounds ;-)
     import lib.helper
     lib.helper.targets = targets
     lib.helper.users = users
     lib.helper.jinjaenv = jinjaenv
+    lib.helper.cache = cache
+
     import lib.decorator
     lib.decorator.handle_login = handle_login
 
