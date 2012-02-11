@@ -23,6 +23,7 @@ class BaseRequester(object):
         """
         """
         self.s = RTorrentXMLRPC(target)
+        self.target = target['name']
 
         # Stack to put commands on
         self.commandstack = []
@@ -35,7 +36,7 @@ class BaseRequester(object):
         self.commands = {}
 
     def __hash__(self):
-        h = 42
+        h = 42 ^ hash(self.target)
 
         for x in self.commandstack:
             h ^= hash(x)

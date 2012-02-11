@@ -34,6 +34,7 @@ class MultiBase(object):
         """
         self.s = RTorrentXMLRPC(target)
         self.m = xmlrpclib.MultiCall(self.s)
+        self.target = target['name']
 
         # Stack to put commands on
         self._groups = [[]]
@@ -43,7 +44,7 @@ class MultiBase(object):
         self._def_group_args = args
 
     def __hash__(self):
-        h = 42
+        h = 42 ^ hash(self.target)
         for y in zip(self._groups, self._groups_args):
             for x in zip(y[0], y[1]):
                 h ^= hash(x[0])
