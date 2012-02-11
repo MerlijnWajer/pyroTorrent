@@ -37,7 +37,20 @@ class MultiBase(object):
 
         # Stack to put commands on
         self._groups = [[]]
-        self._group_args = args
+
+        # We keep these purely for hash functionality
+        self._groups_args = [[]]
+        self._def_group_args = args
+
+    def __hash__(self):
+        h = 42
+        for y in zip(self._groups, self._groups_args):
+            for x in zip(y[0], y[1]):
+                h ^= hash(x[0])
+                for z in x[1]:
+                    h ^= hash(z)
+
+        return h
 
     def __call__(self, attr, *args):
         """
@@ -47,10 +60,11 @@ class MultiBase(object):
         """
         _attr = self._convert_command(attr)
 
-        total_args = list(self._group_args)
+        total_args = list(self._def_group_args)
         total_args.extend(args)
         getattr(self.m, _attr)(*total_args)
         self._groups[-1].append(attr)
+        self._groups_args[-1].append(total_args)
 
         return self
 
@@ -65,7 +79,8 @@ class MultiBase(object):
         Use this to create a new group. You can chain calls as well.
         """
         self._groups.append([])
-        self._group_args = args
+        self._groups_args.append([])
+        self._def_group_args = args
         return self
 
     def all(self, _type=None):

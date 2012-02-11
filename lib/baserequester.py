@@ -34,6 +34,16 @@ class BaseRequester(object):
         # Contains possible arguments.
         self.commands = {}
 
+    def __hash__(self):
+        h = 42
+
+        for x in self.commandstack:
+            h ^= hash(x)
+            for y in self.commands[x]:
+                h ^= hash(y)
+
+        return h
+
     def __call__(self, *args):
         """
         Return self so we can chain calls:
