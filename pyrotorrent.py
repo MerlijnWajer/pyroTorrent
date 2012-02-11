@@ -60,6 +60,8 @@ import stat
 import datetime
 import time
 
+import json
+
 @app.route('/')
 @app.route('/view/<view>')
 def main_view_page(view='default'):
@@ -160,9 +162,117 @@ def add_torrent_page(target):
 #
 #wt.add_rule(re.compile('^%s/logout' % BASE_URL), handle_logout, [])
 
-@app.route('/api')
+def handle_api_method(method, keys):
+    if method not in known_methods:
+        raise Exception('Unknown method')
+
+    if 'target' in keys:
+        target = keys['target']
+        target = lookup_target(target)
+        if target is None:
+            print 'Returning null, target is invalid'
+            return None
+
+#    u = fetch_user(env)
+#    # User can't be none, since we've already passed login.
+#    if USE_AUTH and target not in user.targets:
+#        print 'User is not allowed to use target: %s!' % target
+
+
+    if method == 'torrentrequester':
+        return known_methods[method](keys, target)
+    else:
+        return known_methods[method](keys, method, target)
+
+
+def handle_torrentrequester(k, target):
+    if 'view' not in k or 'attributes' not in k:
+        return None
+
+    view = k['view']
+    attributes = k['attributes']
+
+    try:
+        tr = TorrentRequester(target, view)
+        for method, args in attributes:
+            getattr(tr, method)
+
+        h = hash(tr)
+        r = cache.get(h)
+        if r is None:
+            r = tr.all()
+            cache.set(h, r, 30)
+
+        return r
+
+    except (InvalidTorrentCommandException,):
+        return None
+
+
+def handle_rtorrent_torrent(k, m, target):
+    if 'attributes' not in k:
+        return None
+
+    attributes = k['attributes']
+
+    try:
+        if m == 'rtorrent':
+            a = RTorrent(target).query()
+        else:
+            if 'hash' not in k:
+                return None
+
+            _hash = k['hash']
+
+            a = Torrent(target, _hash).query()
+
+        for method, args in attributes:
+            getattr(a, method)(*args)
+
+        h = hash(a)
+        r = cache.get(h)
+        if r is None:
+            r = a.first()
+            cache.set(h, r, 30)
+
+        return r
+    except (InvalidTorrentException, InvalidTorrentCommandException), e:
+        print e
+        return None
+
+known_methods = {
+    'torrentrequester' : handle_torrentrequester,
+    'rtorrent' : handle_rtorrent_torrent,
+    'torrent' : handle_rtorrent_torrent
+}
+
+
+@app.route('/api', methods=['POST'])
 def api():
-    pass
+    #if not loggedin_and_require(env):
+    #    r = Response(json.dumps(None, indent=' ' * 4), mimetype='application/json')
+    #    r.status_code = 403
+    #    return r
+
+    # Get JSON request via POST data
+    try:
+        req = request.form['request']
+    except KeyError, e:
+        abort(500)
+
+    d = json.loads(req)
+    resp = []
+
+    for x in d:
+        if 'type' in x:
+            print 'Method:', x['type']
+            resp.append(handle_api_method(x['type'], x))
+
+    s = json.dumps(resp, indent=4)
+
+    r = Response(s, mimetype='application/json')
+    r.status_code = 200
+    return r
 
 @app.route('/style.css')
 def style_serve():
