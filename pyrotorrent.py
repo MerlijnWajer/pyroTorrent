@@ -60,8 +60,6 @@ import stat
 import datetime
 import time
 
-targets = 'penis'
-
 @app.route('/')
 @app.route('/view/<view>')
 def main_view_page(view='default'):
@@ -90,11 +88,22 @@ def main_view_page(view='default'):
             t.get_name().get_download_rate().get_upload_rate() \
                     .is_complete().get_size_bytes().get_download_total().get_hash()
 
+            h = hash(t)
+
+            torrents[target['name']] = cache.get(h)
+            if torrents[target['name']]:
+                continue
+
+            torrents[target['name']] = cache.get(target['name'])
+            if torrents[target['name']] is not None:
+                continue
+
             torrents[target['name']] = t.all()
+
+            cache.set(h, torrents[target['name']], timeout=10)
 
         except InvalidTorrentException, e:
             return error_page(env, str(e))
-
 
     return render_template('download_list.html',
             torrents_list=torrents, rtorrent_data=rtorrent_data, view=view
@@ -104,7 +113,6 @@ def main_view_page(view='default'):
 
 @app.route('/target/<target>/torrent/<torrent_hash>')
 def torrent_info_page(target, torrent_hash):
-
     # TODO UNSAFE NEEDS DECORATOR
     target = lookup_target(target)
     torrent = Torrent(target, torrent_hash)
@@ -168,8 +176,9 @@ def style_serve():
     background = BACKGROUND_IMAGE
 
     return Response(render_template('style.css',
-        background_image_url= url_for('static', filename=background)),
-        mimetype='text/css')
+        background_image=background,
+        trans=0.6),
+        mimetype='text/css',)
 
 
 #if ENABLE_API:
@@ -179,8 +188,12 @@ if __name__ == '__main__':
     targets = parse_config()
     users = parse_users()
 
+    from werkzeug.contrib.cache import SimpleCache
+    cache = SimpleCache()
+
     import lib.helper
     lib.helper.targets = targets
     lib.helper.users = users
+    lib.helper.cache = cache
 
     app.run()

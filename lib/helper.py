@@ -143,7 +143,15 @@ def fetch_global_info():
                 .get_upload_throttle().get_download_throttle().get_ip()\
                 .get_hostname().get_memory_usage().get_max_memory_usage()\
                 .get_libtorrent_version().get_view_list()
+
+            h = hash(r)
+            res[target['name']] = cache.get(h)
+            if res[target['name']]:
+                continue
+
             res[target['name']] = r.first()
+            cache.set(h, res[target['name']], timeout=60)
+
         except InvalidConnectionException, e:
             print 'InvalidConnectionException:', e
             # Do we want to return or just not get data for this target?
