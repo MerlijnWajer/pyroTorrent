@@ -1,5 +1,5 @@
 body {
-    background: url('{{background_image_url}}') rgb(68, 68, 68);
+    background: url( {{ url_for('static', filename=background_image) }} ) rgb(68, 68 ,68);
     background-size: 100%;
 /*    background-image: url('/torrent/static/space1.png');*/
     color: #fff;
@@ -197,10 +197,10 @@ span.download_icon, span.upload_icon {
 }
 
 span.download_icon {
-    background: transparent url({{static_url}}/icons/arrow_down.png);
+    background: transparent url({{ url_for('static', filename='icons/arrow_down.png') }} );
 }
 span.upload_icon {
-    background: transparent url({{static_url}}/icons/arrow_up.png);
+    background: transparent url({{ url_for('static', filename='icons/arrow_up.png') }} );
 }
 
 span.add_torrent_icon {
@@ -208,7 +208,7 @@ span.add_torrent_icon {
     width: 16px;
     display: inline-block;
 
-    background: transparent url({{static_url}}/icons/add.png);
+    background: transparent url({{ url_for('static', filename='icons/add.png') }} );
 }
 
 div.torrent-def-div {
