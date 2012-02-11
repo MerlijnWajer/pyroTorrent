@@ -178,7 +178,7 @@ def style_serve():
     return Response(render_template('style.css',
         background_image=background,
         trans=0.6),
-        mimetype='text/css',)
+        mimetype='text/css')
 
 
 #if ENABLE_API:
