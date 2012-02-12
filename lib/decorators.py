@@ -2,26 +2,14 @@
 pyroTorrent decorators - providing validation and lookup routines
 """
 
-# NOTE: Here are some details regarding global implementation
-# and behaviour of the decorators.
-"""
-Functions returned by the decorator system will have an extra '_PYRO_deep_func'
-member. This member will contain the original undecorated function and
-can thus be used by any decorator to immediately access the decorated function
-for various details.
-
-Thus:
-    @a
-    @b
-    c
-
-will result in a function 'c' with c._PYRO_deep_func set to the
-original value of 'c'.
-"""
-
-
-# Inspect is used for function standards validation
+# 'inspect' is used for function standards validation.
 import inspect
+
+# Use 'decorator' for building the decorators.
+from decorator import decorator
+
+# pyro's web framework
+from flask import session, g, abort
 
 # pyro imports
 from config import USE_AUTH
@@ -75,11 +63,10 @@ class AppBugException(Exception):
 ####################################### # # ########
 ####################################################
 
-# Basic lookup method, wrapping all pyroTorrent methods
-# The resulting function will be called by webtool
-def webtool_callback(func = None, require_login = True, do_lookup_user = False):
+# Basic lookup method, wrapping all pyroTorrent views.
+def pyroview(func = None, require_login = True, do_lookup_user = False):
     """
-    lib.webtool - standard interface wrapper
+    pyroTorrent - standard view wrapper
 
     When calling this function without keyword arguments,
     you will want to keep the first argument None since this is a
@@ -94,7 +81,7 @@ def webtool_callback(func = None, require_login = True, do_lookup_user = False):
         provide it as an additional argument.
 
     provides the following variables:
-        evn['verified_user'] = Result of lookup_user operation.
+        g.user = Result of lookup_user operation.
     """
 
     # All hail closures
@@ -103,52 +90,49 @@ def webtool_callback(func = None, require_login = True, do_lookup_user = False):
     ### Optional arguments hack  ###
     ################################
     def owhy(func):
-        deep_func = detach_deep_func(func)
-
-        # Validate env argument
-        if inspect.getargspec(deep_func)[0][0] != 'env':
-            raise AppSemanticException('webtool_callback', deep_func, [(0, 'env')])
 
         ################################
         ### Actual wrapping function ###
         ################################
-        def webtool_func(env, *args, **key_args):
+        def pyroview_func(func, *args, **key_args):
             """
-            webtool internal function wrapper
+            pyroview internal function wrapper
             """
 
             # Force a login if necessary
             if require_login:
-                if not loggedin_and_require(env):
+                if not loggedin_and_require():
                     # If you wonder why the definition of the
                     # following function is nowhere to be found, check
                     # '/pyrotorrent.py'.
-                    return handle_login(env)
+                    return handle_login()
 
             # Lookup user
             try:
-                user_name = env['beaker.session']['user_name']
+                user_name = session['user_name']
                 user = lookup_user(user_name)
             except KeyError, e:
                 user = None
-            env['verified_user'] = user
+            g.user = user
 
             # Pass argument if requested
             if do_lookup_user:
                 key_args['user'] = user
 
-            return func(env, *args, **key_args)
+            print func
+            return func(*args, **key_args)
 
-        return attach_deep_func(webtool_func, deep_func)
+        return decorator(pyroview_func, func)
 
-    # webtool_callback was called using '@webtool_callback'
+    # pyroview was called using '@pyroview'
     if func:
         return owhy(func)
 
-    # webtool_callback was called using '@webtool_callback(...)'
+    # pyroview was called using '@pyroview(...)'
     # I would say this is a weakness in the PEP318 spec, but
     # there is proabably a reason for this..
-    # It makes decorators taking optional arguments a pain to # implement.
+    # It makes decorators taking optional arguments a pain to
+    # implement.
     # http://www.python.org/dev/peps/pep-0318/
     return owhy
 
@@ -156,65 +140,64 @@ def require_target(func):
     """
     Wrap a function requiring a target client. Implements
     automatic rejection semantics to ensure user authorisation.
+
+    provides:
+        target argument
     """
 
-    deep_func = detach_deep_func(func)
-
     # Validate target argument
-    if inspect.getargspec(deep_func)[0][1] != 'target':
-        raise AppStandardsViolation('require_target', deep_func, [(1, 'env')])
+    if 'target' in inspect.getargspec(func)[0]:
+        raise AppStandardsViolation('require_target', func, [(-1, 'target')])
 
     ################################
     ### Actual wrapping function ###
     ################################
-    def target_func(env, target, *args, **key_args):
+    def target_func(func, target, *args, **key_args):
         """
-        webtool internal target argument wrapper.
+        require_target internal target argument wrapper.
         """
         # Perform target lookup for callback function
         target = lookup_target(target)
 
         # Return 404 on target not found
         if target is None:
-            return None # 404
-
-        user = env['verified_user']
+            return abort(404)
 
         # Reject user if not allowed to view this target
         if USE_AUTH:
-            if user == None or target['name'] not in user.targets:
-                return None # 404
+            if g.user == None or target['name'] not in g.user.targets:
+                return abort(404) # 404
 
-        return func(env, target = target, *args, **key_args)
+        return func(target = target, *args, **key_args)
 
-    return attach_deep_func(target_func, deep_func)
+    return decorator(target_func, func)
 
 def require_torrent(func):
     """
     Wrap a function working on a specific torrent.
-    This decorator expects webtool to pass a 'torrent_hash' argument.
+    This decorator expects Flask to pass a 'torrent_hash' argument.
 
+    converts:
+        torrent_hash into a torrent object.
     provides:
-        env['torrent']
+        torrent argument.
     """
 
-    deep_func = detach_deep_func(func)
-
     # Validate torrent argument
-    if 'torrent' not in inspect.getargspec(deep_func)[0]:
-        raise AppStandardsViolation('require_torrent', deep_func, [(-1, 'torrent')])
+    if 'torrent' not in inspect.getargspec(func)[0]:
+        raise AppStandardsViolation('require_torrent', func, [(-1, 'torrent')])
 
     ################################
     ### Actual wrapping function ###
     ################################
-    def torrent_func(env, target, *args, **key_args):
+    def torrent_func(func, target, *args, **key_args):
         """
-        webtool internal torrent argument wrapper
+        require_torrent internal torrent argument wrapper
         """
 
         # Grab torrent_hash
         if not key_args.has_key('torrent_hash'):
-            bugstr = "!!! BUG: Webtool is not passing a 'torrent_hash' " + \
+            bugstr = "!!! BUG: route is not passing a 'torrent_hash' " + \
                 "argument like it should"
             print bugstr
             raise AppBugException(bugstr)
@@ -227,34 +210,37 @@ def require_torrent(func):
         del key_args['torrent_hash']
         key_args['torrent'] = t
 
-        return func(env, target = target, *args, **key_args)
+        return func(target = target, *args, **key_args)
 
-    return attach_deep_func(torrent_func, deep_func)
+    return decorator(torrent_func, func)
 
 def require_rtorrent(func):
     """
     Wrap a function requiring an RTorrent object.
+
+    expects:
+        target argument
+    provides:
+        rtorrent argument
     """
 
-    deep_func = detach_deep_func(func)
-
     # Validate torrent argument
-    if 'rtorrent' not in inspect.getargspec(deep_func)[0]:
-        raise AppStandardsViolation('require_rtorrent', deep_func, [(-1, 'rtorrent')])
+    if 'rtorrent' not in inspect.getargspec(func)[0]:
+        raise AppStandardsViolation('require_rtorrent', func, [(-1, 'rtorrent')])
 
     ################################
     ### Actual wrapping function ###
     ################################
-    def rtorrent_func(env, *args, **key_args):
+    def rtorrent_func(func, *args, **key_args):
         """
-        webtool internal torrent argument wrapper
+        require_rtorrent internal torrent argument wrapper
         """
 
         # Setup torrent object.
         r = RTorrent(key_args['target'])
         key_args['rtorrent'] = r
 
-        return func(env, *args, **key_args)
+        return func(*args, **key_args)
 
-    return attach_deep_func(rtorrent_func, deep_func)
+    return decorator(rtorrent_func, func)
 
