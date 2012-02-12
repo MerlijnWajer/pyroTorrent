@@ -20,11 +20,13 @@
 </li>
 
 {% if node.children %}
+    <div class="torrentfile-div">
     <ul>
     {% for x in node.children %}
         {{ dfs(x) }}
     {% endfor %}
     </ul>
+    </div>
 {% endif %}
 {%- endmacro %}
 

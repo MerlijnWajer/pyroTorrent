@@ -223,6 +223,18 @@ div.torrent-def-div {
     border-radius: 15px;
 }
 
+div.torrentfile-div {
+    background-color: rgba(150, 150, 150, 0.1);
+   /* background-color: rgba(34, 34, 34, {{trans}});*/
+    color: #fff;
+
+    margin-top: 2em;
+    padding: 1em;
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
 /* Form styling */
 
 input, input.file {
