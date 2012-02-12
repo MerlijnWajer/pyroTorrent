@@ -3,6 +3,11 @@ Various helper functions
 """
 
 import sys
+
+# flask webframework stuff
+from flask import redirect, g, session
+
+# pyro imports
 from config import BASE_URL, STATIC_URL, FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
         USE_AUTH, ENABLE_API, rtorrent_config, torrent_users
 from lib.config_parser import parse_config_part, parse_user_part, \
@@ -30,25 +35,29 @@ def wiz_normalise(a):
         size = '%.2fb' % a
     return size
 
-def error_page(env, error='No error?'):
+def error_page(error='No error?'):
     """
     Called on exceptions, when something goes wrong.
     """
     rtorrent_data = fetch_global_info()
     tmpl = jinjaenv.get_template('error.html')
-    return template_render(tmpl, env, {'error' : error,
+    return template_render(tmpl, {'error' : error,
         'rtorrent_data' : rtorrent_data })
 
-# Is environment in login state?
-def loggedin(env):
-   return 'user_name' in env['beaker.session']
+# Is session in login state?
+def loggedin():
+   return 'user_name' in session
 
-# Require login?
-def loggedin_and_require(env):
-    if USE_AUTH:
-        return loggedin(env)
-    else:
-        return True
+# Logged in when required?
+# XXX: 'authorized' might be a better name for this function
+# since having authorisation does not imply being logged in.
+def loggedin_and_require():
+    """
+        Return False whenever the user is not logged in and
+        this is a requirement.
+        True otherwise.
+    """
+    return loggedin() if USE_AUTH else True
 
 def lookup_target(name):
     """
@@ -73,6 +82,9 @@ def lookup_user(name):
 # The following 2 functions are used by the decorator subsystem
 # to handle passing deep function objects. Deep functions in pyroTorrent are the
 # original undecorated functions.
+
+# XXX These functions have been superseded by the use of the wraps decorator
+# and will be removed in the (near) future.
 
 def detach_deep_func(func):
     """
@@ -111,7 +123,7 @@ def attach_deep_func(func, deep_func):
     return func
 
 # Function to render the jinja template and pass some simple vars / functions.
-def template_render(template, env, vars):
+def template_render(template, vars):
     """
         Template Render is a helper that initialises basic template variables
         and handles unicode encoding.
@@ -121,8 +133,8 @@ def template_render(template, env, vars):
     vars['use_auth'] = USE_AUTH
     vars['wn'] = wiz_normalise
     vars['trans'] = 0.4
-    vars['login'] = env['beaker.session']['user_name'] if \
-        env['beaker.session'].has_key('user_name') else None
+    vars['login'] = session['user_name'] if \
+        session.has_key('user_name') else None
 
     ret = unicode(template.render(vars)).encode('utf8')
 
@@ -194,15 +206,15 @@ def parse_users():
 
     return users
 
-def fetch_user(env):
+def fetch_user():
     """
-    Unconditionally fetch credentials from the passed environment,
+    Unconditionally fetch credentials from the flask session,
     and verify against config file.
     returns: 
         A valid user string, or None if no valid user could be found.
     """
     try:
-        user_name = env['beaker.session']['user_name']
+        user_name = session['user_name']
         user = lookup_user(user_name)
     except KeyError, e:
         user = None
@@ -220,14 +232,13 @@ def redirect_client_prg(url):
 
                 Example: '/' For the main page.
 
-    Returns: tuple containing pyroTorrent custom request.
+    Returns: flask Response object.
     """
 
-    # Since the pyroTorrentApp parses tuples as custom
-    # responses, return a tuple containing the required info.
+    # Tell flask to redirect using HTTP 303 See Other.
     # A 303 should not result in resubmission of POST data
     # to the given location.
-    return ('303 See Other', [('Location', BASE_URL + url)], '')
+    return redirect(BASE_URL + url, code=303)
 
 def redirect_client(url):
     """
@@ -241,12 +252,11 @@ def redirect_client(url):
 
                 Example: '/' For the main page.
 
-    Returns: tuple containing pyroTorrent custom request.
+    Returns: flask Response object.
     """
 
-    # Since the pyroTorrentApp parses tuples as custom
-    # responses, return a tuple containing the required info
+    # Tell flask to redirect using HTTP 307 Temporary Redirect.
     # A 307 should not be cached unless explicitely stated so
     # by the HTTP headers.
-    return ('307 Temporary Redirect', [('Location', BASE_URL + url)], '')
+    return redirect(BASE_URL + url, code=307)
 
