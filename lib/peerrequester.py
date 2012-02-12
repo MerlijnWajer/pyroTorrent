@@ -15,7 +15,7 @@ class PeerRequester(BaseRequester):
     """
     """
     def __init__(self, target, *first_args):
-        BaseRequester.__init__(self, target)
+        BaseRequester.__init__(self, target, first_args)
         self.first_args = first_args
 
     def dofetch(self, *rpc_commands):
