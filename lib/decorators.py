@@ -7,6 +7,7 @@ import inspect
 
 # Use 'decorator' for building the decorators.
 from decorator import decorator
+from functools import wraps
 
 # pyro's web framework
 from flask import session, g, abort
@@ -94,10 +95,16 @@ def pyroview(func = None, require_login = True, do_lookup_user = False):
         ################################
         ### Actual wrapping function ###
         ################################
-        def pyroview_func(func, *args, **key_args):
+        # Use wraps here since we skip the decorator module
+        # in this function.
+        @wraps(func)
+        def pyroview_func(*args, **key_args):
             """
             pyroview internal function wrapper
             """
+
+            print "pyroview_func"
+            print args, key_args
 
             # Force a login if necessary
             if require_login:
@@ -119,10 +126,12 @@ def pyroview(func = None, require_login = True, do_lookup_user = False):
             if do_lookup_user:
                 key_args['user'] = user
 
-            print func
             return func(*args, **key_args)
 
-        return decorator(pyroview_func, func)
+        # FIXME: pyroview does not preserve signature to fix
+        #some unexpected decorator behaviour
+        #return decorator(pyroview_func, func)
+        return pyroview_func
 
     # pyroview was called using '@pyroview'
     if func:
@@ -146,16 +155,22 @@ def require_target(func):
     """
 
     # Validate target argument
-    if 'target' in inspect.getargspec(func)[0]:
-        raise AppStandardsViolation('require_target', func, [(-1, 'target')])
+    #if 'target' not in inspect.getargspec(func)[0]:
+    #    raise AppStandardsViolation('require_target', func, [(-1, 'target')])
 
     ################################
     ### Actual wrapping function ###
     ################################
-    def target_func(func, target, *args, **key_args):
+    #def target_func(func, target, *args, **key_args):
+    @wraps(func)
+    def target_func(target, *args, **key_args):
         """
         require_target internal target argument wrapper.
         """
+
+        print "target_func"
+        print key_args
+
         # Perform target lookup for callback function
         target = lookup_target(target)
 
@@ -168,9 +183,11 @@ def require_target(func):
             if g.user == None or target['name'] not in g.user.targets:
                 return abort(404) # 404
 
+        print target, args, key_args
         return func(target = target, *args, **key_args)
 
-    return decorator(target_func, func)
+    #return decorator(target_func, func)
+    return target_func
 
 def require_torrent(func):
     """
@@ -183,36 +200,44 @@ def require_torrent(func):
         torrent argument.
     """
 
+    print '@require_torrent'
     # Validate torrent argument
-    if 'torrent' not in inspect.getargspec(func)[0]:
-        raise AppStandardsViolation('require_torrent', func, [(-1, 'torrent')])
+    #if 'torrent' not in inspect.getargspec(func)[0]:
+    #    raise AppStandardsViolation('require_torrent', func, [(-1, 'torrent')])
 
     ################################
     ### Actual wrapping function ###
     ################################
-    def torrent_func(func, target, *args, **key_args):
+    #def torrent_func(func, target, torrent, *args, **key_args):
+    @wraps(func)
+    def torrent_func(target, *args, **key_args):
         """
         require_torrent internal torrent argument wrapper
         """
 
+        print "torrent_func"
+        print key_args
+
         # Grab torrent_hash
-        if not key_args.has_key('torrent_hash'):
-            bugstr = "!!! BUG: route is not passing a 'torrent_hash' " + \
+        if not key_args.has_key('torrent'):
+            bugstr = "!!! BUG: route is not passing a 'torrent' " + \
                 "argument like it should"
             print bugstr
             raise AppBugException(bugstr)
 
         # Build torrent object
-        torrent_hash = key_args['torrent_hash']
+        torrent_hash = key_args['torrent']
         t = Torrent(target, torrent_hash)
 
         # torrent_hash is contained by torrent object and thus superfluous
-        del key_args['torrent_hash']
+        #del key_args['torrent_hash']
         key_args['torrent'] = t
+        print key_args
 
         return func(target = target, *args, **key_args)
 
-    return decorator(torrent_func, func)
+    #return decorator(torrent_func, func)
+    return torrent_func
 
 def require_rtorrent(func):
     """
@@ -224,14 +249,16 @@ def require_rtorrent(func):
         rtorrent argument
     """
 
-    # Validate torrent argument
-    if 'rtorrent' not in inspect.getargspec(func)[0]:
-        raise AppStandardsViolation('require_rtorrent', func, [(-1, 'rtorrent')])
+    ## Validate torrent argument
+    #if 'rtorrent' not in inspect.getargspec(func)[0]:
+    #    raise AppStandardsViolation('require_rtorrent', func, [(-1, 'rtorrent')])
 
     ################################
     ### Actual wrapping function ###
     ################################
-    def rtorrent_func(func, *args, **key_args):
+    #def rtorrent_func(func, *args, **key_args):
+    @wraps(func)
+    def rtorrent_func(*args, **key_args):
         """
         require_rtorrent internal torrent argument wrapper
         """
@@ -242,5 +269,6 @@ def require_rtorrent(func):
 
         return func(*args, **key_args)
 
-    return decorator(rtorrent_func, func)
+    #return decorator(rtorrent_func, func)
+    return rtorrent_func
 

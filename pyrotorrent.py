@@ -112,12 +112,14 @@ def main_view_page(view='default'):
             # TODO
             )
 
-@app.route('/target/<target>/torrent/<torrent_hash>')
+@app.route('/target/<target>/torrent/<torrent>')
 @pyroview
-def torrent_info_page(target, torrent_hash):
+@require_target
+@require_torrent
+def torrent_info_page(target, torrent):
     # TODO UNSAFE NEEDS DECORATOR
-    target = lookup_target(target)
-    torrent = Torrent(target, torrent_hash)
+    #target = lookup_target(target)
+    #torrent = Torrent(target, torrent_hash)
 
     try:
         q = torrent.query()
