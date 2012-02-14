@@ -154,19 +154,25 @@ a:hover {
 }
 
 div.target_info {
-    background-color: rgba(34, 34, 34, {{trans}});
+    background-color: rgba(34, 34, 34, 0.2);
     color: #fff;
-
-    font-size: 14px;
-    font-weight: bold;
 
     border: 2em;
     -moz-border-radius: 15px;
     border-radius: 15px;
+    
+    margin-bottom: 2em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
 }
 
 div.inner_target_info {
     margin: 2em;
+
+    font-size: 14px;
+    font-weight: bold;
+
 }
 
 li.torrent_complete {
@@ -221,6 +227,17 @@ div.torrent-def-div {
     border: 2em;
     -moz-border-radius: 15px;
     border-radius: 15px;
+}
+
+div.flashes {
+    background-color: rgba(240, 240, 240, {{trans}});
+
+    margin: 1em;
+    padding: 1em;
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+
 }
 
 div.torrentfile-div {

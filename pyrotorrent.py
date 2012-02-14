@@ -1,11 +1,8 @@
 """
 TODO:
     -   Default arguments for jinja (wn, etc)
-    -   Login decorators, etc.
     -   torrent_get_file
     -   torrent_file
-    -   add_torrent_page
-    -   torrent_info_page
 
 """
 
@@ -156,15 +153,37 @@ def torrent_file(target, torrent_hash):
 def torrent_get_file(target, torrent_hash, filename):
     pass
 
-@app.route('/target/<target>/add_torrent')
+@app.route('/target/<target>/add_torrent', methods=['GET', 'POST'])
+@pyroview
+@require_target
 def add_torrent_page(target):
-    pass
+    flash('Hello World')
 
-#wt.add_rule(re.compile('^%s/style.css$' % BASE_URL), style_serve, [])
-#
-#wt.add_rule(re.compile('^%s/login' % BASE_URL), handle_login, [])
-#
-#wt.add_rule(re.compile('^%s/logout' % BASE_URL), handle_logout, [])
+    if request.method == 'POST':
+        if 'torrent_file' in request.files:
+
+            torrent_raw_bin = request.files['torrent_file'].read()
+
+            rtorrent = RTorrent(target)
+            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+        elif 'torrent_url' in request.form:
+
+            torrent_url = request.form['torrent_url']
+
+            response = urllib2.urlopen(torrent_url)
+            torrent_raw = response.read()
+
+            torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
+
+            rtorrent = RTorrent(target)
+            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+
+        flash('Succesfully added torrent' if return_code == 0 else 'Failed to add torrent')
+
+    rtorrent_data = fetch_global_info()
+
+    return render_template('torrent_add.html',
+            rtorrent_data=rtorrent_data, target=target['name'])
 
 def handle_api_method(method, keys):
     if method not in known_methods:

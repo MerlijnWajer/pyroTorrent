@@ -5,6 +5,7 @@ View: {{ view}}
 {% endblock %}
 
 {% block main %}
+
 {% if torrents_list %}
   {% for target in torrents_list %}
   {% set torrents = torrents_list[target] %}
@@ -29,7 +30,6 @@ View: {{ view}}
               <span class="add_torrent_icon"></span>
               </a>
         </span>
-    </div>
     </div>
     </div>
 
@@ -84,6 +84,8 @@ View: {{ view}}
     </li>
     {% endfor %}
     </ul>
+    </div>
+
     </div>
 
   {% endfor %}

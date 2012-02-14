@@ -2,21 +2,9 @@
 
 {% block main %}
 
-{% if torrent_added %}
-
-<div class="torrent-def-div">
-    {% if torrent_added == "SUCCES" %}
-    <p> Torrent added :-) </p>
-    {% else %}
-    <p> Torrent could not be added. Reason: TODO </p>
-    {% endif %}
-    </div>
-
-{% endif %}
-
 <div class="torrent-def-div">
     <h1> Add a torrent with a direct link </h1>
-    <form method="post" action="{{base_url}}/target/{{target}}/add_torrent">
+    <form method="post" action="{{ url_for('add_torrent_page', target=target) }}">
         <p> Enter the Torrent URL here: <input type="text"
         name="torrent_url"></input> </p>
         <input type="submit" value="Add torrent"></input>
@@ -35,7 +23,7 @@ function buttonPush (buttonStatus) {
 
 <div class="torrent-def-div">
     <h1> Add a local torrent file </h1>
-    <form method="post" action="{{base_url}}/target/{{target}}/add_torrent"
+    <form method="post" action="{{ url_for('add_torrent_page', target=target) }}"
         enctype="multipart/form-data">
 
     <p>
