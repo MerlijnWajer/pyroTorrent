@@ -43,7 +43,7 @@ from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
 # TODO REMOVE?
-from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
+from lib.helper import wiz_normalise, pyro_render_template, error_page, loggedin, \
     loggedin_and_require, parse_config, parse_users, fetch_user, \
     fetch_global_info, lookup_user, lookup_target, redirect_client_prg, \
     redirect_client
@@ -72,7 +72,6 @@ def main_view_page(view='default'):
 
     rtorrent_data = fetch_global_info()
 
-    user = None
 #    user = fetch_user(env)
 
 #    if view not in rtorrent_data.get_view_list:
@@ -80,9 +79,9 @@ def main_view_page(view='default'):
 
     torrents = {}
     for target in targets:
-        if user == None and USE_AUTH:
+        if g.user == None and USE_AUTH:
             continue
-        if user and (target['name'] not in user.targets):
+        if g.user and (target['name'] not in g.user.targets):
             continue
 
         try:
@@ -108,10 +107,9 @@ def main_view_page(view='default'):
         except InvalidTorrentException, e:
             return error_page(env, str(e))
 
-    return render_template('download_list.html',
+    return pyro_render_template('download_list.html',
             torrents_list=torrents, rtorrent_data=rtorrent_data, view=view
             # TODO
-            ,wn=wiz_normalise
             )
 
 @app.route('/target/<target>/torrent/<torrent_hash>')
@@ -297,69 +295,53 @@ def style_serve():
 @app.route('/login', methods=['GET', 'POST'])
 @pyroview(require_login=False)
 def handle_login():
-    tmpl = jinjaenv.get_template('loginform.html')
+    print 'Handle das login'
+    #tmpl = jinjaenv.get_template('loginform.html')
+    _login_fail = lambda: pyro_render_template('loginform.html', loginfail=True)
 
-    if str(env['REQUEST_METHOD']) == 'POST':
-        data = read_post_data(env)
+    if request.method == 'POST':
+        if 'user' not in request.form or 'pass' not in request.form:
+            return _login_fail()
 
-        if 'user' not in data or 'pass' not in data:
-            return template_render(tmpl, env,
-            {   'session' : env['beaker.session'], 'loginfail' : True}  )
+        user = request.form['user']
+        passwd = request.form['pass']
 
-        user = urllib.unquote_plus(data['user'].value)
-        pass_ = urllib.unquote_plus(data['pass'].value)
+        #user = urllib.unquote_plus(data['user'].value)
+        #pass_ = urllib.unquote_plus(data['pass'].value)
 
 #        pass = hashlib.sha256(pass).hexdigest()
         u = lookup_user(user)
         if u is None:
-            return template_render(tmpl, env,
-            {   'session' : env['beaker.session'], 'loginfail' : True}  )
+            return _login_fail()
 
-        if u.password == pass_:
-            env['beaker.session']['user_name'] = user
+        if u.password == passwd:
+            print 'Login succes.'
+            session['user_name'] = user
 
             # Redirect user to original page, or if not possible
             # to the main page.
-            if 'login_redirect_url' in env['beaker.session']:
-                redir_url = env['beaker.session']['login_redirect_url']
-                #print 'Got URL from session:', redir_url
+            redir_url = session.pop('login_redirect_url', None)
+            if redir_url:
+                print 'Redirecting to:', redir_url
+                return redirect_client_prg(url=redir_url)
 
-                # Remove unnecessary data from session
-                del env['beaker.session']['login_redirect_url']
+            return redirect_client_prg('main_view_page')
 
-                # Try to chop off BASE_URL from absolute URL
-                if redir_url.startswith(BASE_URL) and not redir_url == BASE_URL:
-                    redir_url = redir_url[len(BASE_URL):]
-
-                # Main page
-                else:
-                    redir_url = '/'
-            else:
-                #print 'URL not found in session'
-                redir_url = '/'
-
-            #print "Login succes, redirect to:", redir_url
-
-            # Store session
-            env['beaker.session'].save()
-            return redirect_client_prg(redir_url)
-            #return main_page(env)
         else:
-            return template_render(tmpl, env,
-            {   'session' : env['beaker.session'], 'loginfail' : True}  )
+            return _login_fail()
 
     # Not logged in?
     # Render login page, and store
     # current URL in beaker session.
-    if not loggedin(env):
-        #print 'Not logged in, storing session data:', env['PATH_INFO']
-        env['beaker.session']['login_redirect_url'] = env['PATH_INFO']
-        env['beaker.session'].save()
-        return template_render(tmpl, env, { })
+    if not loggedin():
+        print 'Not logged in, storing session data:', request.base_url
+        session['login_redirect_url'] = request.base_url
+
+        return pyro_render_template('loginform.html')
 
     # User already loggedin, redirect to main page.
     else:
-        return redirect_client('/')
+        return redirect_client('main_view_page')
 
 @app.route('/logout')
 @pyroview(require_login=False)
@@ -369,8 +351,7 @@ def handle_logout():
     else:
         return error_page(env, 'Not logged in')
 
-    return redirect_client('/')
-
+    return redirect_client('main_view_page')
 
 #if ENABLE_API:
 #    wt.add_rule(re.compile('^%s/api' % BASE_URL), handle_api, [])
