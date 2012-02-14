@@ -5,7 +5,7 @@ Various helper functions
 import sys
 
 # flask webframework stuff
-from flask import redirect, g, session
+from flask import redirect, g, session, url_for, render_template
 
 # pyro imports
 from config import BASE_URL, STATIC_URL, FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
@@ -123,22 +123,23 @@ def attach_deep_func(func, deep_func):
     return func
 
 # Function to render the jinja template and pass some simple vars / functions.
-def template_render(template, vars):
+def pyro_render_template(template, **kw):
     """
         Template Render is a helper that initialises basic template variables
         and handles unicode encoding.
     """
-    vars['base_url'] = BASE_URL
-    vars['static_url'] = STATIC_URL
-    vars['use_auth'] = USE_AUTH
-    vars['wn'] = wiz_normalise
-    vars['trans'] = 0.4
-    vars['login'] = session['user_name'] if \
+    #XXX Base URL not needed any more since Flask
+    #vars['base_url'] = BASE_URL
+    kw['static_url'] = STATIC_URL
+    kw['use_auth'] = USE_AUTH
+    kw['wn'] = wiz_normalise
+    kw['trans'] = 0.4
+    kw['login'] = session['user_name'] if \
         session.has_key('user_name') else None
 
-    ret = unicode(template.render(vars)).encode('utf8')
+    #ret = unicode(template.render(vars)).encode('utf8')
 
-    return ret
+    return render_template(template, **kw)
 
 # Fetch some useful rtorrent info from all targets.
 def fetch_global_info():
@@ -220,43 +221,121 @@ def fetch_user():
         user = None
     return user
 
-def redirect_client_prg(url):
+def parse_args_to_url(endpoint=None, url=None, **kw):
+    """
+    This function parses the arguments accepted by the pyroTorrent
+    redirect helpers.
+
+    Arguments:
+        This function accepts only keyword arguments or a single
+        endpoint string as first argument.
+
+        enpoint:
+            A Flask/Werkzeug endpoint to be redirected to.
+
+        url:
+            A URL to be redirected to in any format you fancy.
+
+        **kw:
+            Any variables provided to the endpoint.
+            For instance a route of: '/view/<name>' would
+            accept a 'name' keyword.
+
+    Returns:
+        A URL string.
+
+    Raises:
+        ValueError:
+            When either both endpoint and url specify something
+            or whenever both a URL and additional keyword arguments
+            are provided.
+    """
+
+    if endpoint and url:
+        raise ValueError("Both 'endpoint' and 'URL' have valid values," +
+            "only specify one of them.")
+
+    if endpoint:
+        return url_for(endpoint, **kw)
+
+    if url and len(kw):
+        raise ValueError('Cannot specify keyword arguments for fixed URL')
+
+    return url
+
+def redirect_client_prg(endpoint=None, **kw):
     """
     Return a HTTP 303 response, effectively redirecting
     the client to the given URL in a Post/Redirect/Get manor.
 
     Arguments:
-        url:    Absolute URL within pyroTorrent.
-                Should therefore include preceding slash.
-                URL should not include base URL.
+        This function accepts only keyword arguments or a single
+        endpoint string as first argument.
 
-                Example: '/' For the main page.
+        enpoint:
+            A Flask/Werkzeug endpoint to be redirected to.
 
-    Returns: flask Response object.
+        url:
+            A URL to be redirected to in any format you fancy.
+
+        **kw:
+            Any variables provided to the endpoint.
+            For instance a route of: '/view/<name>' would
+            accept a 'name' keyword.
+
+    Returns:
+        A Flask Response object.
+
+    Raises:
+        ValueError:
+            When either both endpoint and url specify something
+            or whenever both a URL and additional keyword arguments
+            are provided.
     """
+
+    url = parse_args_to_url(endpoint, **kw)
+    print 'redirect_client_prg:', url
 
     # Tell flask to redirect using HTTP 303 See Other.
     # A 303 should not result in resubmission of POST data
     # to the given location.
-    return redirect(BASE_URL + url, code=303)
+    return redirect(url, code=303)
 
-def redirect_client(url):
+def redirect_client(endpoint=None, **kw):
     """
     Return a HTTP 307 response, effectively redirecting
     the client to the given URL.
 
     Arguments:
-        url:    Absolute URL within pyroTorrent.
-                Should therefore include preceding slash.
-                URL should not include base URL.
+        This function accepts only keyword arguments or a single
+        endpoint string as first argument.
 
-                Example: '/' For the main page.
+        enpoint:
+            A Flask/Werkzeug endpoint to be redirected to.
 
-    Returns: flask Response object.
+        url:
+            A URL to be redirected to in any format you fancy.
+
+        **kw:
+            Any variables provided to the endpoint.
+            For instance a route of: '/view/<name>' would
+            accept a 'name' keyword.
+
+    Returns:
+        A Flask Response object.
+
+    Raises:
+        ValueError:
+            When either both endpoint and url specify something
+            or whenever both a URL and additional keyword arguments
+            are provided.
     """
+
+    url = parse_args_to_url(endpoint, **kw)
+    print 'redirect_client:', url
 
     # Tell flask to redirect using HTTP 307 Temporary Redirect.
     # A 307 should not be cached unless explicitely stated so
     # by the HTTP headers.
-    return redirect(BASE_URL + url, code=307)
+    return redirect(url, code=307)
 
