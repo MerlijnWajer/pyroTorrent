@@ -157,8 +157,6 @@ def torrent_get_file(target, torrent_hash, filename):
 @pyroview
 @require_target
 def add_torrent_page(target):
-    flash('Hello World')
-
     if request.method == 'POST':
         if 'torrent_file' in request.files:
 
