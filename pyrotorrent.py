@@ -2,7 +2,6 @@
 TODO:
     -   Default arguments for jinja (wn, etc)
     -   torrent_get_file
-    -   torrent_file
 
 """
 
@@ -54,6 +53,13 @@ import mimetypes
 import os
 import stat
 
+# For fetching http .torrents
+import urllib2
+import xmlrpclib # for .Binary
+
+# For serving .torrent files
+import base64
+
 import datetime
 import time
 
@@ -66,7 +72,6 @@ def main_view_page(view='default'):
     """
     TODO: Login
     """
-
     rtorrent_data = fetch_global_info()
 
 #    user = fetch_user(env)
@@ -143,10 +148,26 @@ def torrent_info_page(target, torrent):
         ,wn=wiz_normalise
     )
 
-@app.route('/target/<target>/torrent/<torrent_hash>.torrent')
+@app.route('/target/<target>/torrent/<torrent>.torrent')
 @pyroview
-def torrent_file(target, torrent_hash):
-    pass
+@require_target
+@require_torrent
+@require_rtorrent
+def torrent_file(target, torrent, rtorrent):
+    try:
+        filepath = torrent.get_loaded_file()
+
+        # TODO: Check for errors. (Permission denied, non existing file, etc)
+        contents = rtorrent.execute_command('sh', '-c', 'cat ' + filepath +
+                ' | base64')
+
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
+
+    r = Response(base64.b64decode(contents),
+            mimetype='application/x-bittorrent')
+    r.status_code = 200
+    return r
 
 @app.route('/target/<target>/torrent/<torrent_hash>/get_file/<path:filename>')
 @pyroview
