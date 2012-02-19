@@ -169,10 +169,151 @@ def torrent_file(target, torrent, rtorrent):
     r.status_code = 200
     return r
 
-@app.route('/target/<target>/torrent/<torrent_hash>/get_file/<path:filename>')
+@app.route('/target/<target>/torrent/<torrent>/get_file/<filename>')
 @pyroview
-def torrent_get_file(target, torrent_hash, filename):
-    pass
+@require_target
+@require_torrent
+def torrent_get_file(target, torrent, filename):
+
+    # Is file fetching enabled?
+    print target
+    if not target.has_key('storage_mode'):
+        print "File fetching disabled, 404"
+        return None
+    s_mode = target['storage_mode']
+
+#    print "Requested file (un-unquoted):", filename
+#    filename = urllib.unquote_plus(filename)
+    print "Requested file:", filename
+
+    # Fetch absolute path to torrent
+    try:
+        t_path = torrent.get_full_path()
+    except InvalidTorrentException, e:
+        return error_page(env, str(e))
+
+    # rtorrent is running on a remote fs mounted
+    # on this machine?
+    if 'remote_path' in s_mode:
+        # Transform remote path to locally mounted path
+        t_path = t_path.replace(s_mode['remote_path'], s_mode['local_path'], 1)
+
+    # Compute absolute file path
+    try:
+        if stat.S_ISDIR(os.stat(t_path).st_mode):
+            print "Multi file torrent."
+            file_path = os.path.abspath(t_path + '/' + filename)
+        else:
+            print "Single file torrent."
+            file_path = os.path.abspath(t_path)
+    except OSError as e:
+        print "Exception performing stat:"
+        print e
+        return None
+
+    print "Computed path:", file_path
+
+    # Now verify this path is within torrent path
+    if file_path.find(t_path) != 0:
+        print "Path rejected.."
+        return None
+    print "Path accepted."
+
+    print request.headers
+
+    HTTP_RANGE_REQUEST = False
+    try:
+        _bytes = request.headers['Range']
+        print 'HTTP_RANGE Found'
+        _bytes = _bytes.split('=')[1]
+        _start, _end = _bytes.split('-')
+        _start = int(_start)
+        if _end:
+            _end = int(_end)
+
+        HTTP_RANGE_REQUEST = True
+
+    except KeyError, e:
+        print 'No HTTP_RANGE passed'
+    except (ValueError, IndexError), e:
+        print 'Invalid HTTP_RANGE:', e
+
+
+    # Open file for reading
+    try:
+        f = open(file_path, 'r')
+        if HTTP_RANGE_REQUEST:
+            print 'Seeking...'
+            f.seek(_start)
+    except IOError as e:
+        print 'Exception opening file:', e
+        return None
+    print 'File open.'
+
+    # Setup response
+    f_size = os.path.getsize(file_path)
+    if HTTP_RANGE_REQUEST:
+        # We can't set _end earlier.
+        if not _end:
+            _end = f_size
+
+    mimetype = mimetypes.guess_type(file_path)
+    if mimetype[0] == None:
+        mimetype = 'application/x-binary'
+    else:
+        mimetype = mimetype[0]
+
+    headers = []
+    headers.append(('Content-Type', mimetype))
+
+    if HTTP_RANGE_REQUEST:
+        headers.append(('Content-length', str(_end-_start)))
+    else:
+        headers.append(('Content-length', str(f_size)))
+
+        # Let browser figure out filename
+        # See also: http://greenbytes.de/tech/tc2231/
+        # and: http://stackoverflow.com/questions/1361604/how-to-encode-utf8-filename-for-http-headers-python-django
+        headers.append(('Content-Disposition', 'attachment;'\
+            'filename='+os.path.split(file_path)[1]))
+
+    # Useful code for returning files
+    # http://stackoverflow.com/questions/3622675/returning-a-file-to-a-wsgi-get-request
+#    if 'wsgi.file_wrapper' in env:
+#        f_ret = env['wsgi.file_wrapper'](f, FILE_BLOCK_SIZE)
+#    else:
+    f_ret = iter(lambda: f.read(FILE_BLOCK_SIZE), '')
+
+
+    if HTTP_RANGE_REQUEST:
+        print 'RETURNING 206'
+        # Date, Content-Location/ETag, Expires/Cache-Control
+        # Either a Content-Range header field (section 14.16) indicating
+        # the range included with this response, or a multipart/byteranges
+        # Content-Type including Content-Range fields for each part. If a
+        # Content-Length header field is present in the response, its
+        # value MUST match the actual number of OCTETs transmitted in the
+        # message-body.
+        d = datetime.datetime.now()
+
+        headers.append(('Date', d.strftime('%a, %d %b %Y %H:%M:%S GMT')))
+        headers.append(('Content-Range', 'bytes: %d-%d/%d' % (_start, _end-1,
+            f_size-1)))
+        headers.append(('Cache-Control', 'max-age=3600'))
+        headers.append(('Content-Location', filename))
+
+        print headers
+        r = Response(f_ret)
+        r.status_code = 206
+        r.headers = headers
+        return r
+    else:
+        print headers
+        r = Response(f_ret)
+        r.status_code = 200
+        r.headers = headers
+        return r
+
 
 @app.route('/target/<target>/add_torrent', methods=['GET', 'POST'])
 @pyroview
