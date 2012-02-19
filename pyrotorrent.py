@@ -177,11 +177,10 @@ def torrent_get_file(target, torrent, filename):
     print target
     if not target.has_key('storage_mode'):
         print "File fetching disabled, 404"
-        return None
+        abort(404)
+
     s_mode = target['storage_mode']
 
-#    print "Requested file (un-unquoted):", filename
-#    filename = urllib.unquote_plus(filename)
     print "Requested file:", filename
 
     # Fetch absolute path to torrent
@@ -205,19 +204,17 @@ def torrent_get_file(target, torrent, filename):
             print "Single file torrent."
             file_path = os.path.abspath(t_path)
     except OSError as e:
-        print "Exception performing stat:"
-        print e
-        return None
+        print "Exception performing stat:", e
+        abort(500)
 
     print "Computed path:", file_path
 
     # Now verify this path is within torrent path
     if file_path.find(t_path) != 0:
         print "Path rejected.."
-        return None
-    print "Path accepted."
+        abort(403)
 
-    print request.headers
+    print "Path accepted."
 
     HTTP_RANGE_REQUEST = False
     try:
@@ -284,7 +281,6 @@ def torrent_get_file(target, torrent, filename):
 
 
     if HTTP_RANGE_REQUEST:
-        print 'RETURNING 206'
         # Date, Content-Location/ETag, Expires/Cache-Control
         # Either a Content-Range header field (section 14.16) indicating
         # the range included with this response, or a multipart/byteranges
@@ -300,13 +296,11 @@ def torrent_get_file(target, torrent, filename):
         headers.append(('Cache-Control', 'max-age=3600'))
         headers.append(('Content-Location', filename))
 
-        print headers
         r = Response(f_ret)
         r.status_code = 206
         r.headers = headers
         return r
     else:
-        print headers
         r = Response(f_ret)
         r.status_code = 200
         r.headers = headers
