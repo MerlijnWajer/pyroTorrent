@@ -335,6 +335,8 @@ def add_torrent_page(target):
             rtorrent_data=rtorrent_data, target=target['name'])
 
 def handle_api_method(method, keys):
+    if not ENABLE_API:
+        return None
     if method not in known_methods:
         raise Exception('Unknown method')
 
