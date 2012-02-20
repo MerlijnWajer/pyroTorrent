@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 TODO:
     -   Default arguments for jinja (wn, etc)
@@ -16,12 +17,15 @@ DEBUG = True
 USERNAME = 'admin'
 PASSWORD = 'default'
 
+#APPLICATION_ROOT = ''
+APPLICATION_ROOT = '/torrent'
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 
 
 from config import FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
-        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users
+        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users, USE_OWN_HTTPD
 
 from lib.config_parser import parse_config_part, parse_user_part, \
     RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
@@ -116,7 +120,7 @@ def main_view_page(view='default'):
 @pyroview
 @require_target
 @require_torrent
-def torrent_info_page(target, torrent):
+def torrent_info(target, torrent):
     # TODO UNSAFE NEEDS DECORATOR
     #target = lookup_target(target)
     #torrent = Torrent(target, torrent_hash)
@@ -138,7 +142,7 @@ def torrent_info_page(target, torrent):
 
     rtorrent_data = fetch_global_info()
 
-    return render_template('torrent_info.html', torrent=torrentinfo, tree=tree,
+    return pyro_render_template('torrent_info.html', torrent=torrentinfo, tree=tree,
         rtorrent_data=rtorrent_data, target=target,
         file_downloads=target.has_key('storage_mode')
 
@@ -334,7 +338,7 @@ def add_torrent_page(target):
 
     rtorrent_data = fetch_global_info()
 
-    return render_template('torrent_add.html',
+    return pyro_render_template('torrent_add.html',
             rtorrent_data=rtorrent_data, target=target['name'])
 
 def handle_api_method(method, keys):
@@ -460,8 +464,7 @@ def style_serve():
     """
     background = BACKGROUND_IMAGE
 
-    return Response(render_template('style.css',
-        background_image=background,
+    return Response(pyro_render_template('style.css',
         trans=0.6),
         mimetype='text/css')
 
@@ -529,6 +532,25 @@ def handle_logout():
 #if ENABLE_API:
 #    wt.add_rule(re.compile('^%s/api' % BASE_URL), handle_api, [])
 
+class PrefixWith(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        print environ['PATH_INFO']
+
+        if environ['PATH_INFO'].startswith(APPLICATION_ROOT):
+            environ['PATH_INFO'] = environ['PATH_INFO'][len(APPLICATION_ROOT):]
+            environ['SCRIPT_NAME'] = APPLICATION_ROOT
+        else:
+            environ['PATH_INFO'] = '/GENERIC-404'
+            environ['SCRIPT_NAME'] = ''
+            #start_response('404 Not Found', [('Content-Type', 'text/plain')])
+            #return '404'
+
+        return app(environ, start_response)
+
+
 if __name__ == '__main__':
     targets = parse_config()
     users = parse_users()
@@ -542,4 +564,10 @@ if __name__ == '__main__':
     lib.helper.cache = cache
     lib.decorators.handle_login = handle_login
 
-    app.run()
+
+    if USE_OWN_HTTPD:
+        app.run()
+    else:
+        application = PrefixWith(app)
+        from flup.server.fcgi import WSGIServer
+        WSGIServer(application).run()

@@ -7,7 +7,8 @@
 <b>{{ node.name }}</b> 
 {% else %}
     {% if file_downloads %}
-    <a href="{{base_url}}/target/{{target['name']}}/torrent/{{torrent.get_hash}}/get_file/{{ node.get_path_no_root() }}"<i>{{ node.name }}</i>
+    <a href="{{ url_for('torrent_get_file', target=target['name'],
+        torrent=torrent.get_hash, filename=node.get_path_no_root()) }}"<i>{{ node.name }}</i>
     </a>
     <b>(Chunks completed: {{ node.obj.get_completed_chunks }} / {{
         node.obj.get_size_chunks }} )</b>
@@ -38,7 +39,7 @@
             {{ wn(torrent.get_size_bytes) }}) </h1>
         <p> Loaded file: 
         <a
-            href="{{base_url}}/target/{{target['name']}}/torrent/{{torrent.get_hash}}.torrent">
+            href="{{ url_for('torrent_file', target=target['name'], torrent=torrent.get_hash) }}">
             {{ torrent.get_loaded_file }}
         </a>
         </p>

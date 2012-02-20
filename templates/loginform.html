@@ -27,7 +27,7 @@
             <p> You are already logged in </p>
 
         {% else %}
-        <form method="post" action="{{base_url}}/login">
+        <form method="post" action="{{ url_for('handle_login') }}">
 
             <p> You can log in with your pyroTorrent user here. </p>
 

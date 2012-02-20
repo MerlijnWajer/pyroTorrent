@@ -2,11 +2,13 @@
 <html>
 <head>
     <link rel="shortcut icon" href="{{static_url}}/favicon.png" type="image/png" />
-    <link rel="stylesheet" type="text/css" href="{{base_url}}/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('style_serve')}}" />
     <meta charset="utf-8"/>
     <title>{% block title %} pyroTorrent {% endblock %}</title>
 </head>
 <body>
+    <img src="{{ url_for('static', filename=g.user.background_image) }}" class="bg">
+    </img>
 
 <header>
 
@@ -19,15 +21,15 @@
     #}
 
     <span class="logo">πϱTorrent v0.13-dev</span>
-    <span> <a href="{{base_url}}/">Home</a> </span>
-    <span> <a href="{{base_url}}/">Admin</a> </span>
+    <span> <a href="{{ url_for('main_view_page') }}">Home</a> </span>
+    <!--    <span> <a href="{{base_url}}/">Admin</a> </span> -->
     {% if login and use_auth %}
     <span>
-        <a href="{{base_url}}/logout">Logout ( {{ login }} )</a>
+        <a href="{{ url_for('handle_logout') }}">Logout ( {{ login }} )</a>
     </span>
     {% elif use_auth %}
     <span>
-        <a href="{{base_url}}/login">Login</a>
+        <a href="{{ url_for('handle_login') }}">Login</a>
     </span>
     {% endif %}
     {% block nav %}
