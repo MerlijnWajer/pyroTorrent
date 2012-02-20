@@ -12,17 +12,10 @@ from flask import Response
 
 # TODO http://flask.pocoo.org/docs/config/
 
-SECRET_KEY = 'development key'
-DEBUG = True
-USERNAME = 'admin'
-PASSWORD = 'default'
-
-#APPLICATION_ROOT = ''
-APPLICATION_ROOT = '/torrent'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-
+app.config.from_pyfile('flask-config.py')
 
 from config import FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
         USE_AUTH, ENABLE_API, rtorrent_config, torrent_users, USE_OWN_HTTPD
@@ -537,11 +530,10 @@ class PrefixWith(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        print environ['PATH_INFO']
-
-        if environ['PATH_INFO'].startswith(APPLICATION_ROOT):
-            environ['PATH_INFO'] = environ['PATH_INFO'][len(APPLICATION_ROOT):]
-            environ['SCRIPT_NAME'] = APPLICATION_ROOT
+        app_root = app.config['APPLICATION_ROOT']
+        if environ['PATH_INFO'].startswith(app_root):
+            environ['PATH_INFO'] = environ['PATH_INFO'][len(app_root):]
+            environ['SCRIPT_NAME'] = app_root 
         else:
             environ['PATH_INFO'] = '/GENERIC-404'
             environ['SCRIPT_NAME'] = ''

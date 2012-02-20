@@ -8,7 +8,7 @@ import sys
 from flask import redirect, g, session, url_for, render_template
 
 # pyro imports
-from config import BASE_URL, STATIC_URL, FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
+from config import FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
         USE_AUTH, ENABLE_API, rtorrent_config, torrent_users
 from lib.config_parser import parse_config_part, parse_user_part, \
     RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
@@ -129,8 +129,6 @@ def pyro_render_template(template, **kw):
         and handles unicode encoding.
     """
     #XXX Base URL not needed any more since Flask
-    #vars['base_url'] = BASE_URL
-    kw['static_url'] = STATIC_URL
     kw['use_auth'] = USE_AUTH
     kw['wn'] = wiz_normalise
     kw['trans'] = 0.4
