@@ -5,8 +5,6 @@ pyroTorrent decorators - providing validation and lookup routines
 # 'inspect' is used for function standards validation.
 import inspect
 
-# Use 'decorator' for building the decorators.
-from decorator import decorator
 from functools import wraps
 
 # pyro's web framework

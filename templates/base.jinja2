@@ -7,7 +7,11 @@
     <title>{% block title %} pyroTorrent {% endblock %}</title>
 </head>
 <body>
-    <img src="{{ url_for('static', filename=g.user.background_image) }}" class="bg">
+     {% if g.user.background_image %}
+     <img src="{{ url_for('static', filename=g.user.background_image) }}" class="bg">
+     {% else %}
+     <img src="{{ url_for('static', filename=nm_background ) }}" class="bg">
+     {% endif %}
     </img>
 
 <header>

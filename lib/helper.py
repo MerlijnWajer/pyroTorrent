@@ -132,6 +132,7 @@ def pyro_render_template(template, **kw):
     kw['use_auth'] = USE_AUTH
     kw['wn'] = wiz_normalise
     kw['trans'] = 0.4
+    kw['nm_background'] = BACKGROUND_IMAGE
     kw['login'] = session['user_name'] if \
         session.has_key('user_name') else None
 
