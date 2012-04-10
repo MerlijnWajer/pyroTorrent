@@ -1,11 +1,19 @@
 body {
-    background: url('{{static_url}}/{{background_image}}') rgb(68, 68, 68);
-    background-size: 100%;
 /*    background-image: url('/torrent/static/space1.png');*/
+    background-color: rgb(68, 68 ,68); 
     color: #fff;
     font: 12px/18px "Liberation Sans", Arial, Verdana, Sans;
     margin: 0;
     padding: 0;
+}
+
+img.bg {
+    background-size: 100%;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: -1;
+    margin-top: -20px;
 }
 
 header {
@@ -154,23 +162,30 @@ a:hover {
 }
 
 div.target_info {
-    background-color: rgba(34, 34, 34, {{trans}});
+    background-color: rgba(34, 34, 34, 0.2);
     color: #fff;
-
-    font-size: 14px;
-    font-weight: bold;
 
     border: 2em;
     -moz-border-radius: 15px;
     border-radius: 15px;
+    
+    margin-bottom: 2em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
 }
 
 div.inner_target_info {
     margin: 2em;
+
+    font-size: 14px;
+    font-weight: bold;
+
 }
 
 li.torrent_complete {
-    background-color: rgba(34, 153, 34, {{trans}});
+    background-color: rgba(183, 74, 74, {{trans}});
+    /*background-color: rgba(34, 153, 34, {{trans}});*/
 
     border: 0;
     padding: 1px 5px;
@@ -197,10 +212,10 @@ span.download_icon, span.upload_icon {
 }
 
 span.download_icon {
-    background: transparent url({{static_url}}/icons/arrow_down.png);
+    background: transparent url({{ url_for('static', filename='icons/arrow_down.png') }} );
 }
 span.upload_icon {
-    background: transparent url({{static_url}}/icons/arrow_up.png);
+    background: transparent url({{ url_for('static', filename='icons/arrow_up.png') }} );
 }
 
 span.add_torrent_icon {
@@ -208,11 +223,34 @@ span.add_torrent_icon {
     width: 16px;
     display: inline-block;
 
-    background: transparent url({{static_url}}/icons/add.png);
+    background: transparent url({{ url_for('static', filename='icons/add.png') }} );
 }
 
 div.torrent-def-div {
     background-color: rgba(100, 100, 100, {{trans}});
+   /* background-color: rgba(34, 34, 34, {{trans}});*/
+    color: #fff;
+
+    margin-top: 2em;
+    padding: 1em;
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
+div.flashes {
+    background-color: rgba(240, 240, 240, {{trans}});
+
+    margin: 1em;
+    padding: 1em;
+    border: 2em;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+
+}
+
+div.torrentfile-div {
+    background-color: rgba(150, 150, 150, 0.1);
    /* background-color: rgba(34, 34, 34, {{trans}});*/
     color: #fff;
 

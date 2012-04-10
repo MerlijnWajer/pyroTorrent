@@ -6,17 +6,11 @@ Setting up πϱTorrent
 Requirements
 ------------
 
-πϱTorrent is written in Python. Aside from Python, you'll need the following
-python packages, depending on your setup:
+πϱTorrent is written in Python. Aside from Python (2.6 or 2.7),
+you'll need the following python packages, depending on your setup:
 
-    -   jinja2
-    -   beaker
-
-If you're not using the built-in simple HTTPD, you will need:
-    -   flup (WSGIServer)
-
-Future:
-    -   simplejson (not yet but will soon)
+    -   flask (with all the dependencies, (werkzeug, jinja, etc)
+    -   decorator
 
 as well as rtorrent with XMLRPC support. πϱTorrent has only been tested on
 GNU/Linux, so this would be an advantage as well.

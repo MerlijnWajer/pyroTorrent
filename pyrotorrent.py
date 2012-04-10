@@ -1,45 +1,34 @@
 #!/usr/bin/env python
 """
-pyroTorrent module.
+TODO:
+    -   Default arguments for jinja (wn, etc)
 """
 
-from jinja2 import Environment, PackageLoader
+###############################################################################
+#                               PYROTORRENT                                   #
+###############################################################################
+# To configure pyrotorrent, check the documentation as well as config.py and  #
+# flask-config.py. These two files will be merged later.                      #
+###############################################################################
 
-from lib.webtool import WebTool, read_post_data
 
-# For unescaping
-import urllib
+from flask import Flask, request, session, g, redirect, url_for, \
+             abort, render_template, flash
 
-# For torrent downloading
-import urllib2
+from flask import Response
 
-# Binary object encoding
-import xmlrpclib
+# TODO http://flask.pocoo.org/docs/config/
 
-# base64 dec+enc
-import base64
 
-# Regex
-import re
+app = Flask(__name__)
+app.config.from_object(__name__)
+app.config.from_pyfile('flask-config.py')
 
-from beaker.middleware import SessionMiddleware
-
-import simplejson as json
-
-# For sys.exit(), etc
-import sys
-
-from config import BASE_URL, STATIC_URL, FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
-        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users
-try:
-    from config import USE_OWN_HTTPD
-except ImportError:
-    USE_OWN_HTTPD = False # sane default?
+from config import FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
+        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users, USE_OWN_HTTPD
 
 from lib.config_parser import parse_config_part, parse_user_part, \
     RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
-
-from lib.sessionhack import SessionHack, SessionHackException
 
 from model.rtorrent import RTorrent
 from model.torrent import Torrent
@@ -51,11 +40,12 @@ from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
-from lib.helper import wiz_normalise, template_render, error_page, loggedin, \
+# TODO REMOVE?
+from lib.helper import wiz_normalise, pyro_render_template, error_page, loggedin, \
     loggedin_and_require, parse_config, parse_users, fetch_user, \
     fetch_global_info, lookup_user, lookup_target, redirect_client_prg, \
     redirect_client
-from lib.decorator import webtool_callback, require_torrent, \
+from lib.decorators import pyroview, require_torrent, \
     require_rtorrent, require_target
 
 # For MIME
@@ -65,79 +55,32 @@ import mimetypes
 import os
 import stat
 
+# For fetching http .torrents
+import urllib2
+import xmlrpclib # for .Binary
+
+# For serving .torrent files
+import base64
+
 import datetime
 import time
 
-# Main app
-def pyroTorrentApp(env, start_response):
-    """
-    pyroTorrent main function.
-    """
-    # Log here if you want
+import json
 
-    r = wt.apply_rule(env['PATH_INFO'], env)
-
-    # 404
-    if r is None:
-        start_response('404 Not Found', [('Content-Type', 'text/html')])
-        tmpl = jinjaenv.get_template('404.html')
-
-        rtorrent_data = fetch_global_info()
-
-        return template_render(tmpl, env,
-            {'url' : env['PATH_INFO'],
-            'rtorrent_data' : rtorrent_data})
-
-    elif type(r) in (tuple, list) and len(r) == 3:
-        # Respond with custom headers
-        start_response(r[0], r[1])
-        r = r[2]
-
-    # 200
-    else:
-        start_response('200 OK', [('Content-Type', 'text/html;charset=utf8')])
-
-    # Response data
-
-    # If r is not a file, but a string
-    # prevent an exhausting loop
-    if type(r) == str:
-        return [r]
-
-    return r
-
-# These *_page functions are what you would call ``controllers''.
-@webtool_callback(
-    require_login = False,
-    do_lookup_user = True
-    )
-def main_page(env, user):
-    """
-    Default page, calls main_view_page() with default view.
-    """
-    return main_view_page(env, 'default')
-
-# TODO: Implement target filters.
-def main_view_page(env, view):
-    """
-    Main page. Shows all torrents, per target.
-    Does two XMLRPC calls per target.
-    """
-    if not loggedin_and_require(env):
-        return handle_login(env)
-
+@app.route('/')
+@app.route('/view/<view>')
+@pyroview
+def main_view_page(view='default'):
     rtorrent_data = fetch_global_info()
-
-    user = fetch_user(env)
 
 #    if view not in rtorrent_data.get_view_list:
 #        return error_page(env, 'Invalid view: %s' % view)
 
     torrents = {}
     for target in targets:
-        if user == None and USE_AUTH:
+        if g.user == None and USE_AUTH:
             continue
-        if user and (target['name'] not in user.targets):
+        if g.user and (target['name'] not in g.user.targets):
             continue
 
         try:
@@ -147,29 +90,33 @@ def main_view_page(env, view):
                     .is_complete().get_size_bytes().get_download_total().get_hash()
 
             h = hash(t)
+
             torrents[target['name']] = cache.get(h)
+            if torrents[target['name']]:
+                continue
+
+            torrents[target['name']] = cache.get(target['name'])
+
             if torrents[target['name']] is not None:
                 continue
 
             torrents[target['name']] = t.all()
 
-            cache.set(h, torrents[target['name']], timeout=30)
+            cache.set(h, torrents[target['name']], timeout=10)
 
         except InvalidTorrentException, e:
             return error_page(env, str(e))
 
-    tmpl = jinjaenv.get_template('download_list.html')
+    return pyro_render_template('download_list.html',
+            torrents_list=torrents, rtorrent_data=rtorrent_data, view=view
+            # TODO
+            )
 
-    return template_render(tmpl, env, {'torrents_list' : torrents,
-        'rtorrent_data' : rtorrent_data, 'view' : view} )
-
-@webtool_callback
+@app.route('/target/<target>/torrent/<torrent>')
+@pyroview
 @require_target
 @require_torrent
-def torrent_info_page(env, target, torrent):
-    """
-    Page for torrent information. Files, messages, active, etc.
-    """
+def torrent_info(target, torrent):
 
     try:
         q = torrent.query()
@@ -198,91 +145,20 @@ def torrent_info_page(env, target, torrent):
 
     rtorrent_data = fetch_global_info()
 
-    tmpl = jinjaenv.get_template('torrent_info.html')
+    return pyro_render_template('torrent_info.html', torrent=torrentinfo, tree=tree,
+        rtorrent_data=rtorrent_data, target=target,
+        file_downloads=target.has_key('storage_mode')
 
-    return template_render(tmpl, env, {'torrent' : torrentinfo,
-        'tree' : tree, 'rtorrent_data' : rtorrent_data,
-        'target' : target, 'file_downloads' : target.has_key('storage_mode')})
+        # TODO FIX ME
+        ,wn=wiz_normalise
+    )
 
-@webtool_callback
-@require_target
-def add_torrent_page(env, target):
-    """
-    Page for adding torrents.
-    Works: Adding a correct torrent (URL only)
-    What doesn't work:
-        Error handling,
-        Uploading .torrent files
-        Option to add and start, or not start on add
-    """
-    if not loggedin_and_require(env):
-        return handle_login(env)
-
-    try:
-        user_name = env['beaker.session']['user_name']
-        user = lookup_user(user_name)
-    except KeyError, e:
-        user = None
-
-    if USE_AUTH:
-        if user == None or target['name'] not in user.targets:
-            return None # 404
-
-    return_code = None
-
-    # Check for POST vars
-    if str(env['REQUEST_METHOD']) == 'POST':
-        data = read_post_data(env)
-
-        if 'torrent_url' in data:
-            print "It's a URL!"
-            torrent_url = data['torrent_url'].value
-            if torrent_url:
-                print "Loading URL:", torrent_url
-                torrent_url = urllib.unquote_plus(torrent_url)
-                response = urllib2.urlopen(torrent_url)
-                torrent_raw = response.read()
-
-                torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
-
-                rtorrent = RTorrent(target)
-                return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
-        elif 'torrent_file' in data:
-            if not data['torrent_file'].file:
-                return "Error: Form field 'torrent_file' not a file!"
-
-            print "Loading file:", data['torrent_file'].filename
-            torrent_raw_bin = xmlrpclib.Binary(data['torrent_file'].value)
-
-            rtorrent = RTorrent(target)
-            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
-        else:
-            return str("Error: Invalid POST data")
-
-    rtorrent_data = fetch_global_info()
-
-    tmpl = jinjaenv.get_template('torrent_add.html')
-
-    if return_code == 0:
-        torrent_added = 'SUCCES'
-    elif return_code is not None:
-        torrent_added = 'FAIL'
-    else:
-        torrent_added = ''
-
-    return template_render(tmpl, env, {'rtorrent_data' : rtorrent_data,
-        'torrent_added' : torrent_added, 'target' : target['name']} )
-
-@webtool_callback
+@app.route('/target/<target>/torrent/<torrent>.torrent')
+@pyroview
 @require_target
 @require_torrent
 @require_rtorrent
-def torrent_file(env, target, torrent, rtorrent):
-    """
-    This function returns a torrent's
-    .torrent file to the user.
-    """
-
+def torrent_file(target, torrent, rtorrent):
     try:
         filepath = torrent.get_loaded_file()
 
@@ -293,33 +169,25 @@ def torrent_file(env, target, torrent, rtorrent):
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
-    headers = [('Content-Type', 'application/x-bittorrent')]
-    return ['200 OK', headers, base64.b64decode(contents)]
+    r = Response(base64.b64decode(contents),
+            mimetype='application/x-bittorrent')
+    r.status_code = 200
+    return r
 
-# Download a file contained in a torrent
-@webtool_callback
+@app.route('/target/<target>/torrent/<torrent>/get_file/<filename>')
+@pyroview
 @require_target
 @require_torrent
-def torrent_get_file(env, target, torrent, filename):
-    """
-    Download a file contained within a torrent.
-
-    env:            The WSGI environment
-    target:         The target bittorrent client
-    torrent_hash:   Hash of the torrent being examined
-    filename:       path to file within torrent
-                    (should not start with a /)
-    """
+def torrent_get_file(target, torrent, filename):
 
     # Is file fetching enabled?
     print target
     if not target.has_key('storage_mode'):
         print "File fetching disabled, 404"
-        return None
+        abort(404)
+
     s_mode = target['storage_mode']
 
-    print "Requested file (un-unquoted):", filename
-    filename = urllib.unquote_plus(filename)
     print "Requested file:", filename
 
     # Fetch absolute path to torrent
@@ -343,21 +211,21 @@ def torrent_get_file(env, target, torrent, filename):
             print "Single file torrent."
             file_path = os.path.abspath(t_path)
     except OSError as e:
-        print "Exception performing stat:"
-        print e
-        return None
+        print "Exception performing stat:", e
+        abort(500)
 
     print "Computed path:", file_path
 
     # Now verify this path is within torrent path
     if file_path.find(t_path) != 0:
         print "Path rejected.."
-        return None
+        abort(403)
+
     print "Path accepted."
 
     HTTP_RANGE_REQUEST = False
     try:
-        _bytes = env['HTTP_RANGE']
+        _bytes = request.headers['Range']
         print 'HTTP_RANGE Found'
         _bytes = _bytes.split('=')[1]
         _start, _end = _bytes.split('-')
@@ -401,7 +269,7 @@ def torrent_get_file(env, target, torrent, filename):
     headers.append(('Content-Type', mimetype))
 
     if HTTP_RANGE_REQUEST:
-        headers.append(('Content-length', str(_end-_start+1)))
+        headers.append(('Content-length', str(_end-_start)))
     else:
         headers.append(('Content-length', str(f_size)))
 
@@ -413,10 +281,10 @@ def torrent_get_file(env, target, torrent, filename):
 
     # Useful code for returning files
     # http://stackoverflow.com/questions/3622675/returning-a-file-to-a-wsgi-get-request
-    if 'wsgi.file_wrapper' in env:
-        f_ret = env['wsgi.file_wrapper'](f, FILE_BLOCK_SIZE)
-    else:
-        f_ret = iter(lambda: f.read(FILE_BLOCK_SIZE), '')
+#    if 'wsgi.file_wrapper' in env:
+#        f_ret = env['wsgi.file_wrapper'](f, FILE_BLOCK_SIZE)
+#    else:
+    f_ret = iter(lambda: f.read(FILE_BLOCK_SIZE), '')
 
 
     if HTTP_RANGE_REQUEST:
@@ -435,153 +303,50 @@ def torrent_get_file(env, target, torrent, filename):
         headers.append(('Cache-Control', 'max-age=3600'))
         headers.append(('Content-Location', filename))
 
-        print headers
-        return ('206 Partial Content', headers, f_ret)
+        r = Response(f_ret)
+        r.status_code = 206
+        r.headers = headers
+        return r
     else:
-        print headers
-        return ('200 OK', headers, f_ret)
+        r = Response(f_ret)
+        r.status_code = 200
+        r.headers = headers
+        return r
 
-@webtool_callback(
-    require_login = False
-    )
-def static_serve(env, static_file):
-    """
-    Serve static files ourselves. Most browsers will cache them after one
-    request anyway, so there's not a lot of overhead.
-    """
-    mimetype = mimetypes.guess_type('./static/' + static_file)
-    if mimetype[0] == None:
+
+@app.route('/target/<target>/add_torrent', methods=['GET', 'POST'])
+@pyroview
+@require_target
+def add_torrent_page(target):
+    if request.method == 'POST':
+        if 'torrent_file' in request.files:
+
+            torrent_raw_bin = request.files['torrent_file'].read()
+
+            rtorrent = RTorrent(target)
+            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+        elif 'torrent_url' in request.form:
+
+            torrent_url = request.form['torrent_url']
+
+            response = urllib2.urlopen(torrent_url)
+            torrent_raw = response.read()
+
+            torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
+
+            rtorrent = RTorrent(target)
+            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+
+        flash('Succesfully added torrent' if return_code == 0 else 'Failed to add torrent')
+
+    rtorrent_data = fetch_global_info()
+
+    return pyro_render_template('torrent_add.html',
+            rtorrent_data=rtorrent_data, target=target['name'])
+
+def handle_api_method(method, keys):
+    if not ENABLE_API:
         return None
-
-    pyropath = os.path.abspath(__file__)
-    filepath = os.path.abspath('./static/' + static_file)
-    pyrodir =  os.path.dirname(pyropath) + '/static'
-
-    if not filepath.startswith(pyrodir):
-        return None
-
-    # print 'Serving static file:', static_file, 'with mime type:', mimetype[0]
-
-    try:
-        st = os.stat('./static/' + static_file)
-        d = datetime.datetime.fromtimestamp(st[stat.ST_MTIME])
-
-        headers = [('Content-Type', mimetype[0]),
-                   ('Last-Modified', d.strftime('%a, %d %b %Y %H:%M:%S GMT'))
-                   ]
-
-        if 'HTTP_IF_MODIFIED_SINCE' in env:
-            try:
-                prev_date = datetime.datetime.strptime( \
-                        env['HTTP_IF_MODIFIED_SINCE'], \
-                        '%a, %d %b %Y %H:%M:%S GMT')
-                if prev_date >= d:
-                    return ['304 Not Modified', headers, '']
-            except ValueError, e:
-                pass
-
-        f = open('./static/' + static_file)
-        return ['200 OK', headers, f.read()]
-    except (IOError, OSError):
-        return None
-
-@webtool_callback(
-    require_login = False,
-    do_lookup_user = True
-    )
-def style_serve(env, user):
-    tmpl = jinjaenv.get_template('style.css')
-
-    background = BACKGROUND_IMAGE
-
-    if user and user.background_image != None:
-        background = user.background_image
-
-    headers = [('Content-Type', 'text/css')]
-    return ['200 OK', headers, template_render(tmpl, env,
-            {'background_image' : background})]
-
-@webtool_callback(
-    require_login = False
-    )
-def handle_login(env):
-    tmpl = jinjaenv.get_template('loginform.html')
-
-    if str(env['REQUEST_METHOD']) == 'POST':
-        data = read_post_data(env)
-
-        if 'user' not in data or 'pass' not in data:
-            return template_render(tmpl, env,
-            {   'session' : env['beaker.session'], 'loginfail' : True}  )
-
-        user = urllib.unquote_plus(data['user'].value)
-        pass_ = urllib.unquote_plus(data['pass'].value)
-
-#        pass = hashlib.sha256(pass).hexdigest()
-        u = lookup_user(user)
-        if u is None:
-            return template_render(tmpl, env,
-            {   'session' : env['beaker.session'], 'loginfail' : True}  )
-
-        if u.password == pass_:
-            env['beaker.session']['user_name'] = user
-
-            # Redirect user to original page, or if not possible
-            # to the main page.
-            if 'login_redirect_url' in env['beaker.session']:
-                redir_url = env['beaker.session']['login_redirect_url']
-                #print 'Got URL from session:', redir_url
-
-                # Remove unnecessary data from session
-                del env['beaker.session']['login_redirect_url']
-
-                # Try to chop off BASE_URL from absolute URL
-                if redir_url.startswith(BASE_URL) and not redir_url == BASE_URL:
-                    redir_url = redir_url[len(BASE_URL):]
-
-                # Main page
-                else:
-                    redir_url = '/'
-            else:
-                #print 'URL not found in session'
-                redir_url = '/'
-
-            #print "Login succes, redirect to:", redir_url
-
-            # Store session
-            env['beaker.session'].save()
-            return redirect_client_prg(redir_url)
-            #return main_page(env)
-        else:
-            return template_render(tmpl, env,
-            {   'session' : env['beaker.session'], 'loginfail' : True}  )
-
-    # Not logged in?
-    # Render login page, and store
-    # current URL in beaker session.
-    if not loggedin(env):
-        #print 'Not logged in, storing session data:', env['PATH_INFO']
-        env['beaker.session']['login_redirect_url'] = env['PATH_INFO']
-        env['beaker.session'].save()
-        return template_render(tmpl, env, { })
-
-    # User already loggedin, redirect to main page.
-    else:
-        return redirect_client('/')
-
-@webtool_callback(
-    require_login = False
-    )
-def handle_logout(env):
-    if loggedin(env):
-        s = env['beaker.session']
-        s.delete()
-    else:
-        return error_page(env, 'Not logged in')
-
-    return redirect_client('/')
-
-def handle_api_method(env, method, keys):
     if method not in known_methods:
         raise Exception('Unknown method')
 
@@ -592,10 +357,10 @@ def handle_api_method(env, method, keys):
             print 'Returning null, target is invalid'
             return None
 
-    u = fetch_user(env)
-    # User can't be none, since we've already passed login.
-    if USE_AUTH and target not in user.targets:
-        print 'User is not allowed to use target: %s!' % target
+#    u = fetch_user(env)
+#    # User can't be none, since we've already passed login.
+#    if USE_AUTH and target not in user.targets:
+#        print 'User is not allowed to use target: %s!' % target
 
 
     if method == 'torrentrequester':
@@ -616,7 +381,13 @@ def handle_torrentrequester(k, target):
         for method, args in attributes:
             getattr(tr, method)
 
-        return tr.all()
+        h = hash(tr)
+        r = cache.get(h)
+        if r is None:
+            r = tr.all()
+            cache.set(h, r, timeout=30)
+
+        return r
 
     except (InvalidTorrentCommandException,):
         return None
@@ -640,10 +411,17 @@ def handle_rtorrent_torrent(k, m, target):
             a = Torrent(target, _hash).query()
 
         for method, args in attributes:
-            getattr(a, method)(args)
+            getattr(a, method)(*args)
 
-        return a.first()
-    except (InvalidTorrentException, InvalidTorrentCommandException):
+        h = hash(a)
+        r = cache.get(h)
+        if r is None:
+            r = a.first()
+            cache.set(h, r, timeout=30)
+
+        return r
+    except (InvalidTorrentException, InvalidTorrentCommandException), e:
+        print e
         return None
 
 known_methods = {
@@ -652,37 +430,125 @@ known_methods = {
     'torrent' : handle_rtorrent_torrent
 }
 
-def handle_api(env):
-    """
-    """
-    if str(env['REQUEST_METHOD']) != 'POST':
-        return None
 
-    if not loggedin_and_require(env):
-        return ['403 Forbidden', [('Content-Type', 'application/json')],
-                json.dumps(None, indent=' ' * 4)]
+@app.route('/api', methods=['POST'])
+def api():
+    #if not loggedin_and_require(env):
+    #    r = Response(json.dumps(None, indent=' ' * 4), mimetype='application/json')
+    #    r.status_code = 403
+    #    return r
 
     # Get JSON request via POST data
-    data = read_post_data(env)
-    request = urllib.unquote_plus(data['request'].value)
+    try:
+        req = request.form['request']
+    except KeyError, e:
+        abort(500)
 
-    print 'Request:', repr(request)
-
-    d = json.loads(request)
-    r = []
+    d = json.loads(req)
+    resp = []
 
     for x in d:
         if 'type' in x:
             print 'Method:', x['type']
-            r.append(handle_api_method(env, x['type'], x))
+            resp.append(handle_api_method(x['type'], x))
 
-    return ['200 OK', [('Content-Type', 'application/json')], \
-            json.dumps(r, indent=' ' * 4)]
+    s = json.dumps(resp, indent=4)
 
+    r = Response(s, mimetype='application/json')
+    r.status_code = 200
+    return r
 
-session_options = {
-    'session.cookie_expires' : True
-}
+@app.route('/style.css')
+def style_serve():
+    """
+    TODO: Re-add user lookup and user specific image:
+
+    if user and user.background_image != None:
+        background = user.background_image
+
+    """
+    background = BACKGROUND_IMAGE
+
+    return Response(pyro_render_template('style.css',
+        trans=0.6),
+        mimetype='text/css')
+
+@app.route('/login', methods=['GET', 'POST'])
+@pyroview(require_login=False)
+def handle_login():
+    print 'Handle das login'
+    #tmpl = jinjaenv.get_template('loginform.html')
+    _login_fail = lambda: pyro_render_template('loginform.html', loginfail=True)
+    print 'Request method:', request.method
+
+    if request.method == 'POST':
+        if 'user' not in request.form or 'pass' not in request.form:
+            return _login_fail()
+
+        user = request.form['user']
+        passwd = request.form['pass']
+
+#        pass = hashlib.sha256(pass).hexdigest()
+        u = lookup_user(user)
+        if u is None:
+            return _login_fail()
+
+        if u.password == passwd:
+            print 'Login succes.'
+            session['user_name'] = user
+
+            # Redirect user to original page, or if not possible
+            # to the main page.
+            redir_url = session.pop('login_redirect_url', None)
+            if redir_url:
+                print 'Redirecting to:', redir_url
+                return redirect_client_prg(url=redir_url)
+
+            return redirect_client_prg('main_view_page')
+
+        else:
+            return _login_fail()
+
+    # Not logged in?
+    # Render login page, and store
+    # current URL in beaker session.
+    if not loggedin():
+        print 'Not logged in, storing session data:', request.base_url
+        session['login_redirect_url'] = request.base_url
+
+        return pyro_render_template('loginform.html')
+
+    # User already loggedin, redirect to main page.
+    else:
+        return redirect_client('main_view_page')
+
+@app.route('/logout')
+@pyroview(require_login=False)
+def handle_logout():
+    if loggedin():
+        session.pop('user_name', None)
+    else:
+        return error_page(env, 'Not logged in')
+
+    return redirect_client('main_view_page')
+
+class PrefixWith(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        app_root = app.config['APPLICATION_ROOT']
+        if environ['PATH_INFO'].startswith(app_root):
+            environ['PATH_INFO'] = environ['PATH_INFO'][len(app_root):]
+            environ['SCRIPT_NAME'] = app_root
+        else:
+            environ['PATH_INFO'] = '/GENERIC-404'
+            environ['SCRIPT_NAME'] = ''
+            #start_response('404 Not Found', [('Content-Type', 'text/plain')])
+            #return '404'
+
+        return app(environ, start_response)
+
 
 
 class SimpleCache(object):
@@ -708,42 +574,19 @@ if __name__ == '__main__':
     targets = parse_config()
     users = parse_users()
 
-    jinjaenv = Environment(loader=PackageLoader('pyrotorrent', 'templates'))
-    jinjaenv.autoescape = True
-    wt = WebTool()
-
+    from werkzeug.contrib.cache import SimpleCache
     cache = SimpleCache()
 
-    # O GOD WTF
-    # I apologise deeply for these inconsiderate workarounds ;-)
     import lib.helper
     lib.helper.targets = targets
     lib.helper.users = users
-    lib.helper.jinjaenv = jinjaenv
     lib.helper.cache = cache
+    lib.decorators.handle_login = handle_login
 
-    import lib.decorator
-    lib.decorator.handle_login = handle_login
-
-    session_options = {
-        'session.cookie_expires' : True
-    }
-
-    # Add all rules
-    execfile('rules.py')
-
-    app = pyroTorrentApp
-    app = SessionHack(app, error_page)
-    app = SessionMiddleware(app, session_options)
 
     if USE_OWN_HTTPD:
-        from wsgiref.simple_server import make_server, \
-                WSGIServer, WSGIRequestHandler
-        WSGIRequestHandler.log_message = lambda *x: None
-        httpd = make_server('', 8000, app, server_class=WSGIServer,
-                handler_class=WSGIRequestHandler)
-        httpd.serve_forever()
+        app.run()
     else:
+        application = PrefixWith(app)
         from flup.server.fcgi import WSGIServer
-        WSGIServer(app).run()
-
+        WSGIServer(application).run()

@@ -5,6 +5,7 @@ View: {{ view}}
 {% endblock %}
 
 {% block main %}
+
 {% if torrents_list %}
   {% for target in torrents_list %}
   {% set torrents = torrents_list[target] %}
@@ -25,11 +26,10 @@ View: {{ view}}
         {{ wn(rtorrent.get_download_throttle) }}
         </span>
         <span>
-              <a href="{{base_url}}/target/{{target}}/add_torrent">
+            <a href="{{ url_for('add_torrent_page', target=target) }}">
               <span class="add_torrent_icon"></span>
-              </a>
+            </a>
         </span>
-    </div>
     </div>
     </div>
 
@@ -38,7 +38,7 @@ View: {{ view}}
     {% for x in torrents %}
     <li class="torrent_{% if not x.is_complete %}in{% endif %}complete">
 
-    <a href="{{base_url}}/target/{{target}}/torrent/{{ x.get_hash }}">{{ x.get_name }} </a>
+    <a href="{{ url_for('torrent_info', target=target, torrent=x.get_hash) }}">{{ x.get_name }} </a>
         <!-- Place other options/ icons here.... Resume... Pause... Delete...
         View -->
 
@@ -84,6 +84,8 @@ View: {{ view}}
     </li>
     {% endfor %}
     </ul>
+    </div>
+
     </div>
 
   {% endfor %}
