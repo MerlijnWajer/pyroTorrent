@@ -16,7 +16,7 @@ BACKGROUND_IMAGE = 'cat.jpg'
 
 USE_AUTH = True
 
-ENABLE_API = True
+ENABLE_API = False
 
 torrent_users = {
     'test' : {

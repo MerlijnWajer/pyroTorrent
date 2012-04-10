@@ -4,6 +4,13 @@ TODO:
     -   Default arguments for jinja (wn, etc)
 """
 
+###############################################################################
+#                               PYROTORRENT                                   #
+###############################################################################
+# To configure pyrotorrent, check the documentation as well as config.py and  #
+# flask-config.py. These two files will be merged later.                      #
+###############################################################################
+
 
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
@@ -64,12 +71,7 @@ import json
 @app.route('/view/<view>')
 @pyroview
 def main_view_page(view='default'):
-    """
-    TODO: Login
-    """
     rtorrent_data = fetch_global_info()
-
-#    user = fetch_user(env)
 
 #    if view not in rtorrent_data.get_view_list:
 #        return error_page(env, 'Invalid view: %s' % view)
@@ -114,9 +116,6 @@ def main_view_page(view='default'):
 @require_target
 @require_torrent
 def torrent_info(target, torrent):
-    # TODO UNSAFE NEEDS DECORATOR
-    #target = lookup_target(target)
-    #torrent = Torrent(target, torrent_hash)
 
     try:
         q = torrent.query()
@@ -375,7 +374,7 @@ def handle_torrentrequester(k, target):
         r = cache.get(h)
         if r is None:
             r = tr.all()
-            cache.set(h, r, 30)
+            cache.set(h, r, timeout=30)
 
         return r
 
@@ -407,7 +406,7 @@ def handle_rtorrent_torrent(k, m, target):
         r = cache.get(h)
         if r is None:
             r = a.first()
-            cache.set(h, r, 30)
+            cache.set(h, r, timeout=30)
 
         return r
     except (InvalidTorrentException, InvalidTorrentCommandException), e:
@@ -469,6 +468,7 @@ def handle_login():
     print 'Handle das login'
     #tmpl = jinjaenv.get_template('loginform.html')
     _login_fail = lambda: pyro_render_template('loginform.html', loginfail=True)
+    print 'Request method:', request.method
 
     if request.method == 'POST':
         if 'user' not in request.form or 'pass' not in request.form:
@@ -476,9 +476,6 @@ def handle_login():
 
         user = request.form['user']
         passwd = request.form['pass']
-
-        #user = urllib.unquote_plus(data['user'].value)
-        #pass_ = urllib.unquote_plus(data['pass'].value)
 
 #        pass = hashlib.sha256(pass).hexdigest()
         u = lookup_user(user)
@@ -524,9 +521,6 @@ def handle_logout():
 
     return redirect_client('main_view_page')
 
-#if ENABLE_API:
-#    wt.add_rule(re.compile('^%s/api' % BASE_URL), handle_api, [])
-
 class PrefixWith(object):
     def __init__(self, app):
         self.app = app
@@ -535,7 +529,7 @@ class PrefixWith(object):
         app_root = app.config['APPLICATION_ROOT']
         if environ['PATH_INFO'].startswith(app_root):
             environ['PATH_INFO'] = environ['PATH_INFO'][len(app_root):]
-            environ['SCRIPT_NAME'] = app_root 
+            environ['SCRIPT_NAME'] = app_root
         else:
             environ['PATH_INFO'] = '/GENERIC-404'
             environ['SCRIPT_NAME'] = ''
