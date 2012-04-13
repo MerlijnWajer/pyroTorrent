@@ -433,6 +433,8 @@ known_methods = {
 
 @app.route('/api', methods=['POST'])
 def api():
+    if not ENABLE_API:
+        abort(403)
     #if not loggedin_and_require(env):
     #    r = Response(json.dumps(None, indent=' ' * 4), mimetype='application/json')
     #    r.status_code = 403
