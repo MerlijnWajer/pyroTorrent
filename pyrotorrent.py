@@ -344,7 +344,9 @@ def add_torrent_page(target):
     if request.method == 'POST':
         if 'torrent_file' in request.files:
 
-            torrent_raw_bin = request.files['torrent_file'].read()
+            torrent_raw = request.files['torrent_file'].read()
+
+            torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
 
             rtorrent = RTorrent(target)
             return_code = rtorrent.add_torrent_raw_start(torrent_raw_bin)
