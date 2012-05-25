@@ -1,0 +1,226 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import os
+import sys
+import argparse
+import re
+
+conf_path = unicode(os.getenv('XDG_CONFIG_HOME', os.getenv('HOME') + \
+        '/.config'))
+conf_path += u'/πϱ'
+#print conf_path
+
+sys.path.append(conf_path)
+
+from pyroconfig import rtorrent_config, lib_path
+
+sys.path.append(lib_path)
+
+from lib.config_parser import parse_config_part, \
+    RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
+
+from model.rtorrent import RTorrent
+from model.torrent import Torrent
+
+from lib.torrentrequester import TorrentRequester
+
+from lib.filerequester import TorrentFileRequester
+from lib.filetree import FileTree
+
+parser = argparse.ArgumentParser(description='πϱ command tool',
+            epilog='Beter een torrent op de harddisk dan 10 in de cloud')
+parser.add_argument('-l', '--list', type=str,
+        action='append', default=[],
+        help='List torrents.')
+parser.add_argument('-t', '--torrent', type=str,
+        action='append', default=[],
+        help='Torrent actions. Requires hash.'\
+        'Valid actions are: open, close, start, stop, pause,'\
+        'resume, erase, info, files')
+
+parser.add_argument('--add-file', type=str,
+        action='append', default=[],
+        help='Add torrent file specified by path; requires an explicit target.')
+
+parser.add_argument('--add-stdin',
+        action='store_true',
+        help='Add torrent file from stdin; requires an explicit target.')
+
+parser.add_argument('--add-magnet', type=str,
+        action='append', default=[],
+        help='Add torrent specified by magnet; requires an explicit target.')
+
+parser.add_argument('--target', type=str,
+        default=None,
+        help='Target for target-specific operations. You want to set this'\
+                'if you\'re not just listing torrents and files')
+parser.add_argument('--view', type=str,
+        default='default',
+        help='view for target-specific operations. you only need to set this'\
+                'if you do not want to use the default view for --list')
+
+parser.add_argument('--pretty', action='store_true',
+        help='Pretty print')
+
+args = parser.parse_args()
+
+def parse_config():
+    targets = []
+    for x in rtorrent_config:
+        try:
+            info = parse_config_part(rtorrent_config[x], x)
+        except RTorrentConfigException, e:
+            print 'Invalid config: ', e
+            sys.exit(1)
+
+        targets.append(info)
+
+    return targets
+
+def handle_list(lists, view, pretty=False):
+    for l in lists:
+        reg = re.compile(l, re.IGNORECASE)
+        for x in targets:
+            if pretty:
+                print '-' * 80
+                print x['name']
+                print '-' * 80
+            treq = TorrentRequester(x, view)
+            treq.get_name().get_hash()
+            treq = treq.all()
+
+            for t in treq:
+                if reg.match(t.get_name):
+                    if pretty:
+                        s = '| %s: ' % t.get_hash
+                        s += t.get_name[:(74 - 42)]
+                        s += (78 - len(s)) * ' '
+                        s += '|'
+                        print s
+                    else:
+                        print t.get_hash, t.get_name
+
+dfs_depth = 0
+def dfs(node):
+    global dfs_depth
+    print (' ' * dfs_depth * 2) + node.name
+
+    if hasattr(node, 'children'):
+        for x in node.children:
+            dfs_depth += 1
+            dfs(x)
+            dfs_depth -= 1
+
+def handle_torrent(torrents):
+    def info(target, t):
+        t = Torrent(target, t)
+        q = t.query()
+        q.get_hash().get_name().get_size_bytes().get_download_total().\
+                get_loaded_file().get_message().is_active()
+        t = q.first()
+        print 'Hash:', t.get_hash
+        print 'Name:', t.get_name
+        print 'Active:', t.is_active
+        print 'Size:', t.get_size_bytes
+        print 'Loaded file:', t.get_loaded_file
+        print 'Message:', t.get_message
+
+    def files(target, t):
+        t = Torrent(target, t)
+        files = TorrentFileRequester(target, t._hash)\
+                .get_path_components().get_size_chunks()\
+                .get_completed_chunks().all()
+        root_node = FileTree(files).root
+        dfs(root_node)
+
+
+    a = {'info' : info, 'files' : files}
+
+    for target in targets:
+        for t in torrents:
+            _hash, action = t.split(',')
+            if action not in ('open', 'close', 'start', 'stop', 'pause', \
+                    'resume', 'erase', 'info', 'files'):
+                print >>sys.stderr, 'Invalid action:', action
+                continue
+            print _hash, action
+            try:
+                a[action](target, _hash)
+            except KeyError:
+                t = Torrent(target, _hash)
+                getattr(t, action)()
+
+def handle_stdin():
+    if not target:
+        print 'Adding torrent requires a specific target!'
+        return
+    try:
+        import xmlrpclib
+    except ImportError:
+        print 'xmlrpclib wasn\'t found. Not adding file!'
+        return
+
+    f = sys.stdin
+    s = f.read()
+    b = xmlrpclib.Binary(s)
+
+    print target
+
+    rtorrent = RTorrent(target)
+    return_code = rtorrent.add_torrent_raw_start(b)
+    if return_code == 0:
+        print 'Successfully added torrent from stdin.'
+
+def handle_magnet(magnet_links):
+    if not target:
+        print 'Adding torrent requires a specific target!'
+        return
+    for magnet_link in magnet_links:
+        torrent = 'd10:magnet-uri' + str(len(magnet_link)) + ':' + magnet_link + 'e'
+        rtorrent = RTorrent(target)
+        return_code = rtorrent.add_torrent_raw(torrent)
+        if return_code == 0:
+            print 'Successfully added torrent from magnet', magnet_link
+
+
+def handle_file(filenames):
+    if not target:
+        print 'Adding torrent requires a specific target!'
+        return
+    for filename in filenames:
+        try:
+            torrent_raw = open(filename).read()
+        except IOError:
+            print 'File not found:', filename
+            continue
+
+        torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
+
+        rtorrent = RTorrent(target)
+        return_code = rtorrent.add_torrent_raw_start(torrent_raw_bin)
+
+        if return_code == 0:
+            print 'Succesfully added torrent from file', filename
+
+targets = parse_config()
+target = None
+
+if args.target:
+    for x in targets:
+        if x['name'] == args.target:
+            target = x
+
+handle_list(args.list, args.view)
+handle_torrent(args.torrent)
+
+if args.add_stdin:
+    handle_stdin()
+
+if args.add_magnet:
+    handle_magnet(args.add_magnet)
+
+if args.add_file:
+    handle_file(args.add_file)
+
+sys.exit(0)
