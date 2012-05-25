@@ -324,7 +324,7 @@ def add_torrent_page(target):
             torrent_raw_bin = request.files['torrent_file'].read()
 
             rtorrent = RTorrent(target)
-            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+            return_code = rtorrent.add_torrent_raw_start(torrent_raw_bin)
         elif 'torrent_url' in request.form:
 
             torrent_url = request.form['torrent_url']
@@ -335,7 +335,14 @@ def add_torrent_page(target):
             torrent_raw_bin = xmlrpclib.Binary(torrent_raw)
 
             rtorrent = RTorrent(target)
-            return_code = rtorrent.add_torrent_raw(torrent_raw_bin)
+            return_code = rtorrent.add_torrent_raw_start(torrent_raw_bin)
+        elif 'magnet' in request.form:
+            magnet_link = request.form['magnet']
+
+            torrent = 'd10:magnet-uri' + str(len(magnet_link)) + ':' + magnet_link + 'e'
+
+            rtorrent = RTorrent(target)
+            return_code = rtorrent.add_torrent_raw(torrent)
 
         flash('Succesfully added torrent' if return_code == 0 else 'Failed to add torrent')
 

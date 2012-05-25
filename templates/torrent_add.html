@@ -11,6 +11,15 @@
     </form>
 </div>
 
+<div class="torrent-def-div">
+    <h1> Add a torrent via magnet link</h1>
+    <form method="post" action="{{ url_for('add_torrent_page', target=target) }}">
+        <p> Enter the magnet link here: <input type="text"
+        name="magnet"></input> </p>
+        <input type="submit" value="Add torrent"></input>
+    </form>
+</div>
+
 <script type="text/javascript">
 <!-- hack from http://www.dreamincode.net/forums/topic/15621-styling-a-file-browse-button/ -->
 function buttonPush (buttonStatus) {
