@@ -25,7 +25,8 @@ app.config.from_object(__name__)
 app.config.from_pyfile('flask-config.py')
 
 from config import FILE_BLOCK_SIZE, BACKGROUND_IMAGE, \
-        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users, USE_OWN_HTTPD
+        USE_AUTH, ENABLE_API, rtorrent_config, torrent_users, USE_OWN_HTTPD, \
+        CACHE_TIMEOUT
 
 from lib.config_parser import parse_config_part, parse_user_part, \
     RTorrentConfigException, CONNECTION_SCGI, CONNECTION_HTTP
@@ -102,7 +103,7 @@ def main_view_page(view='default'):
 
             torrents[target['name']] = t.all()
 
-            cache.set(h, torrents[target['name']], timeout=10)
+            cache.set(h, torrents[target['name']], timeout=CACHE_TIMEOUT)
 
         except InvalidTorrentException, e:
             return error_page(env, str(e))
@@ -113,10 +114,16 @@ def main_view_page(view='default'):
             )
 
 @app.route('/target/<target>/torrent/<torrent>')
+@app.route('/target/<target>/torrent/<torrent>/<action>')
 @pyroview
 @require_target
 @require_torrent
-def torrent_info(target, torrent):
+def torrent_info(target, torrent, action=None):
+    print torrent, action
+    if action in ('open', 'close', 'start', 'stop', 'pause', 'resume'):
+        print 'Executing action', action
+        print getattr(torrent, action)()
+        flash('Executed %s on torrent %s' % (action, torrent.get_name()))
 
     try:
         q = torrent.query()
@@ -127,7 +134,7 @@ def torrent_info(target, torrent):
         torrentinfo = cache.get(h)
         if torrentinfo is None:
             torrentinfo = q.all()[0] # .first() ?
-            cache.set(h, torrentinfo, 30)
+            cache.set(h, torrentinfo, CACHE_TIMEOUT)
 
     except InvalidTorrentException, e:
         return error_page(env, str(e))
@@ -139,7 +146,7 @@ def torrent_info(target, torrent):
     f = cache.get(h)
     if f is None:
         f = files.all()
-        cache.set(h, f, 30)
+        cache.set(h, f, CACHE_TIMEOUT)
 
     tree = FileTree(f).root
 
@@ -392,7 +399,7 @@ def handle_torrentrequester(k, target):
         r = cache.get(h)
         if r is None:
             r = tr.all()
-            cache.set(h, r, timeout=30)
+            cache.set(h, r, timeout=CACHE_TIMEOUT)
 
         return r
 
@@ -424,7 +431,7 @@ def handle_rtorrent_torrent(k, m, target):
         r = cache.get(h)
         if r is None:
             r = a.first()
-            cache.set(h, r, timeout=30)
+            cache.set(h, r, timeout=CACHE_TIMEOUT)
 
         return r
     except (InvalidTorrentException, InvalidTorrentCommandException), e:

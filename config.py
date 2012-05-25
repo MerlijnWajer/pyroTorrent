@@ -18,6 +18,8 @@ USE_AUTH = True
 
 ENABLE_API = False
 
+CACHE_TIMEOUT=10
+
 torrent_users = {
     'test' : {
         'targets' : [],

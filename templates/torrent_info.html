@@ -33,6 +33,15 @@
 {% block main %}
 {% if torrent %}
         <div class="torrent-def-div">
+            <p>
+            {% for action in ['open', 'close', 'start', 'stop', 'pause',
+            'resume', 'erase'] %}
+            <a href="{{ url_for('torrent_info', target=target['name'],
+                torrent=torrent.get_hash, action=action) }}">{{ action }}</a>
+            {% endfor %}
+            </p>
+        </div>
+        <div class="torrent-def-div">
         <h1> {{ torrent.get_name }}
             ({{ wn(torrent.get_download_total) }} /
             {{ wn(torrent.get_size_bytes) }}) </h1>
