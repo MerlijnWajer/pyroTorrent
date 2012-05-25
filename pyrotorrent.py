@@ -38,6 +38,8 @@ from lib.multibase import InvalidTorrentException, InvalidConnectionException, \
     InvalidTorrentCommandException
 
 from lib.torrentrequester import TorrentRequester
+from lib.peerrequester import PeerRequester
+
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
@@ -139,6 +141,12 @@ def torrent_info(target, torrent, action=None):
     except InvalidTorrentException, e:
         return error_page(env, str(e))
 
+    p = PeerRequester(torrent.target, torrent._hash)
+
+    p.get_address().get_client_version().is_encrypted().get_id()
+
+    peers = p.all()
+
     files = TorrentFileRequester(target, torrent._hash)\
             .get_path_components().get_size_chunks().get_completed_chunks()
 
@@ -154,11 +162,19 @@ def torrent_info(target, torrent, action=None):
 
     return pyro_render_template('torrent_info.html', torrent=torrentinfo, tree=tree,
         rtorrent_data=rtorrent_data, target=target,
-        file_downloads=target.has_key('storage_mode')
+        file_downloads=target.has_key('storage_mode'),
+        peers=peers
 
         # TODO FIX ME
         ,wn=wiz_normalise
     )
+
+@app.route('/target/<target>/torrent/<torrent>/peer/<peer_id>')
+@pyroview
+@require_target
+@require_torrent
+def peer_info(target, torrent, peer_id):
+    return 'Peer info page will be here'
 
 @app.route('/target/<target>/torrent/<torrent>.torrent')
 @pyroview
