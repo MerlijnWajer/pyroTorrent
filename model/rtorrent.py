@@ -176,7 +176,7 @@ _rpc_methods = {
         """
         Loads a torrent into rtorrent from a given string.
         """),
-    'add_torrent_raw' : ('load_raw_start',
+    'add_torrent_raw_start' : ('load_raw_start',
         """
         Loads a torrent into rtorrent from a given string.
         Will also start the download immediately.
