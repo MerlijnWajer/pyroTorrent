@@ -91,7 +91,7 @@ def handle_list(lists, view, pretty=False):
             treq = treq.all()
 
             for t in treq:
-                if reg.match(t.get_name):
+                if reg.findall(t.get_name):
                     if pretty:
                         s = '| %s: ' % t.get_hash
                         s += t.get_name[:(74 - 42)]
