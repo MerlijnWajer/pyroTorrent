@@ -10,7 +10,6 @@ class Leaf(object):
         self.name = name
         self.path = path
         self.obj = obj
-        self.hoi = 'HAOI'
 
     def get_path(self):
         return self.path
