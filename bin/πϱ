@@ -110,16 +110,12 @@ def handle_list(lists, view, pretty=False):
                     else:
                         print t.get_hash, t.get_name
 
-dfs_depth = 0
-def dfs(node):
-    global dfs_depth
+def dfs(node, dfs_depth=0):
     print (' ' * dfs_depth * 2) + node.name
 
     if hasattr(node, 'children'):
         for x in node.children:
-            dfs_depth += 1
-            dfs(x)
-            dfs_depth -= 1
+            dfs(x, dfs_depth+1)
 
 def handle_torrent(torrents):
     def info(target, t):
