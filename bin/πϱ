@@ -70,7 +70,7 @@ parser.add_argument('--view', type=str,
 
 parser.add_argument('--raw', type=str,
         action='append', default=[],
-        help='Raw comment to execute on specified target')
+        help='Raw command to execute on specified target.')
 
 parser.add_argument('--pretty', action='store_true',
         help='Pretty print')
