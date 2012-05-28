@@ -28,6 +28,9 @@ from lib.torrentrequester import TorrentRequester
 from lib.filerequester import TorrentFileRequester
 from lib.filetree import FileTree
 
+import xmlrpclib
+from lib.xmlrpc import RTorrentXMLRPC
+
 parser = argparse.ArgumentParser(description='πϱ command tool',
             epilog='Beter een torrent op de harddisk dan 10 in de cloud')
 parser.add_argument('-l', '--list', type=str,
@@ -59,6 +62,10 @@ parser.add_argument('--view', type=str,
         default='default',
         help='view for target-specific operations. you only need to set this'\
                 'if you do not want to use the default view for --list')
+
+parser.add_argument('--raw', type=str,
+        action='append', default=[],
+        help='Raw comment to execute on specified target')
 
 parser.add_argument('--pretty', action='store_true',
         help='Pretty print')
@@ -203,6 +210,22 @@ def handle_file(filenames):
         if return_code == 0:
             print 'Succesfully added torrent from file', filename
 
+def handle_raw(cmds):
+    rpc = RTorrentXMLRPC(target)
+    m = xmlrpclib.MultiCall(rpc)
+
+    for raw_cmd in cmds:
+        cmd = raw_cmd.split('=', 2)
+
+        if len(cmd) > 1:
+            getattr(m, cmd[0])(cmd[1])
+        else:
+            getattr(m, cmd[0])()
+
+    for cmd, ret in zip(cmds, m()):
+        print cmd, ':', ret
+
+
 targets = parse_config()
 target = None
 
@@ -222,5 +245,8 @@ if args.add_magnet:
 
 if args.add_file:
     handle_file(args.add_file)
+
+if args.raw:
+    handle_raw(args.raw)
 
 sys.exit(0)
