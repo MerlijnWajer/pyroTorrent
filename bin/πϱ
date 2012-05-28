@@ -40,7 +40,12 @@ parser.add_argument('-t', '--torrent', type=str,
         action='append', default=[],
         help='Torrent actions. Requires hash.'\
         'Valid actions are: open, close, start, stop, pause,'\
-        'resume, erase, info, files')
+        'resume, erase, info, files. Default action=\'info\'')
+
+for x in ('open', 'close', 'start', 'stop', 'pause','resume', 'erase', 'files'):
+    parser.add_argument('--' + x + '-torrent', type=str,
+            action='append', default=[],
+            help='Same as --torrent, but action is implied. Argument is a hash')
 
 parser.add_argument('--add-file', type=str,
         action='append', default=[],
@@ -146,7 +151,12 @@ def handle_torrent(torrents):
         if target and x != target:
             continue
         for t in torrents:
-            _hash, action = t.split(',')
+            try:
+                _hash, action = t.split(',')
+            except ValueError:
+                _hash = t
+                action = 'info'
+
             if action not in ('open', 'close', 'start', 'stop', 'pause', \
                     'resume', 'erase', 'info', 'files'):
                 print >>sys.stderr, 'Invalid action:', action
@@ -241,7 +251,13 @@ if args.target:
         raise Exception('Invalid target: %s' % args.target)
 
 handle_list(args.list, args.view)
+
 handle_torrent(args.torrent)
+
+for x in ('open', 'close', 'start', 'stop', 'pause','resume', 'erase', 'files'):
+    torr = getattr(args, x + '_torrent')
+    for y in torr:
+        handle_torrent([y + ',' + x])
 
 if args.add_stdin:
     handle_stdin()
