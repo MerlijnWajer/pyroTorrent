@@ -89,6 +89,8 @@ def handle_list(lists, view, pretty=False):
     for l in lists:
         reg = re.compile(l, re.IGNORECASE)
         for x in targets:
+            if target and x != target:
+                continue
             if pretty:
                 print '-' * 80
                 print x['name']
@@ -144,7 +146,9 @@ def handle_torrent(torrents):
 
     a = {'info' : info, 'files' : files}
 
-    for target in targets:
+    for x in targets:
+        if target and x != target:
+            continue
         for t in torrents:
             _hash, action = t.split(',')
             if action not in ('open', 'close', 'start', 'stop', 'pause', \
@@ -153,9 +157,9 @@ def handle_torrent(torrents):
                 continue
             print _hash, action
             try:
-                a[action](target, _hash)
+                a[action](x, _hash)
             except KeyError:
-                t = Torrent(target, _hash)
+                t = Torrent(x, _hash)
                 getattr(t, action)()
 
 def handle_stdin():
@@ -211,19 +215,23 @@ def handle_file(filenames):
             print 'Succesfully added torrent from file', filename
 
 def handle_raw(cmds):
-    rpc = RTorrentXMLRPC(target)
-    m = xmlrpclib.MultiCall(rpc)
+    for x in targets:
+        if target and x != target:
+            continue
 
-    for raw_cmd in cmds:
-        cmd = raw_cmd.split('=', 2)
+        rpc = RTorrentXMLRPC(x)
+        m = xmlrpclib.MultiCall(rpc)
 
-        if len(cmd) > 1:
-            getattr(m, cmd[0])(cmd[1])
-        else:
-            getattr(m, cmd[0])()
+        for raw_cmd in cmds:
+            cmd = raw_cmd.split('=', 2)
 
-    for cmd, ret in zip(cmds, m()):
-        print cmd, ':', ret
+            if len(cmd) > 1:
+                getattr(m, cmd[0])(cmd[1])
+            else:
+                getattr(m, cmd[0])()
+
+        for cmd, ret in zip(cmds, m()):
+            print cmd, ':', ret
 
 
 targets = parse_config()
