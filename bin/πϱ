@@ -241,6 +241,8 @@ if args.target:
     for x in targets:
         if x['name'] == args.target:
             target = x
+    if target == None:
+        raise Exception('Invalid target: %s' % args.target)
 
 handle_list(args.list, args.view)
 handle_torrent(args.torrent)
