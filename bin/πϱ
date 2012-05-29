@@ -13,7 +13,11 @@ conf_path += u'/πϱ'
 
 sys.path.append(conf_path)
 
-from pyroconfig import rtorrent_config, lib_path
+try:
+    from pyroconfig import rtorrent_config, lib_path
+except ImportError:
+    print 'pyroconfig.py not found in', conf_path
+    sys.exit(1)
 
 sys.path.append(lib_path)
 
