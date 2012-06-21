@@ -1,2 +1,1 @@
--   .torrent upload via file is broken
--   login / sessions are broken.
+-   login / sessions are broken when using built-in httpd.
