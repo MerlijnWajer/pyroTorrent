@@ -27,7 +27,7 @@ rtorrent? Now I did.) web interfaces.
 Features
 --------
 
-It's features include but are not limited to:
+Its features include but are not limited to:
 
     -   View your torrents and upload/download rate.
     -   Efficient XMLRPC usage.
