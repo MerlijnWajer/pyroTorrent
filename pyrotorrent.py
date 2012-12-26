@@ -197,12 +197,11 @@ def torrent_file(target, torrent, rtorrent):
     r.status_code = 200
     return r
 
-@app.route('/target/<target>/torrent/<torrent>/get_file/<filename>')
+@app.route('/target/<target>/torrent/<torrent>/get_file/<path:filename>')
 @pyroview
 @require_target
 @require_torrent
 def torrent_get_file(target, torrent, filename):
-
     # Is file fetching enabled?
     print target
     if not target.has_key('storage_mode'):
@@ -215,6 +214,7 @@ def torrent_get_file(target, torrent, filename):
 
     # Fetch absolute path to torrent
     try:
+        # FIXME: rtorrent get_full_path() apparently isn't always ``full''.
         t_path = torrent.get_full_path()
     except InvalidTorrentException, e:
         return error_page(env, str(e))
@@ -300,7 +300,7 @@ def torrent_get_file(target, torrent, filename):
         # See also: http://greenbytes.de/tech/tc2231/
         # and: http://stackoverflow.com/questions/1361604/how-to-encode-utf8-filename-for-http-headers-python-django
         headers.append(('Content-Disposition', 'attachment;'\
-            'filename='+os.path.split(file_path)[1]))
+            'filename="'+os.path.split(file_path)[1]+'"'))
 
     # Useful code for returning files
     # http://stackoverflow.com/questions/3622675/returning-a-file-to-a-wsgi-get-request
@@ -619,7 +619,8 @@ if __name__ == '__main__':
 
 
     if USE_OWN_HTTPD:
-        app.run()
+        app.run() # Run with host='0.0.0.0' if you want pyro to be
+                                # remotely accessible
     else:
         application = PrefixWith(app)
         from flup.server.fcgi import WSGIServer
