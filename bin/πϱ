@@ -131,7 +131,7 @@ def handle_torrent(torrents):
         t = Torrent(target, t)
         q = t.query()
         q.get_hash().get_name().get_size_bytes().get_download_total().\
-                get_loaded_file().get_message().is_active()
+                get_loaded_file().get_message().is_active().get_full_path()
         t = q.first()
         print 'Hash:', t.get_hash
         print 'Name:', t.get_name.encode('utf-8')
@@ -139,6 +139,7 @@ def handle_torrent(torrents):
         print 'Size:', t.get_size_bytes
         print 'Loaded file:', t.get_loaded_file
         print 'Message:', t.get_message
+        print 'Full path:', t.get_full_path.encode('utf-8')
 
     def files(target, t):
         t = Torrent(target, t)
