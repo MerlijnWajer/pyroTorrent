@@ -112,12 +112,12 @@ def handle_list(lists, view, pretty=False):
                 if reg.findall(t.get_name):
                     if pretty:
                         s = '| %s: ' % t.get_hash
-                        s += t.get_name[:(74 - 42)]
+                        s += t.get_name.encode('utf-8')[:(74 - 42)]
                         s += (78 - len(s)) * ' '
                         s += '|'
                         print s
                     else:
-                        print t.get_hash, t.get_name
+                        print t.get_hash, t.get_name.encode('utf-8')
 
 def dfs(node, dfs_depth=0):
     print (' ' * dfs_depth * 2) + node.name
@@ -134,7 +134,7 @@ def handle_torrent(torrents):
                 get_loaded_file().get_message().is_active()
         t = q.first()
         print 'Hash:', t.get_hash
-        print 'Name:', t.get_name
+        print 'Name:', t.get_name.encode('utf-8')
         print 'Active:', t.is_active
         print 'Size:', t.get_size_bytes
         print 'Loaded file:', t.get_loaded_file
